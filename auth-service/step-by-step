@@ -1,0 +1,26 @@
+--------CONFIGURAÇÃO INICIAL------
+
+1. Criar o package.json(ariquivo de configuraçao e dependencias da app) npm init -y
+2. Instalar o typescript npm install typescript
+3. Instalar o types/node, fastify, tsx e o prisma
+4. Criar o arquivo de config do typescript. tsc --init. O tsconfig.json configura as regras de compilaçao do ts para javascript
+
+--------RODAR O SERVIDOR--------
+
+1. Criar o arquivo main "server.ts"
+2. No package.json definir o script que vai rodar o codigo. Com "tsx watch srcs/server.ts"
+  O SERVIDOR JA ESTA RODANDO!
+
+-------CRIAR O BANCO COM prisma------
+
+1.  npm install @prisma/client
+    npm install --save-dev prisma
+2.  init no prisma npx prisma init
+3.  configurar o schema.prisma para o provide sqlite, adicionar models e caminho da base de dados
+
+Comandos uteis para desenvolvimento e o que faz
+  npx prisma migrate dev --name nome	Cria e aplica uma migração
+  npx prisma migrate reset	Apaga e recria o banco do zero (útil em dev)
+  npx prisma migrate deploy	Aplica migrações já existentes (usado em produção)
+  npx prisma db pull	Gera schema do Prisma com base em um banco existente
+  npx prisma generate	Regenera os tipos (@prisma/client) sem mexer no banco
