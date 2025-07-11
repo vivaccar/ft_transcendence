@@ -24,13 +24,16 @@ export async function loginRoutes(app: FastifyInstance) {
         return reply.status(401).send({ error: 'Invalid credentials' });
     }
 
-    return reply.status(200).send({
-      message: 'Login successful',
-      user: {
-        id: user.id,
+    const token = app.jwt.sign(
+      {
+        sub: user.id,
         username: user.username,
-        email: user.email,
       },
+      { expiresIn: '7d' }
+    );
+
+    return reply.status(200).send({
+      token,
     })
   })
 }

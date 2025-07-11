@@ -1,5 +1,5 @@
 docker build -t auth-service .
-docker run -p 3000:3000 auth-service
+docker run -p 3200:3200 auth-service
 
 ou 
 
