@@ -1,0 +1,23 @@
+docker build -t auth-service .
+docker run -p 3000:3000 auth-service
+
+ou 
+
+npm install
+npm run dev
+
+
+REGISTER
+POST 127.0.0.0/register
+{
+  "username": "Marcelo",
+  "email": "Marcelo@gmail.com",
+  "password": "123456789100"
+} 
+
+
+..POST 127.0.0.0/login
+{
+  "username": "Marcelo",
+  "password": "123456789100"
+} 
