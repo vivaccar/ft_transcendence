@@ -1,0 +1,39 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+	id          		Int    @id @default(autoincrement())
+	username    		String @unique
+	games_played		Int
+	wins				Int
+	losses				Int
+	points_scored		Int
+	points_conceded		Int
+	matches[]			Match
+	friends[]			User
+}
+
+model Match {
+	id          		Int    @id @default(autoincrement())
+	player_one 			User
+	player_two			User
+	goals_player_one	Int
+	goals_player_two	Int
+	winner				User
+	loser				User
+	date 				DateTime
+
+}
