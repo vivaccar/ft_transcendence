@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch srcs/server.ts"
+    "dev": "tsx watch --env-file .env srcs/server.ts"
   },
   "keywords": [],
   "author": "",

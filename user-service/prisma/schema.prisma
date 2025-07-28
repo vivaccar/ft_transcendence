@@ -15,25 +15,33 @@ datasource db {
 }
 
 model User {
-	id          		Int    @id @default(autoincrement())
+	id          		Int    @id @default(autoincrement()) // primary key
 	username    		String @unique
 	games_played		Int
 	wins				Int
 	losses				Int
 	points_scored		Int
 	points_conceded		Int
-	matches[]			Match
-	friends[]			User
+	player_one_matches	Match[] @relation("PlayerOneMatches")
+	player_two_matches	Match[] @relation("PlayerTwoMatches")
+	//friends				User[]
 }
 
 model Match {
-	id          		Int    @id @default(autoincrement())
-	player_one 			User
-	player_two			User
+	id          		Int    @id @default(autoincrement()) // primary key
+	player_one 			User @relation("PlayerOneMatches", fields: [player_one_id], references: [id]) // foreign key
+	player_two			User @relation("PlayerTwoMatches", fields: [player_two_id], references: [id]) // foreign key
+	player_one_id		Int // foreign key
+	player_two_id		Int // foreign key
 	goals_player_one	Int
 	goals_player_two	Int
-	winner				User
-	loser				User
 	date 				DateTime
 
+}
+
+model Tournament {
+	id 				Int @id @default(autoincrement()) // primary key
+	name			String @unique
+
+	//players[]		User 
 }
