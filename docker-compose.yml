@@ -4,6 +4,8 @@ services:
     container_name: auth-service
     ports:
       - 3002:3002
+    networks:
+       - transcendence
   frontend-service:
       build:
         context: frontend-service/.
@@ -12,9 +14,9 @@ services:
       ports:
         - "8080:80"
       restart: unless-stopped
-#      networks:
-#        - transcendence
+      networks:
+       - transcendence
 
 networks:
-  meu-network:
-    driver: bridge
+  transcendence:
+    driver: bridgey
