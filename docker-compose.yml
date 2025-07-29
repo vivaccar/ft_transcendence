@@ -4,3 +4,17 @@ services:
     container_name: auth-service
     ports:
       - 3002:3002
+  frontend-service:
+      build:
+        context: frontend-service/.
+        dockerfile: Dockerfile
+      container_name: frontend-service
+      ports:
+        - "8080:80"
+      restart: unless-stopped
+#      networks:
+#        - transcendence
+
+networks:
+  meu-network:
+    driver: bridge
