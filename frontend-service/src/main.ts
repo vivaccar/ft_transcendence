@@ -5,11 +5,11 @@ import viteLogo from '/vite.svg' */
 import { createLoginForm } from './login'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div class="flex flex-col items-center justify-start h-full pt-60 space-y-4">
+  <div id="first-page" class="max-w-sm mx-auto p-10 bg-white bg-opacity-5 rounded-lg shadow-md backdrop-blur-md flex flex-col itens-center justify-center">
     <button id="login-btn" class="btn">
       Login
     </button>
-    <p class="text-gray-50 font-silkscreen">or</p>
+    <p class="text-gray-50 text-center p-3 font-silkscreen">or</p>
     <button id="register-btn" class="btn">
       Register
     </button>

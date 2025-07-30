@@ -1,12 +1,15 @@
 export function createLoginForm() {
+  const firstPage = document.getElementById('first-page');
+  firstPage?.classList.add("hidden");
+
 	const container = document.createElement('div');
-	container.className = 'max-w-sm mx-auto p-4';
+	container.className = 'max-w-sm mx-auto p-10 bg-white bg-opacity-5 rounded-lg shadow-md backdrop-blur-md flex flex-col itens-center justify-center';
 
 	container.innerHTML = `
-    <h2 class="text-2xl font-bold mb-4">Login</h2>
+    <h2 class="text-2xl text-center font-silkscreen text-white mb-4">Login</h2>
     <input id="username" type="text" placeholder="Username" class="w-full p-2 border rounded mb-2" />
     <input id="password" type="password" placeholder="Password" class="w-full p-2 border rounded mb-4" />
-    <button id="login-btn" class="w-full bg-blue-600 text-white p-2 rounded">Login</button>
+    <button id="login-btn" class="btn !w-full">Go</button>
     <p id="message" class="mt-4 text-red-600"></p>
   `;
 
@@ -43,5 +46,6 @@ export function createLoginForm() {
     }
   }
 
-	return container;
+	const app = document.querySelector<HTMLDivElement>('#app')!;
+  app.appendChild(container);
 }

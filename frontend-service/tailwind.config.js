@@ -9,6 +9,7 @@ export default {
       fontFamily: {
         bitcount: ['Bitcount', 'monospace'],
         silkscreen: ['Silkscreen', 'monospace'],
+        pressStart2P: ['PressStart2P', 'monospace'],
       },
     },
   },
