@@ -10,6 +10,9 @@ const fastify = (0, fastify_1.default)({
 fastify.get('/', async (request, reply) => {
     return { hello: 'typescript world' };
 });
+fastify.get('/marcelo', async (request, reply) => {
+    return { hello: 'Marcelinho Gauchi' };
+});
 // 4. Função para iniciar o servidor
 const start = async () => {
     try {
