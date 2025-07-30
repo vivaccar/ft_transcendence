@@ -46,11 +46,10 @@ export async function registerRoutes(app: FastifyInstance) {
       return reply.status(201).send({ id: user.id, email: user.email })
 
     } catch (err) {
-      if (err instanceof ZodError) {
-          const zodErr = err as ZodError
+        if (err instanceof ZodError) {
           return reply.status(400).send({
             message: 'Validation error',
-            errors: err.errors.map(e => ({
+            errors: err.issues.map(e => ({
               path: e.path.join('.'),
               message: e.message,
             }))
