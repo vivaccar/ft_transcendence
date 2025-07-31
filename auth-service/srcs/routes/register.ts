@@ -4,7 +4,7 @@ import { z, ZodError } from 'zod'
 
 
 export async function registerRoutes(app: FastifyInstance) {
-  app.post('/register', async (request, reply) => {
+  app.post('/auth/register', async (request, reply) => {
     const userBody = z.object({
       email: z.string().email({ message: 'Invalid email format' }),
       password: z.string()

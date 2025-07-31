@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 
 export async function loginRoutes(app: FastifyInstance) {
-  app.post('/login', async (request, reply) => {
+  app.post('/auth/login', async (request, reply) => {
     const loginBody = z.object({
       username: z.string(),
       password: z.string(),
