@@ -10,6 +10,7 @@ export default {
         bitcount: ['Bitcount', 'monospace'],
         silkscreen: ['Silkscreen', 'monospace'],
         pressStart2P: ['PressStart2P', 'monospace'],
+        kronaOne: ['KronaOne', 'monospace'],
       },
     },
   },
