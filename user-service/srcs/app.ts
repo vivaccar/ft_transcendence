@@ -1,10 +1,10 @@
 import Fastify from "fastify"
 import dbPlugin from './dbPlugin' 
-import { registerMatch } from "./routes/registerMatch";
+import { registerMatch, registerUser } from "./routes/register";
 
 const app = Fastify()
 
 app.register(dbPlugin);
-app.register(registerMatch);
+app.register(registerMatch, registerUser);
 
 export default app
