@@ -1,6 +1,4 @@
-import fastify from "fastify";
-
-const app = fastify()
+import app from './app'
 
 app.get('/', async (req, res) => {
 	return "hello my friend!"

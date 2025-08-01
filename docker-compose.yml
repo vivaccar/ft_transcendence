@@ -5,7 +5,7 @@ services:
     ports:
       - 3002:3002
     networks:
-       - transcendence
+        - meu-network
   frontend-service:
       build:
         context: frontend-service/.
@@ -15,7 +15,19 @@ services:
         - "8080:80"
       restart: unless-stopped
       networks:
-       - transcendence
+        - meu-network
+      depends_on:
+        - api-gateway
+  api-gateway:
+    build: api-gateway/.
+    container_name: api-gateway
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    networks:
+      - meu-network
+    depends_on:
+      - auth-service
 
 networks:
   transcendence:
