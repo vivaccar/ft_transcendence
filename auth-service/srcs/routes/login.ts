@@ -1,10 +1,12 @@
 import { FastifyInstance  } from "fastify";
 import { compare } from 'bcryptjs';
 import { z } from 'zod'
+import { loginSwaggerSchema } from '../schemas/login'
 
 
 export async function loginRoutes(app: FastifyInstance) {
-  app.post('/auth/login', async (request, reply) => {
+  app.post('/auth/login', { schema: loginSwaggerSchema }, 
+    async (request, reply) => {
     const loginBody = z.object({
       username: z.string(),
       password: z.string(),
@@ -17,7 +19,7 @@ export async function loginRoutes(app: FastifyInstance) {
     })
 
     if (!user) {
-      return reply.status(400).send({ message: 'Invalid username or password' })
+      return reply.status(400).send({ message: 'Invalid username' })
     }
 
     if (!(await compare(password, user.passwordHash))) {

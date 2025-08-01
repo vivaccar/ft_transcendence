@@ -1,10 +1,12 @@
 import { FastifyInstance  } from "fastify";
 import { hash } from 'bcryptjs'
 import { z, ZodError } from 'zod'
+import { registerSwaggerSchema } from "../schemas/register";
 
 
 export async function registerRoutes(app: FastifyInstance) {
-  app.post('/auth/register', async (request, reply) => {
+  app.post('/auth/register', {schema: registerSwaggerSchema },
+    async (request, reply) => {
     const userBody = z.object({
       email: z.string().email({ message: 'Invalid email format' }),
       password: z.string()
@@ -56,7 +58,7 @@ export async function registerRoutes(app: FastifyInstance) {
           })
       }
 
-      // Erro inesperado (ex: falha no banco de dados)
+      // Erro inesperado
       console.error(err)
       return reply.status(500).send({ message: 'Internal server error' })
     }

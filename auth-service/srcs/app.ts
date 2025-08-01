@@ -8,12 +8,14 @@ import jwtPlugin from "./plugins/jwtPlugin";
 import googleOAuthPlugin from './plugins/google-oauth'
 import googleOauth from "./plugins/google-oauth";
 import fastifyCookie from '@fastify/cookie'
+import swaggerPlugin from "./plugins/swaggerPlugin";
 
 const app = Fastify({ logger: true })
 
 app.register(fastifyCookie, {
   secret: process.env.COOKIE_SECRET!, // string segura
 })
+app.register(swaggerPlugin)
 app.register(dbPlugin);
 app.register(jwtPlugin);
 app.register(googleOauth);
