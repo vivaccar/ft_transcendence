@@ -1,4 +1,4 @@
-import { login, saveToken, register } from '../auth/authService';
+import { login, saveToken} from '../auth/authService';
 import { buildRegisterPage } from '../pages/registerPage';
 
 export function setupAuthLogic(): void {
@@ -30,9 +30,9 @@ function setupRegisterLogic(): void {
 	const registerForm = document.querySelector<HTMLFormElement>('#registerForm');
 	if (!registerForm) return;
 
-	// registerForm.addEventListener('submit', async (event) => {
-	// 	event.preventDefault();
+	registerForm.addEventListener('submit', async (event) => {
+		event.preventDefault();
 
-	// 	// alert('Success login');
-	// })
+		alert('Success login');
+	})
 }
