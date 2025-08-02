@@ -26,11 +26,11 @@ export const registerSwaggerSchema = {
       description: 'Register OK',
       type: 'object',
       properties: {
-        Id: {
+        id: {
           type: 'number',
           description: 'User id',
         },
-        Email: {
+        email: {
             type: 'string',
             description: 'User email',
         }
