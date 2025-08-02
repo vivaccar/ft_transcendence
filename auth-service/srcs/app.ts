@@ -13,7 +13,7 @@ import swaggerPlugin from "./plugins/swaggerPlugin";
 const app = Fastify({ logger: true })
 
 app.register(fastifyCookie, {
-  secret: process.env.COOKIE_SECRET!, // string segura
+  secret: process.env.COOKIE_SECRET!,
 })
 app.register(swaggerPlugin)
 app.register(dbPlugin);

@@ -40,6 +40,6 @@ export async function googleCallback(app:FastifyInstance) {
       { expiresIn: '7d' }
     );
     
-    return reply.send({ message: 'Login successful', token: jwtToken, user: userInfo })
+    return reply.status(200).send({ token: jwtToken, user: userInfo })
     })
 }
