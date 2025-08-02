@@ -1,4 +1,7 @@
 import { FastifyInstance  } from "fastify";
+import { email } from "zod";
+
+
 
 // ESTA FUNCAO É REDIRECIONADA APÓS O USUARIO SE AUTENTICAR PELA API DO GOOGLE!
 export async function googleCallback(app:FastifyInstance) {
@@ -12,6 +15,12 @@ export async function googleCallback(app:FastifyInstance) {
     })
 
     const userInfo = await userInfoResponse.json()
+
+    const emailExists = await app.prisma.findUnique({ 
+      where: { email }
+     })
+
+    
 
     return reply.send({ message: 'Login successful', user: userInfo })
     })

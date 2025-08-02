@@ -12,7 +12,15 @@ export async function loginRoutes(app: FastifyInstance) {
       password: z.string(),
     })
 
-    const { username, password } = loginBody.parse(request.body)
+    try
+    {
+      const { username, password } = loginBody.parse(request.body)
+    }
+    catch (error)
+    {
+      return reply.status(400).send({ message: 'Bad request' })
+    }
+
 
     const user = await app.prisma.user.findUnique({
       where: { username },
