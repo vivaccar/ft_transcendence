@@ -30,5 +30,5 @@ services:
       - auth-service
 
 networks:
-  meu-network:
-    driver: bridge
+  transcendence:
+    driver: bridgey
