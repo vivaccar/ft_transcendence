@@ -3,16 +3,16 @@ export function buildLoginPage(): void {
 	if (!app) return;
 	
 	app.innerHTML = `
-	<div class="min-h-screen flex items-center justify-center -mt-32">
-		<div class="w-full max-w-md px-8 py-16 bg-white rounded-lg shadow-lg">
-			<h2 class="text-2xl font-semibold text-center text-gray-800 mb-6 font-sans">Welcome Back</h2>
+	<div id="authBox" class="min-h-screen flex items-center justify-center -mt-32">
+		<div id="login" class="whiteBox">
+			<h2 class="boxTitle">Welcome Back</h2>
 	
 			<form id="loginForm" class="space-y-4">
-		  		<input type="text" id="username" placeholder="Username" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+		  		<input type="text" id="username" placeholder="Username" class="boxInput" />
 		  
-		  		<input type="password" id="password" placeholder="Password" class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+		  		<input type="password" id="password" placeholder="Password" class="boxInput" />
 		  
-		  		<button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded transition duration-200">
+		  		<button type="submit" class="btn">
 		  		Login
 		  		</button>
 		  	</form>
@@ -20,8 +20,12 @@ export function buildLoginPage(): void {
 		  	<p id="message" class="mt-4 text-center text-sm text-red-600 hidden"></p>
 		  
 		  	<p class="mt-4 text-center text-sm text-gray-600">
-		  	Don't have an account? 
-		  	<a href="#" class="text-blue-600 hover:underline">Register</a>
+		  		Don't have an account?
+
+		  		<button id="go-to-register" class="text-blue-600 hover:underline">
+    			Register
+  				</button>
+				
 		  	</p>
 		</div>
 	</div>
