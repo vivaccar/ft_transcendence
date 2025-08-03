@@ -45,6 +45,8 @@ export async function registerRoutes(app: FastifyInstance) {
         },
       })
 
+      console.log
+
       return reply.status(201).send({ id: user.id, email: user.email })
 
     } catch (err) {
@@ -58,7 +60,6 @@ export async function registerRoutes(app: FastifyInstance) {
           })
       }
 
-      // Erro inesperado
       console.error(err)
       return reply.status(500).send({ message: 'Internal server error' })
     }

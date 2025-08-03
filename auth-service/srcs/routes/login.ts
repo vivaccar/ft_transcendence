@@ -7,7 +7,8 @@ import { loginSwaggerSchema } from '../schemas/login'
 export async function loginRoutes(app: FastifyInstance) {
   app.post('/auth/login', { schema: loginSwaggerSchema }, 
     async (request, reply) => {
-    const loginBody = z.object({
+      const { username, password } = request.body as { username: string; password: string };
+      const loginBody = z.object({
       username: z.string(),
       password: z.string(),
     })
@@ -43,7 +44,7 @@ export async function loginRoutes(app: FastifyInstance) {
     );
 
     return reply.status(200).send({
-      token,
+      token: token,
     })
   })
 }
