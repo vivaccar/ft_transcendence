@@ -2,3 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+	font-family: 'Bitcount';
+	src: url('/fonts/Bitcount-Regular.woff2') format('woff2');
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+  }
+
+@font-face {
+	font-family: 'Silkscreen';
+	src: url('/fonts/Silkscreen-Bold.woff2') format('woff2');
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'PressStart2P';
+	src: url('/fonts/PressStart2P-Regular.woff2') format('woff2');
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'KronaOne';
+	src: url('/fonts/KronaOne-Regular.woff2') format('woff2');
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html, body, #app {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+  }
+
+.btn {
+	@apply w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded transition duration-200;
+}
+
+.whiteBox {
+	@apply w-full max-w-md px-8 py-16 bg-white rounded-lg shadow-lg;
+}
+
+.boxTitle {
+	@apply text-2xl font-semibold text-center text-gray-800 mb-6 font-sans;
+}
+
+.boxInput {
+	@apply w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+@layer components {
+	.box-standard {
+	  @apply w-full max-w-sm mx-auto p-10 h-auto bg-white bg-opacity-5 shadow-md backdrop-blur-md flex flex-col items-center justify-center space-y-4;
+	}
+  }

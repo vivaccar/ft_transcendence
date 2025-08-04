@@ -5,7 +5,14 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        bitcount: ['Bitcount', 'monospace'],
+        silkscreen: ['Silkscreen', 'monospace'],
+        pressStart2P: ['PressStart2P', 'monospace'],
+        kronaOne: ['KronaOne', 'monospace'],
+      },
+    },
   },
   plugins: [],
 }
