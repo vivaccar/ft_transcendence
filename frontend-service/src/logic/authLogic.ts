@@ -1,4 +1,4 @@
-import { login, saveToken} from '../auth/authService';
+import { login, saveToken, register} from '../auth/authService';
 import { buildRegisterPage } from '../pages/registerPage';
 
 export function setupAuthLogic(): void {
@@ -28,11 +28,28 @@ function setupRegisterLogic(): void {
 	buildRegisterPage();
 
 	const registerForm = document.querySelector<HTMLFormElement>('#registerForm');
-	if (!registerForm) return;
+	// const loginForm = document.querySelector<HTMLFormElement>('#loginForm');
+	if (!registerForm /* || !loginForm */) return;
 
 	registerForm.addEventListener('submit', async (event) => {
 		event.preventDefault();
 
-		alert('Success login');
+		const email = getInputValue(registerForm, 'email');
+		const username = getInputValue(registerForm, 'username');
+		const password = getInputValue(registerForm, 'password');
+
+		try {
+			await register({ email, username, password });
+			alert('Success register');
+			// registerForm.classList.add('hidden');
+			// loginForm.classList.remove('hidden');
+		} catch (err) {
+			console.log('aqui');
+			alert(err);			
+		}
 	})
+}
+
+function getInputValue(form: HTMLElement, id: string): string {
+	return form.querySelector<HTMLInputElement>(`#${id}`)?.value ?? '';
 }
