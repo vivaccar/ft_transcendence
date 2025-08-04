@@ -1,6 +1,23 @@
 services:
-  auth-service:
-    build: auth-service/.
-    container_name: auth-service
+  backend:
+    build: backend/.
+    container_name: backend
     ports:
       - 3002:3002
+    networks:
+        - meu-network
+  frontend:
+      build:
+        context: frontend/.
+        dockerfile: Dockerfile
+      container_name: frontend
+      ports:
+        - "8080:80"
+      restart: unless-stopped
+      networks:
+        - meu-network
+
+
+networks:
+  meu-network:
+    driver: bridge

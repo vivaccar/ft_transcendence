@@ -1,6 +1,5 @@
 all: build run
 
-
 build:
 	docker compose build 
 
