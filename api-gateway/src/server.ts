@@ -1,4 +1,3 @@
-
 import Fastify from 'fastify';
 import httpProxy from '@fastify/http-proxy';
 import cors from '@fastify/cors';
@@ -39,6 +38,7 @@ const start = async () => {
     await fastify.register(httpProxy, {
         upstream: auth_service_url,
         prefix: auth_service_prefix,
+        rewritePrefix: auth_service_prefix
     });
 
     //start server
