@@ -1,4 +1,4 @@
-import { login, saveToken} from '../auth/authService';
+import { login,/*  saveToken */} from '../auth/authService';
 import { buildRegisterPage } from '../pages/registerPage';
 
 export function setupAuthLogic(): void {
@@ -15,8 +15,8 @@ async function setupLoginLogic(event: Event): Promise<void> {
 	const username = (document.querySelector<HTMLInputElement>('#username')!)?.value;
 	const password = (document.querySelector<HTMLInputElement>('#password')!)?.value;
 	try {
-	  const token = await login({ username, password });
-	  saveToken(token);
+	  /* const token =  */await login({ username, password });
+	//   saveToken(token);
 	  alert('Success login');
 	  // navegar para outra parte da app
 	} catch (err) {

@@ -2,5 +2,6 @@
 auth-service/node_modules/
 api-gateway/node_modules/
 user-service/node_modules/
+frontend-service/
 
 Subject/
