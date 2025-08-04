@@ -6,7 +6,7 @@
 /*   By: aconceic <aconceic@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 18:55:26 by aconceic          #+#    #+#             */
-/*   Updated: 2025/07/30 19:25:13 by aconceic         ###   ########.fr       */
+/*   Updated: 2025/08/04 12:39:39 by aconceic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ const start = async () => {
     await fastify.register(httpProxy, {
         upstream: auth_service_url,
         prefix: auth_service_prefix,
+        rewritePrefix: auth_service_prefix
     });
 
     //start server
