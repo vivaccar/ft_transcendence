@@ -1,34 +1,23 @@
 import { FastifyInstance  } from "fastify";
 import { compare } from 'bcryptjs';
 import { z } from 'zod'
-import { loginSwaggerSchema } from '../schemas/login'
 
 
 export async function loginRoutes(app: FastifyInstance) {
-  app.post('/auth/login', { schema: loginSwaggerSchema }, 
-    async (request, reply) => {
-      const { username, password } = request.body as { username: string; password: string };
-      const loginBody = z.object({
+  app.post('/login', async (request, reply) => {
+    const loginBody = z.object({
       username: z.string(),
       password: z.string(),
     })
 
-    try
-    {
-      const { username, password } = loginBody.parse(request.body)
-    }
-    catch (error)
-    {
-      return reply.status(400).send({ message: 'Bad request' })
-    }
-
+    const { username, password } = loginBody.parse(request.body)
 
     const user = await app.prisma.user.findUnique({
       where: { username },
     })
 
     if (!user) {
-      return reply.status(400).send({ message: 'Invalid username' })
+      return reply.status(400).send({ message: 'Invalid username or password' })
     }
 
     if (!(await compare(password, user.passwordHash))) {
@@ -44,7 +33,7 @@ export async function loginRoutes(app: FastifyInstance) {
     );
 
     return reply.status(200).send({
-      token: token,
+      token,
     })
   })
 }

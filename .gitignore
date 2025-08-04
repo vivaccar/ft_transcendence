@@ -1,6 +1,5 @@
 # Ignora a pasta node_modules
 auth-service/node_modules/
 api-gateway/node_modules/
-user-service/node_modules/
 
 Subject/

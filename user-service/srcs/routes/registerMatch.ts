@@ -2,9 +2,9 @@ import { FastifyInstance } from "fastify"
 import { z } from 'zod'
 
 export async function registerMatch(app: FastifyInstance) {
-	app.post('/registerMatch', async(req, res) => {
+	app.post('/register', async(req, res) => {
 		const matchSchema = z.object({ //cria o esquema de como o zod quer que o request body seja validado
-			date: z.string().transform((str) => new Date(str)),
+			date: z.date(),
      		participants: z.array(z.object({
         		userId: z.int(),
         		goals: z.int()
@@ -30,10 +30,11 @@ export async function registerMatch(app: FastifyInstance) {
 		} catch(err) {
 			console.error(err)
 		}
-		return res.status(201)
+
+
 	})
 }
-/* 
+
 export async function loginRoutes(app: FastifyInstance) {
   app.post('/login', async (request, reply) => {
     const loginBody = z.object({
@@ -67,4 +68,4 @@ export async function loginRoutes(app: FastifyInstance) {
       token,
     })
   })
-} */
+}
