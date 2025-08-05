@@ -1,22 +1,28 @@
 import { FastifyInstance } from "fastify"
 import { z } from 'zod'
+import { getMatchSwaggerSchema } from "../../schemas/getMatches"
 
 export async function getMatches(app: FastifyInstance) {
-	app.get('/getMatches', async(req, res) => {
-		const usernameSchema = z.string()	
+	app.get('/getMatches', { schema: getMatchSwaggerSchema }, async(req, res) => {
+		 const usernameSchema = z.object({ username: z.string(),})
 		try {
-      		const user = usernameSchema.parse(req.body) // faz o parse do request body, deixando o corpo da requisicao tipado e seguro para ser utilizado
-			  
-			const matches = app.prisma.matchParticipant.findMany({
-
+      		const query = usernameSchema.parse(req.query)
+			const userObject = await app.prisma.user.findUnique ({
+				where: { username: query.username }
 			})
-			/* return res.status(201).send({matchId: match.id, playerOne: match.matchParticipant[0].user.username, playerTwo: match.matchParticipant[1].user.username})
-			} catch (error) {
-			   return reply.status(400).send({ message: 'Bad request' })
-		 }
-		} catch(err) {
-			console.error(err)
-			return res.status(200).send({error: err})
+			if (!userObject) {
+				return res.status(404).send({error: 'username not found in database'})
+			}
+			
+			const matches = await app.prisma.matchParticipant.findMany({
+				where: {userId: userObject.id},
+				include: {
+					match: true
+				}
+			})
+			return res.status(200).send({ matches })
+		} catch(error) {
+			return res.status(400).send({ message: 'Bad request', error: error })
 		}
 	})
-} */
+}
