@@ -1,27 +1,9 @@
 import { FastifyInstance } from "fastify"
 import { z } from 'zod'
-
-/* export async function registerUser(app: FastifyInstance) {
-	app.post('/registerUser', async(req, res) => {
-		const userSchema = z.object({ username: z.string()})
-		try {
-			const { username } = userSchema.parse(req.body) // faz o parse do request body, deixando o corpo da requisicao tipado e seguro para ser utilizado
-			
-			const user = await app.prisma.user.create({
-				data: { 
-					username
-				},
-			})
-			return res.status(201).send({id: user.id, username: user.username })
-			} catch(err) {
-				console.error(err)
-				return res.status(200).send({error: err})
-			}
-		});
-} */
+import { registerMatchSwaggerSchema } from '../../schemas/registerMatch'
 
 export async function registerMatch(app: FastifyInstance) {
-	app.post('/registerMatch', async(req, res) => {
+	app.post('/registerMatch', { schema: registerMatchSwaggerSchema }, async(req, res) => {
 		const matchSchema = z.object({ //cria o esquema de como o zod quer que o request body seja validado
 			date: z.string().transform((str) => new Date(str)),
      		participants: z.array(z.object({
@@ -56,7 +38,7 @@ export async function registerMatch(app: FastifyInstance) {
 		return res.status(201).send({matchId: match.id, playerOne: match.matchParticipant[0].user.username, playerTwo: match.matchParticipant[1].user.username})
 		} catch(err) {
 			console.error(err)
-			return res.status(200).send({error: err})
+			return res.status(400).send({error: err})
 		}
 	})
 }
