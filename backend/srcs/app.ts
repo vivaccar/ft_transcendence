@@ -3,6 +3,10 @@ import dbPlugin from './plugins/dbPlugin';
 import { registerRoutes } from "./authentication/routes/register";
 import { loginRoutes } from "./authentication/routes/login";
 import { googleCallback } from "./authentication/routes/googleCallback";
+import { setup2fa } from "./authentication/routes/2fa";
+import { enable2fa } from "./authentication/routes/2fa";
+import { verify2fa } from "./authentication/routes/2fa";
+import { disable2fa } from "./authentication/routes/2fa";
 import { registerMatch } from "./user/routes/registerMatch";
 import jwt from "./plugins/jwtPlugin";
 import jwtPlugin from "./plugins/jwtPlugin";
@@ -29,7 +33,10 @@ app.register(googleOauth);
 app.register(registerRoutes);
 app.register(loginRoutes);
 app.register(googleCallback);
-
+app.register(setup2fa)
+app.register(enable2fa)
+app.register(verify2fa)
+app.register(disable2fa)
 app.register(registerMatch);
 
 export default app
