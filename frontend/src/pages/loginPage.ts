@@ -35,27 +35,11 @@ export function buildLoginPage(): void {
 		  	<p class="mt-4 text-center text-sm text-gray-600">
 		  		Don't have an account?
 
-		  		<button id="go-to-register" class="text-blue-600 hover:underline">
-    			Register
-  				</button>
+		  		<a href="/register" id="go-to-register" class="text-blue-600 hover:underline">
+    				Register
+ 				</a>
 				
 		  	</p>
-			  </div>
-			  `;
-	}
-			/* </div>
-			<div id="register" class="whiteBox hidden">
-			<h2 class="boxTitle">Create an Account</h2>
-	
-			<form id="registerForm" class="space-y-4">
-				<input type="email" id="emailRegister" placeholder="E-mail" class="boxInput" />
-	
-				<input type="text" id="usernameRegister" placeholder="Username" class="boxInput" />
-			
-				<input type="password" id="passwordRegister" placeholder="Password" class="boxInput" />
-			
-				<button type="submit" class="btn">
-				Register
-				</button>
-			</form>
-			</div> */
+	</div>
+	`;
+}

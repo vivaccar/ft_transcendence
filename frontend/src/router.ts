@@ -1,22 +1,36 @@
-import { buildLoginPage } from './pages/loginPage';
-import { buildRegisterPage } from './pages/registerPage';
-import { setupAuthLogic } from './logic/authLogic';
+import { buildLoginPage } from "./pages/loginPage";
+import { buildRegisterPage } from "./pages/registerPage";
+import { setupAuthLogic, setupRegisterLogic } from "./logic/authLogic";
+import { buildDashboard } from "./pages/dashboardPage";
 
-export function router(): void {
-  const path = window.location.pathname;
-  const app = document.getElementById('app');
-  if (!app) return;
-
-  app.innerHTML = ''; // limpa a tela atual
-
-  if (path === '/register') {
-    buildRegisterPage();
-    setupAuthLogic();
-  } else if (path === '/login') {
+const routes: Record<string, () => void> = {
+  "/login": () => {
     buildLoginPage();
     setupAuthLogic();
+  },
+  "/register": () => {
+    buildRegisterPage();
+    setupRegisterLogic();
+  },
+  "/dashboard": () => {
+    buildDashboard();
+  },
+};
+
+export function handleRoute(): void {
+  const path = window.location.pathname;
+  const routeHandler = routes[path];
+
+  if (routeHandler) {
+    routeHandler();
   } else {
-    buildLoginPage(); // default
-    setupAuthLogic();
+    // Rota não encontrada → redireciona para /login, posteriormente, pagina de erro
+    history.replaceState(null, "", "/login");
+    routes["/login"]();
   }
+}
+
+export function navigate(path: string): void {
+  history.pushState(null, "", path);
+  handleRoute();
 }

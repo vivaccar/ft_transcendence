@@ -1,25 +1,21 @@
 export function buildRegisterPage(): void {
-	const authBox = document.querySelector<HTMLDivElement>('#authBox');
-	if (!authBox) return;
-
-	const loginForm = document.querySelector<HTMLDivElement>('#login');
-	loginForm?.classList.add('hidden');
-
-	authBox.innerHTML = `
-	<div id="register" class="whiteBox">
+	const app = document.querySelector<HTMLDivElement>('#app');
+	if (!app) return;
+  
+	app.innerHTML = `
+	<div id="authBox" class="min-h-screen flex items-center justify-center -mt-32">
+	  <div id="register" class="whiteBox">
 		<h2 class="boxTitle">Create an Account</h2>
-
+  
 		<form id="registerForm" class="space-y-4">
-			<input type="email" id="email" placeholder="E-mail" class="boxInput" />
-
-			<input type="text" id="username" placeholder="Username" class="boxInput" />
-		
-			<input type="password" id="password" placeholder="Password" class="boxInput" />
-		
-			<button type="submit" class="btn">
+		  <input type="email" id="emailRegister" placeholder="E-mail" class="boxInput" />
+		  <input type="text" id="usernameRegister" placeholder="Username" class="boxInput" />
+		  <input type="password" id="passwordRegister" placeholder="Password" class="boxInput" />
+		  <button type="submit" class="btn">
 			Register
-			</button>
+		  </button>
 		</form>
+	  </div>
 	</div>
-	`
-}
+	`;
+  }
