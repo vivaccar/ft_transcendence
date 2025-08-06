@@ -1,5 +1,3 @@
-import { int } from "zod";
-
 export const registerSwaggerSchema = {
   tags: ['Auth'],
   summary: 'Register',
@@ -13,11 +11,11 @@ export const registerSwaggerSchema = {
       },
       password: {
         type: 'string',
-        description: 'User password',
+        description: 'User password'
       },
-        username: {
+      username: {
         type: 'string',
-        description: 'Username',
+        description: 'Username'
       },
     },
   },
@@ -28,20 +26,52 @@ export const registerSwaggerSchema = {
       properties: {
         id: {
           type: 'number',
-          description: 'User id',
+          description: 'User id'
         },
         email: {
-            type: 'string',
-            description: 'User email',
+          type: 'string',
+          description: 'User email'
         }
       },
     },
     400: {
-      description: 'Validation error: Email or Username conflict; Incorrect type of email, username or password',
+      description: 'Validation error or email/username already registered',
+      type: 'object',
+      oneOf: [
+        {
+          description: 'Zod validation error',
+          type: 'object',
+          properties: {
+            message: { type: 'string' },
+            errors: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  path: { type: 'string' },
+                  message: { type: 'string' }
+                }
+              }
+            }
+          }
+        },
+        {
+          description: 'Email or username already exists',
+          type: 'object',
+          properties: {
+            message: {
+              type: 'string'
+            }
+          }
+        }
+      ]
+    },
+    500: {
+      description: 'Internal server error',
       type: 'object',
       properties: {
-        message: { type: 'string' },
-      },
-    },
+        message: { type: 'string' }
+      }
+    }
   },
-};
+}
