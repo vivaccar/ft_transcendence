@@ -3,6 +3,8 @@ import dbPlugin from './plugins/dbPlugin';
 import { registerRoutes } from "./authentication/routes/register";
 import { loginRoutes } from "./authentication/routes/login";
 import { googleCallback } from "./authentication/routes/googleCallback";
+import { registerMatch } from "./user/routes/registerMatch";
+import { getMatches } from "./user/routes/getMatches";
 import jwt from "./plugins/jwtPlugin";
 import jwtPlugin from "./plugins/jwtPlugin";
 import googleOAuthPlugin from './plugins/google-oauth'
@@ -28,5 +30,8 @@ app.register(googleOauth);
 app.register(registerRoutes);
 app.register(loginRoutes);
 app.register(googleCallback);
+
+app.register(registerMatch);
+app.register(getMatches);
 
 export default app
