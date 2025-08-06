@@ -3,7 +3,6 @@ import type { loginCredentials, registerCredentials } from "./types";
 
 export async function google(): Promise<void> {
 	window.location.href = `${API_ROUTES.auth.loginGoogle}`;
-	//token is missing
 }
 
 export async function login(credentials: loginCredentials): Promise<string> {

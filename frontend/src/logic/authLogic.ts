@@ -1,4 +1,4 @@
-import { login, saveToken, register, google} from '../auth/authService';
+import { login/* , saveToken */, register, google} from '../auth/authService';
 import { buildDashboard } from '../pages/dashboardPage';
 // import { buildRegisterPage } from '../pages/registerPage';
 
@@ -70,3 +70,4 @@ function setupRegisterLogic(): void {
 		  }	
 	})
 }
+
