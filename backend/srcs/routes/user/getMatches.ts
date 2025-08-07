@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify"
 import { z } from 'zod'
-import { getMatchSwaggerSchema } from "../../schemas/getMatches"
+import { getMatchSwaggerSchema } from "../../schemaSwagger/getMatchesSchema"
 
 export async function getMatches(app: FastifyInstance) {
 	app.get('/getMatches', { schema: getMatchSwaggerSchema }, async(req, res) => {

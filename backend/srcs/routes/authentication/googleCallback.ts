@@ -1,6 +1,6 @@
 import { FastifyInstance  } from "fastify";
 import { email } from "zod";
-import { googleCallbackSwaggerSchema } from "../../schemas/googleCallbackSchema";
+import { googleCallbackSwaggerSchema } from "../../schemaSwagger/googleCallbackSchema"
 
 
 

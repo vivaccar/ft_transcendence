@@ -1,7 +1,7 @@
 import { FastifyInstance  } from "fastify";
 import { compare } from 'bcryptjs';
 import { z } from 'zod'
-import { loginSwaggerSchema } from '../../schemas/login'
+import { loginSwaggerSchema } from "../../schemaSwagger/loginSchema"
 
 
 export async function loginRoutes(app: FastifyInstance) {

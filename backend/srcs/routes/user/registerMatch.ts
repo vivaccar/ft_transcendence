@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify"
 import { z } from 'zod'
-import { registerMatchSwaggerSchema } from '../../schemas/registerMatch'
+import { registerMatchSwaggerSchema } from "../../schemaSwagger/registerMatchSchema"
 
 export async function registerMatch(app: FastifyInstance) {
 	app.post('/registerMatch', { schema: registerMatchSwaggerSchema }, async(req, res) => {
