@@ -6,7 +6,7 @@ import {
   enable2faSchema,
   verify2faSchema,
   disable2faSchema
-} from '../../schemas/2faSchemas'
+} from "../../schemaSwagger/2faSchema"
 
 // TURN ON 2FA WHEN USER WANTS AND RETURN QR CODE
 

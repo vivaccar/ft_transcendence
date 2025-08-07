@@ -1,7 +1,7 @@
 import { FastifyInstance  } from "fastify";
 import { hash } from 'bcryptjs'
 import { z, ZodError } from 'zod'
-import { registerSwaggerSchema } from "../../schemas/register";
+import { registerSwaggerSchema } from "../../schemaSwagger/registerSchema"
 
 
 export async function registerRoutes(app: FastifyInstance) {
