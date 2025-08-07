@@ -2,8 +2,6 @@ import { FastifyInstance  } from "fastify";
 import { email } from "zod";
 import { googleCallbackSwaggerSchema } from "../../schemas/googleCallbackSchema";
 
-
-
 // ESTA FUNCAO É REDIRECIONADA APÓS O USUARIO SE AUTENTICAR PELA API DO GOOGLE!
 export async function googleCallback(app: FastifyInstance) {
   app.get('/auth/google/callback', { schema: googleCallbackSwaggerSchema } ,async (request, reply) => {
@@ -23,11 +21,23 @@ export async function googleCallback(app: FastifyInstance) {
     });
 
     if (!user) {
+      let baseUsername = userInfo.name
+        ? userInfo.name.replace(/\s+/g, '').toLowerCase()
+        : 'user';
+
+      let uniqueUsername = baseUsername;
+      let counter = 1;
+
+      while (await app.prisma.user.findUnique({ where: { username: uniqueUsername } })) {
+        uniqueUsername = `${baseUsername}${counter}`;
+        counter++;
+      }
+      
       user = await app.prisma.user.create({
         data: {
-          username: userInfo.name || "undefined",
+          username: uniqueUsername, 
           email: userEmail,
-          passwordHash: "undefined", // ou null se permitido no schema
+          passwordHash: null,
         },
       });
     }
