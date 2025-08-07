@@ -21,3 +21,9 @@ POST 127.0.0.0/register
   "username": "Marcelo",
   "password": "123456789100"
 } 
+
+
+token deve ser enviado pelo frontend
+
+curl -X POST http://localhost:3002/2fa/setup  
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjEsInVzZXJuYW1lIjoic3RyaW5nIiwiaWF0IjoxNzU0NDk5MzQ5LCJleHAiOjE3NTUxMDQxNDl9._7zi1syio5A_LyGcP1ukggidN8Cm1HOrJHhV0v2iJzw"   -H "Content-Type: application/json"   -d '{}'

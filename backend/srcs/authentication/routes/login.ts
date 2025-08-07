@@ -5,7 +5,7 @@ import { loginSwaggerSchema } from '../../schemas/login'
 
 
 export async function loginRoutes(app: FastifyInstance) {
-  app.post('/auth/login', { schema: loginSwaggerSchema }, 
+  app.post('/auth/login', { schema: loginSwaggerSchema },
     async (request, reply) => {
       const { username, password } = request.body as { username: string; password: string };
       const loginBody = z.object({
@@ -13,15 +13,12 @@ export async function loginRoutes(app: FastifyInstance) {
       password: z.string(),
     })
 
-    try
-    {
+    try {
       const { username, password } = loginBody.parse(request.body)
     }
-    catch (error)
-    {
+    catch (error) {
       return reply.status(400).send({ message: 'Bad request' })
     }
-
 
     const user = await app.prisma.user.findUnique({
       where: { username },
@@ -35,16 +32,30 @@ export async function loginRoutes(app: FastifyInstance) {
         return reply.status(401).send({ error: 'Invalid credentials' });
     }
 
+    if (user.has2fa) {
+        const token = app.jwt.sign(
+        {
+          id: user.id,
+          username: user.username,
+          partialToken: true
+        },
+        { expiresIn: '3m' }
+      );
+      return reply.status(200).send({ token: token, has2fa: true})
+    }
+
     const token = app.jwt.sign(
       {
-        sub: user.id,
+        id: user.id,
         username: user.username,
+        partialToken: false
       },
       { expiresIn: '7d' }
     );
 
     return reply.status(200).send({
       token: token,
+      has2fa: false
     })
   })
 }
