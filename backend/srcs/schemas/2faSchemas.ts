@@ -58,10 +58,9 @@ export const verify2faSchema = {
   tags: ['2FA'],
   body: {
     type: 'object',
-    required: ['id', 'code'],
+    required: ['code'],
     properties: {
-      id: { type: 'string' },
-      code: { type: 'string' }
+      code: { type: 'number' }
     }
   },
   response: {
@@ -69,7 +68,7 @@ export const verify2faSchema = {
       type: 'object',
       description: "2FA OK",
       properties: {
-        token: { type: 'string' }
+        token: { type: 'string' },
       }
     },
     400: {

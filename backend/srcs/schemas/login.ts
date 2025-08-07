@@ -22,7 +22,10 @@ export const loginSwaggerSchema = {
       properties: {
         token: {
           type: 'string',
-          description: 'JWT token',
+          description: 'JWT token'},
+        has2fa: {
+          type: 'boolean',
+          description: 'User has 2fa'
         },
       },
     },

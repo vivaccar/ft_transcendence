@@ -33,19 +33,29 @@ export async function loginRoutes(app: FastifyInstance) {
     }
 
     if (user.has2fa) {
-      return reply.status(200).send({ twoFAenabled: true, userId: user.id })
+        const token = app.jwt.sign(
+        {
+          id: user.id,
+          username: user.username,
+          partialToken: true
+        },
+        { expiresIn: '3m' }
+      );
+      return reply.status(200).send({ token: token, has2fa: true})
     }
 
     const token = app.jwt.sign(
       {
         id: user.id,
         username: user.username,
+        partialToken: false
       },
       { expiresIn: '7d' }
     );
 
     return reply.status(200).send({
       token: token,
+      has2fa: false
     })
   })
 }

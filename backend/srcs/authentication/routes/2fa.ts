@@ -75,8 +75,9 @@ export async function enable2fa(app:FastifyInstance) {
 }
 
 export async function verify2fa(app:FastifyInstance) {
-    app.post('/2fa/verify', { schema: verify2faSchema }, async (request, reply) => {
-        const userId = request.body.id;
+    app.post('/2fa/verify', { preHandler: [app.preAuthenticate], schema: verify2faSchema },
+        async (request, reply) => {
+        const userId = request.user.id;
         const code = request.body.code
 
         const user = await app.prisma.user.findUnique({where: {id: userId}})
@@ -100,12 +101,13 @@ export async function verify2fa(app:FastifyInstance) {
         {
             id: user.id,
             username: user.username,
+            partialToken: false
         },
         { expiresIn: '7d' }
         );
 
         return reply.status(200).send({
-        token: token,
+            token: token,
         })
 
     })
