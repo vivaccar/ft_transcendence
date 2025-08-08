@@ -1,16 +1,10 @@
 import "./style.css";
 import { handleRoute } from "./router";
 
-function startApp(): void {
-  // const app = document.getElementById('app');
-  // if (!app) throw new Error('Any #app element.');
+//import { buildDashboard } from "./pages/dashboardPage";
 
-  // if (isAuthenticated()) {
-  //   alert('Already login');
-  // } else {
-  // buildLoginPage();
-  // setupAuthLogic();
-  // }
+function startApp(): void {
+
   // buildDashboard();
 
   handleRoute();

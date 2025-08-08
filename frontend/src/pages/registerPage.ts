@@ -17,5 +17,5 @@ export function buildRegisterPage(): void {
 		</form>
 	  </div>
 	</div>
-	`;
+	`.trim();
   }
