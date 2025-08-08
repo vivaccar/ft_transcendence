@@ -10,6 +10,8 @@ import { disable2fa } from "./routes/authentication/2fa";
 import { registerMatch } from "./routes/user/registerMatch";
 import { uploadAvatar } from "./routes/user/uploadAvatar";
 import { getMatches } from "./routes/user/getMatches";
+import { me } from "./routes/user/me";
+import { userAvatar } from "./routes/user/getUserAvatar";
 import jwt from "./plugins/jwtPlugin";
 import jwtPlugin from "./plugins/jwtPlugin";
 import googleOAuthPlugin from './plugins/google-oauth'
@@ -49,5 +51,7 @@ app.register(disable2fa)
 app.register(registerMatch);
 app.register(getMatches);
 app.register(uploadAvatar);
+app.register(userAvatar)
+app.register(me)
 
 export default app
