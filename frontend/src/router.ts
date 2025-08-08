@@ -2,8 +2,13 @@ import { buildLoginPage } from "./pages/loginPage";
 import { buildRegisterPage } from "./pages/registerPage";
 import { setupAuthLogic, setupRegisterLogic } from "./logic/authLogic";
 import { buildDashboard } from "./pages/dashboardPage";
+import { buildAIGame } from "./pages/AIGamePage";
 
 const routes: Record<string, () => void> = {
+  "/": () => {
+    buildLoginPage();
+    setupAuthLogic();
+  },
   "/login": () => {
     buildLoginPage();
     setupAuthLogic();
@@ -15,6 +20,9 @@ const routes: Record<string, () => void> = {
   "/dashboard": () => {
     buildDashboard();
   },
+  "/ai-game": () => {
+    buildAIGame();
+  },
 };
 
 export function handleRoute(): void {
@@ -24,9 +32,9 @@ export function handleRoute(): void {
   if (routeHandler) {
     routeHandler();
   } else {
-    // Rota não encontrada → redireciona para /login, posteriormente, pagina de erro
-    history.replaceState(null, "", "/login");
-    routes["/login"]();
+    // // Rota não encontrada → redireciona para /login, posteriormente, pagina de erro
+    // history.replaceState(null, "", "/login");
+    // routes["/login"]();
   }
 }
 

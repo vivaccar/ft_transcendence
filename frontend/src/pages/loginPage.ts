@@ -3,6 +3,7 @@ export function buildLoginPage(): void {
 	if (!app) return;
 	
 	app.innerHTML = `
+	<h1 id="pongTitle" class="font-orbitron font-semibold text-gray-50 text-6xl mt-64 text-center" > | PONG GAME | </h1>
 	<div id="authBox" class="min-h-screen flex items-center justify-center -mt-32">
 		<div id="login" class="whiteBox">
 			<h2 class="boxTitle">Welcome Back</h2>

@@ -28,9 +28,15 @@ html, body, #app {
 	@apply w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500;
 }
 
-.text-glow {
-	text-shadow: 1 1 12px #00F0FF;
-  }
+.arrow {
+	@apply bg-white/20 hover:bg-white/30 
+	backdrop-blur-md 
+	rounded-full p-3
+	text-white text-2xl
+	transition-all duration-300
+	focus:outline-none focus:ring-0
+	shadow-none ring-0 drop-shadow-none
+}
 
 @layer components {
 	.box-standard {

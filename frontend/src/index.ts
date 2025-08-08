@@ -1,11 +1,7 @@
 import "./style.css";
 import { handleRoute } from "./router";
 
-//import { buildDashboard } from "./pages/dashboardPage";
-
 function startApp(): void {
-
-  // buildDashboard();
 
   handleRoute();
 

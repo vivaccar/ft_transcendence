@@ -1,6 +1,6 @@
 export function Navbar(): HTMLElement {
 	const nav = document.createElement('nav');
-	nav.className = 'bg-[#174B7A] text-white font-orbitron px-8 py-4 flex justify-between items-center';
+	nav.className = 'bg-[#174B7A] text-white font-orbitron font-semibold px-8 py-4 flex justify-between items-center';
 
 	const ul = document.createElement('ul');
 	ul.className = 'flex gap-6';
