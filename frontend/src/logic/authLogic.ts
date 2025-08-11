@@ -17,9 +17,8 @@ async function setupGoogleLogic(event: Event): Promise<void> {
 	event.preventDefault();
 
 	try {
-		/* const token =  */await google();
-		//saveToken(token);
-		// alert('Success login');
+		await google();
+		
 		
 		navigate('./dashboard');
 

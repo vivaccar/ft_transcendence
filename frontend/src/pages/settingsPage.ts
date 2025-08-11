@@ -1,0 +1,130 @@
+import { renderPage } from "../utils";
+
+export function buildSettingsPage(): void {
+	const container = document.createElement("div");
+	container.className = "flex flex-col items-center justify-center h-screen gap-6";
+
+	renderPage(container);
+	const box = document.createElement("div");
+	box.className = "bg-white text-gray-900 rounded-xl shadow-lg w-full max-w-2xl";
+	box.style.background = "#D9D9D9";
+	
+	// Title
+	const headerBar = document.createElement("div");
+	headerBar.style.backgroundColor = "#174B7A";
+	headerBar.style.padding = "12px 16px";  
+	headerBar.style.borderTopLeftRadius = "8px"; 
+	headerBar.style.borderTopRightRadius = "8px"; 
+	headerBar.style.margin = "0"; 
+
+	const title = document.createElement("h1");
+	title.textContent = "Player Settings";
+	title.className = "text-3xl font-orbitron font-bold mb-0 text-center p-6";
+	title.style.color = "white";
+
+	headerBar.appendChild(title);
+	box.insertBefore(headerBar, box.firstChild);
+	
+	// Profile image
+	const profileSection = document.createElement("div");
+	profileSection.className = "flex items-center mb-10 gap-10 p-8";
+
+	// Image
+	const img = document.createElement("img");
+	img.src = "/images/randomAvatar/0.jpeg"; 
+	img.className = "w-32 h-32 rounded-full border-4 border-gray-300";
+	profileSection.appendChild(img);
+
+	// Buttons and text
+	const chooseAvatar = document.createElement("div");
+	chooseAvatar.className = "flex flex-col items-center gap-4"; 
+
+	const text = document.createElement("p");
+	text.textContent = "Upload a new avatar or choose a random one";
+	text.className = "text-lg font-orbitron text-center text-gray-700";
+	chooseAvatar.appendChild(text);
+
+	const buttons = document.createElement("div");
+	buttons.className = "flex items-center gap-4";
+
+	const btnUpload = document.createElement("button");
+	btnUpload.textContent = "Upload Photo";
+	btnUpload.className = "px-5 py-2 bg-[#174B7A] font-orbitron text-white rounded hover:hover:bg-[#133A58] transition";
+	buttons.appendChild(btnUpload);
+
+	const btnRandom = document.createElement("button");
+	btnRandom.textContent = "Random Avatar";
+	btnRandom.className = "px-5 py-2 bg-[#174B7A] font-orbitron text-white rounded hover:hover:bg-[#133A58] transition";
+	btnRandom.addEventListener("click", () => {
+	  img.src = `https://api.dicebear.com/7.x/bottts/svg?seed=${Math.random()}`;
+	});
+	buttons.appendChild(btnRandom);
+	chooseAvatar.appendChild(buttons);
+
+	profileSection.appendChild(chooseAvatar);
+	box.appendChild(profileSection);
+	
+	// Form
+	const form = document.createElement("form");
+	form.className = "flex flex-col gap-4 p-8 pt-0 font-orbitron";	
+	const emailInput = document.createElement("input");
+	emailInput.type = "email";
+	emailInput.placeholder = "Email";
+	emailInput.className = "p-2 rounded bg-gray-100 border border-gray-300";
+	form.appendChild(emailInput);	
+	const usernameInput = document.createElement("input");
+	usernameInput.type = "text";
+	usernameInput.placeholder = "Username";
+	usernameInput.className = "p-2 rounded bg-gray-100 border border-gray-300";
+	form.appendChild(usernameInput);	
+	const passwordInput = document.createElement("input");
+	passwordInput.type = "password";
+	passwordInput.placeholder = "New Password";
+	passwordInput.className = "p-2 rounded bg-gray-100 border border-gray-300";
+	form.appendChild(passwordInput);
+	const confirmPasswordInput = document.createElement("input");
+	confirmPasswordInput.type = "password";
+	confirmPasswordInput.placeholder = "Confir Password";
+	confirmPasswordInput.className = "p-2 rounded bg-gray-100 border border-gray-300";
+	form.appendChild(confirmPasswordInput);	
+	box.appendChild(form);	
+
+	//2FA
+	// Text
+	const twoFAContainer = document.createElement("div");
+	twoFAContainer.className = "flex items-center mt-4 gap-6 p-8 pt-0";
+
+	const twoFAText = document.createElement("span");
+	twoFAText.textContent = "Enable 2FA";
+	twoFAText.className = "text-lg font-medium";
+	twoFAContainer.appendChild(twoFAText);
+
+	// Toggle
+	const toggleLabel = document.createElement("label");
+	toggleLabel.className = "relative inline-flex items-center cursor-pointer";
+
+	const toggleInput = document.createElement("input");
+	toggleInput.type = "checkbox";
+	toggleInput.className = "sr-only peer";
+
+	const toggleSpan = document.createElement("span");
+	toggleSpan.className =
+	  "w-11 h-6 bg-red-400 rounded-full peer peer-checked:bg-green-500 " +
+	  "after:content-[''] after:absolute after:top-[2px] after:left-[2px] " +
+	  "after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all " +
+	  "peer-checked:after:translate-x-full peer-checked:after:border-white";
+
+	toggleLabel.appendChild(toggleInput);
+	toggleLabel.appendChild(toggleSpan);
+	twoFAContainer.appendChild(toggleLabel);
+
+	box.appendChild(twoFAContainer);
+
+ 	container.appendChild(box);
+
+	// Submit
+  	const submitBtn = document.createElement("button");
+	submitBtn.textContent = "Submit";
+	submitBtn.className = "px-5 py-2 bg-[#5FBE00] font-orbitron text-white rounded hover:hover:bg-[#133A58] transition";
+	container.appendChild(submitBtn);
+}
