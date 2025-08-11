@@ -1,15 +1,12 @@
-import { navigate } from "../router";
-
 export function ColorSelector(onColorSelect: (color: string) => void): HTMLElement {
 	const colors = ['#A855F7', '#FACC15', '#22C55E', '#60A5FA', '#EC4899'];
-	// let selectedColor = '';
 
 	const container = document.createElement('div');
 	container.className = 'flex flex-col items-center mt-6';
 
 	const label = document.createElement('p');
 	label.textContent = 'Select your color';
-	label.className = 'text-white font-orbitron font-bold text-xl mb-4';
+	label.className = 'text-white font-orbitron font-semibold text-xl mb-4';
 	container.appendChild(label);
 
 	const colorContainer = document.createElement('div');
@@ -21,7 +18,6 @@ export function ColorSelector(onColorSelect: (color: string) => void): HTMLEleme
 		btn.style.backgroundColor = color;
 
 		btn.addEventListener('click', () => {
-			// selectedColor = color;
 			onColorSelect(color);
 			
 			Array.from(colorContainer.children).forEach((child) =>
@@ -34,15 +30,6 @@ export function ColorSelector(onColorSelect: (color: string) => void): HTMLEleme
 	});
 
 	container.appendChild(colorContainer);
-
-	// const startBtn = document.createElement('button');
-	// startBtn.textContent = 'Start';
-	// startBtn.className = 'mt-6 px-6 py-2 bg-green-600 text-white font-bold rounded hover:bg-green-700 transition';
-	// startBtn.addEventListener('click', () => {
-	// 	console.log('Start game with color:', selectedColor);
-	// 	navigate('./game');
-	// });
-	// container.appendChild(startBtn);
 
 	return container;
 }

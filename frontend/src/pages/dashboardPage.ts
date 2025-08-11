@@ -22,7 +22,8 @@ function buildGameCards(): HTMLElement {
 
 	const cards = [
 		{ title: 'Man vs AI', imgSrc: '/images/dashboardCards/card1.jpeg', url: 'ai-game' },
-		{ title: 'Man vs Man', imgSrc: '/images/dashboardCards/card2.jpeg', url: 'human-game' },
+		{ title: 'Man vs Man\nLocal', imgSrc: '/images/dashboardCards/card2.jpeg', url: 'human-game-local' },
+		{ title: 'Man vs Man\nRemote', imgSrc: '/images/dashboardCards/card5.jpeg', url: 'human-game-remote' },
 		{ title: 'Tournament', imgSrc: '/images/dashboardCards/card3.jpeg', url: 'tournament' },
 	];
 

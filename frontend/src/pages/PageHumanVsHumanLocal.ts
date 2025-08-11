@@ -1,0 +1,79 @@
+import { renderPage } from "../utils";
+import { BackgroundCarousel } from "../components/BackgroundCarousel";
+import { ColorSelector } from "../components/ColorSelector";
+import { navigate } from "../router";
+
+export function buildGamePageManVsManLocal() {
+	let selectedColorP1: string | null = null;
+	let selectedColorP2: string | null = null;
+  		let selectedbackgroundImg = "/images/backgroundGame/back10.jpg";
+
+  	const container = document.createElement("div");
+  	container.className = "flex flex-col items-center justify-center h-screen";
+  	renderPage(container);
+
+  	const title = document.createElement("h1");
+  	title.textContent = 'Man vs Man';
+  	title.className = "text-white font-orbitron font-bold text-4xl mb-8";
+  	container.appendChild(title);
+	
+	const subtitle = document.createElement("h2");
+  	subtitle.textContent = 'Local';
+  	subtitle.className = "text-white font-orbitron text-4xl mb-8";
+  	container.appendChild(subtitle);
+
+  	const onSelectBackground = (Background: string) => {
+  	  selectedbackgroundImg = Background;
+  	};
+
+  	const carousel = BackgroundCarousel(onSelectBackground);
+  	container.appendChild(carousel);
+
+  	// Player 1
+	const onSelectColorP1 = (color: string) => {
+		selectedColorP1 = color;
+  	};
+  
+  	// Player 2
+  	const onSelectColorP2 = (color: string) => {
+		selectedColorP2 = color;
+  	};
+  
+  	const playersContainer = document.createElement("div");
+  	playersContainer.className = "flex gap-[5rem] mt-6";
+	
+  	const player1Wrapper = document.createElement("div");
+  	player1Wrapper.className = "flex flex-col items-center";
+  	const player1Title = document.createElement("h2");
+  	player1Title.textContent = "Player 1";
+  	player1Title.className = "text-white font-orbitron font-bold mb-2";
+  	player1Wrapper.appendChild(player1Title);
+  	player1Wrapper.appendChild(ColorSelector(onSelectColorP1));
+	
+  	const player2Wrapper = document.createElement("div");
+  	player2Wrapper.className = "flex flex-col items-center";
+  	const player2Title = document.createElement("h2");
+  	player2Title.textContent = "Player 2";
+  	player2Title.className = "text-white font-orbitron font-bold mb-2";
+  	player2Wrapper.appendChild(player2Title);
+  	player2Wrapper.appendChild(ColorSelector(onSelectColorP2));
+	
+  	playersContainer.appendChild(player1Wrapper);
+  	playersContainer.appendChild(player2Wrapper);
+	
+  	container.appendChild(playersContainer);
+
+  	const startBtn = document.createElement("button");
+  	startBtn.textContent = "Start";
+  	startBtn.className =
+  	  "mt-6 px-6 py-2 bg-green-600 text-white font-bold rounded hover:bg-green-700 transition";
+  	startBtn.addEventListener("click", () => {
+
+  	sessionStorage.setItem("selectedColorP1", selectedColorP1 ?? "white");
+    sessionStorage.setItem("selectedColorP2", selectedColorP2 ?? "white");
+    sessionStorage.setItem("selectedBackground", selectedbackgroundImg);
+
+    navigate("./game-local");
+  });
+  container.appendChild(startBtn);
+}
