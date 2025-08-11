@@ -73,7 +73,7 @@ export function buildGamePageManVsManLocal() {
     sessionStorage.setItem("selectedColorP2", selectedColorP2 ?? "white");
     sessionStorage.setItem("selectedBackground", selectedbackgroundImg);
 
-    navigate("./game");
+    navigate("./game-local");
   });
   container.appendChild(startBtn);
 }

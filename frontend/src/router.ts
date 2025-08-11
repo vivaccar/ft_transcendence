@@ -22,12 +22,11 @@ const routes: Record<string, () => void> = {
     buildDashboard();
   },
   "/ai-game": () => {
-    buildGamePageManVsManLocal();
   },
   "/human-game-local": () => {
     buildGamePageManVsManLocal();
   },
-  "/game": () => {
+  "/game-local": () => {
     buildHumanGameLocal();
   },
 };
