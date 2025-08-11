@@ -14,10 +14,13 @@ model User {
 	id           		Int    @id @default(autoincrement())
 	username     		String @unique
 	email        		String @unique
-	passwordHash 		String
+	passwordHash 		String?
+	has2fa				Boolean @default(false)
+	secret2fa			String?
 	matches				MatchParticipant[]
 	friends				User[] @relation("UserFriends") // amigos este user adicionou - self relationship
 	friendsOf			User[] @relation("UserFriends") // users que adicionaram este user como amigo - self-relationship
+	avatar				Bytes?
 }
 
 model Match {
