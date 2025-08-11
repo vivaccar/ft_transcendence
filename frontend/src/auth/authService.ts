@@ -1,5 +1,9 @@
 import { API_ROUTES } from "../config";
-import type { loginCredentials } from "./types";
+import type { loginCredentials, registerCredentials } from "./types";
+
+export async function google(): Promise<void> {
+	window.location.href = `${API_ROUTES.auth.loginGoogle}`;
+}
 
 export async function login(credentials: loginCredentials): Promise<string> {
 	const response = await fetch(`${API_ROUTES.auth.login}`, {
@@ -28,4 +32,31 @@ export function getToken(): string | null {
 
 export function isAuthenticated(): boolean {
 	return Boolean(getToken());
+}
+
+export async function register(credentials: registerCredentials): Promise<void> {
+	const response = await fetch(`${API_ROUTES.auth.register}`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		  },
+		  body: JSON.stringify(credentials),
+	});
+
+	if (!response.ok) {
+		let errorMessage;
+
+		try {
+			const errorData = await response.json();
+			if (errorData.message) {
+				errorMessage = errorData.message;
+			}
+		} catch (e) {
+			errorMessage = 'Register failed';
+		}
+
+		throw new Error(errorMessage);
+	}
+
+	await response.json();
 }

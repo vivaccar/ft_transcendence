@@ -115,6 +115,8 @@ export function initializeLocalGame(containerId: string, width: number, height: 
         return;
     }
 
+    const savedBackground = sessionStorage.getItem('selectedBackground');
+
     // Cria os elementos do DOM.
     // provavelmente para mudar o BG, vai ser aqui.
     // Posso utilizar o canvas e colocar uma img especifica nele.
@@ -135,10 +137,20 @@ export function initializeLocalGame(containerId: string, width: number, height: 
     myGameArea.canvas.width = width;
     myGameArea.canvas.height = height;
 
+    if (savedBackground) {
+        myGameArea.canvas.style.backgroundImage = `url(${savedBackground})`;
+        console.log(myGameArea.canvas.style.backgroundImage);
+        myGameArea.canvas.style.backgroundSize = 'cover';
+        myGameArea.canvas.style.backgroundPosition = 'center';
+    } else {
+        myGameArea.canvas.style.backgroundColor = 'black'; // fallback
+    }
+
+
     const paddleWidth = 10, paddleHeight = 100, paddleSpeed = 6;
     const ballSize = 10, ballSpeed = 4;
-    player1 = new Paddle(paddleWidth, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed);
-    player2 = new Paddle(myGameArea.canvas.width - paddleWidth * 2, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed);
+    player1 = new Paddle(paddleWidth, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP1') || 'white');
+    player2 = new Paddle(myGameArea.canvas.width - paddleWidth * 2, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP2') || 'white');
     ball = new Ball(myGameArea.canvas.width / 2, myGameArea.canvas.height / 2, ballSize, ballSpeed, myGameArea.canvas);
 
     window.addEventListener('keydown', (e) => { keysPressed[e.key.toLowerCase()] = true; });
