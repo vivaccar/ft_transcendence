@@ -1,14 +1,21 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg" href="/rocket-lunch.svg"> />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Trascendence</title>
-  </head>
-  <body class="overflow-hidden box-border bg-[url('/images/back16.jpg')] bg-cover bg-center min-h-screen bg-gray-900 flex flex-col justify-center">
-    <h1 class="font-kronaOne text-gray-50 text-6xl mt-64 text-center">| PONG GAME |</h1>
-    <div id="app" class=" flex flex-col justify-center"></div>
-    <script type="module" src="/src/index.ts"></script>
-  </body>
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="icon" type="image/svg" href="/rocket-lunch.svg"> />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Trascendence</title>
+	</head>
+	<body class="overflow-hidden box-border bg-[url('/images/back16.jpg')] bg-cover bg-center min-h-screen bg-gray-900 flex flex-col justify-center">
+		<h1 class="font-kronaOne text-gray-50 text-6xl mt-64 text-center">| PONG GAME |</h1>
+		<div id="app" class=" flex flex-col justify-center"></div>
+
+		<!-- START PONT TEST-->
+		<button id="play-pong-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+			Jogar Pong
+		</button>
+		<div id="game-container" class="w-full max-w-5xl mx-auto mt-4 flex flex-col items-center"></div>
+		<!-- FINISH PONT TEST-->
+		<script type="module" src="/src/game/localPong/Pong.ts"></script>
+	</body>
 </html>
