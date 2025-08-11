@@ -7,10 +7,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        bitcount: ['Bitcount', 'monospace'],
-        silkscreen: ['Silkscreen', 'monospace'],
-        pressStart2P: ['PressStart2P', 'monospace'],
-        kronaOne: ['KronaOne', 'monospace'],
+        orbitron: ['Orbitron', 'monospace'],
       },
     },
   },
