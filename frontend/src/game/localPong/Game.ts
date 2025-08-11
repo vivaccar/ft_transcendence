@@ -115,6 +115,8 @@ export function initializeLocalGame(containerId: string, width: number, height: 
         return;
     }
 
+    const savedBackground = sessionStorage.getItem('selectedBackground');
+
     // Cria os elementos do DOM.
     // provavelmente para mudar o BG, vai ser aqui.
     // Posso utilizar o canvas e colocar uma img especifica nele.
@@ -134,6 +136,16 @@ export function initializeLocalGame(containerId: string, width: number, height: 
     myGameArea.context = myGameArea.canvas.getContext('2d');
     myGameArea.canvas.width = width;
     myGameArea.canvas.height = height;
+
+    if (savedBackground) {
+        myGameArea.canvas.style.backgroundImage = `url(${savedBackground})`;
+        console.log(myGameArea.canvas.style.backgroundImage);
+        myGameArea.canvas.style.backgroundSize = 'cover';
+        myGameArea.canvas.style.backgroundPosition = 'center';
+    } else {
+        myGameArea.canvas.style.backgroundColor = 'black'; // fallback
+    }
+
 
     const paddleWidth = 10, paddleHeight = 100, paddleSpeed = 6;
     const ballSize = 10, ballSpeed = 4;

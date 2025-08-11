@@ -27,7 +27,7 @@ export function BackgroundCarousel(onSelect: (bgId: string) => void): HTMLElemen
 
 	function update() {
 		image.src = backgrounds[currentIndex].imgSrc;
-		onSelect(backgrounds[currentIndex].id);
+		onSelect(backgrounds[currentIndex].imgSrc);
 	}
 
 	leftBtn.onclick = () => {
