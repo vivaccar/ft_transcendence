@@ -2,7 +2,7 @@ import { buildLoginPage } from "./pages/loginPage";
 import { buildRegisterPage } from "./pages/registerPage";
 import { setupAuthLogic, setupRegisterLogic } from "./logic/authLogic";
 import { buildDashboard } from "./pages/dashboardPage";
-import { buildGamePage } from "./pages/GamePage";
+import { buildGamePageManVsManLocal } from "./pages/PageHumanVsHumanLocal";
 import { buildHumanGameLocal } from "./game/localPong/Pong";
 
 const routes: Record<string, () => void> = {
@@ -22,10 +22,10 @@ const routes: Record<string, () => void> = {
     buildDashboard();
   },
   "/ai-game": () => {
-    buildGamePage('Man vs AI');
+    buildGamePageManVsManLocal();
   },
-  "/human-game": () => {
-    buildGamePage('Man vs Man');
+  "/human-game-local": () => {
+    buildGamePageManVsManLocal();
   },
   "/game": () => {
     buildHumanGameLocal();
