@@ -1,0 +1,158 @@
+import { createSettingsUI } from "../pages/settingsPage";
+import { API_ROUTES } from "../config";
+import { getToken } from "../auth/authService";
+
+export async function setupSettingsLogic(elements: ReturnType<typeof createSettingsUI>) {
+  const { emailInput, usernameInput, img, submitBtn, toggleInput2FA } = elements;
+
+  async function loadUserProfile() {
+    const token = getToken();
+
+    try {
+      const res = await fetch(`${API_ROUTES.me}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+      });
+      if (!res.ok) throw new Error('Failed to fetch user data');
+      const data = await res.json();
+
+	  console.log(data);
+
+      emailInput.value = data.email || '';
+      usernameInput.value = data.username || '';
+      img.src = data.avatar || "/images/randomAvatar/0.jpeg"; //find when don't have img
+      toggleInput2FA.checked = data.has2fa || false;
+      sessionStorage.setItem('id', data.id);
+
+    } catch (err) {
+      alert('Error loading profile: ' + err);
+    }
+  }
+
+  // Submit logic to update user profile
+  submitBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    const updatedData = {
+      email: emailInput.value,
+      username: usernameInput.value,
+      // password: ..., // se quiser enviar senha
+      twoFAEnabled: toggleInput2FA.checked,
+    };
+
+    try {
+      const res = await fetch('/me', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedData),
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to update user profile');
+      }
+
+    } catch (err) {
+      alert(err);
+    }
+  });
+
+  await loadUserProfile();
+}
+
+export function setupAvatarControls(
+  img: HTMLImageElement,
+  btnUpload: HTMLButtonElement,
+  btnRandom: HTMLButtonElement
+): void {
+  // Upload
+  btnUpload.addEventListener("click", () => {
+    const input: HTMLInputElement = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+
+    input.onchange = () => {
+      if (input.files && input.files[0]) {
+        const file: File = input.files[0];
+        img.src = URL.createObjectURL(file);
+        uploadAvatar(file);
+      }
+    };
+
+    input.click();
+  });
+
+  // Random avatar
+  btnRandom.addEventListener("click", async () => {
+    try {
+      const avatars = [
+        "/images/randomAvatar/1.jpeg",
+        "/images/randomAvatar/2.jpeg",
+        "/images/randomAvatar/3.jpeg",
+        "/images/randomAvatar/4.jpeg"
+      ];
+      const randomIndex = Math.floor(Math.random() * avatars.length);
+      const avatarPath = avatars[randomIndex];
+
+      const res = await fetch(avatarPath);
+      if (!res.ok) throw new Error("Falha ao carregar avatar local");
+
+      const blob = await res.blob();
+
+      const file = new File([blob], `avatar${randomIndex}.jpeg`, { type: blob.type });
+
+      img.src = URL.createObjectURL(file);
+
+      const formData = new FormData();
+      formData.append("avatar", file);
+
+      const token = getToken();
+
+      const uploadResponse = await fetch(`${API_ROUTES.uploadAvatar}`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      if (!uploadResponse.ok) {
+        const error = await uploadResponse.text();
+        throw new Error(`Error uploading avatar: ${error}`);
+      }
+
+    } catch (error) {
+      console.error(error);
+      alert("Error updating avatar");
+    }
+  });
+}
+
+async function uploadAvatar(file: File): Promise<void> {
+  const formData: FormData = new FormData();
+  formData.append("avatar", file);
+  const token = getToken();
+
+  try {
+    const res: Response = await fetch(`${API_ROUTES.uploadAvatar}`, {
+      method: "POST",
+      body: formData,
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!res.ok) {
+      alert("Error uploading avatar");
+      return;
+    }
+
+  } catch (error) {
+    console.error("Erro na requisição de upload:", error);
+    alert("An error occurred while trying to upload the avatar.");
+  }
+}

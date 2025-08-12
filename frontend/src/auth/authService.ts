@@ -23,11 +23,11 @@ export async function login(credentials: loginCredentials): Promise<string> {
 }
 
 export function saveToken(token: string): void {
-	localStorage.setItem('token', token); //it will be stored in the browser
+	sessionStorage.setItem('token', token); //it will be stored in the browser
 }
 
 export function getToken(): string | null {
-	return localStorage.getItem('token');
+	return sessionStorage.getItem('token');
 }
 
 export function isAuthenticated(): boolean {

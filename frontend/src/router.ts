@@ -5,6 +5,7 @@ import { buildDashboard } from "./pages/dashboardPage";
 import { buildGamePageManVsManLocal } from "./pages/PageHumanVsHumanLocal";
 import { buildHumanGameLocal } from "./game/localPong/Pong";
 import { buildSettingsPage } from "./pages/settingsPage";
+// import { setupSettingsLogic } from "./logic/settingsLogic";
 
 const routes: Record<string, () => void> = {
   "/": () => {

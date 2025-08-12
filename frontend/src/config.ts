@@ -5,5 +5,7 @@ export const API_ROUTES = {
 		login: `${BACKEND_URL}/auth/login`,
 		register: `${BACKEND_URL}/auth/register`,
 		loginGoogle: `${BACKEND_URL}/auth/google`,
-	}
+	}, 
+	me: `${BACKEND_URL}/me`,
+	uploadAvatar: `${BACKEND_URL}/uploadAvatar`,
 };
