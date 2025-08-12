@@ -1,12 +1,13 @@
 import { createSettingsUI } from "../pages/settingsPage";
 import { API_ROUTES } from "../config";
 import { getToken } from "../auth/authService";
+import { setup2FA } from "../auth/2fa";
 
 export async function setupSettingsLogic(elements: ReturnType<typeof createSettingsUI>) {
   const { emailInput, usernameInput, img, submitBtn, toggleInput2FA } = elements;
-
+  
+  const token = getToken();
   async function loadUserProfile() {
-    const token = getToken();
 
     try {
       const res = await fetch(`${API_ROUTES.me}`, {
@@ -61,6 +62,7 @@ export async function setupSettingsLogic(elements: ReturnType<typeof createSetti
     }
   });
 
+  setup2FA(toggleInput2FA);
   await loadUserProfile();
 }
 
@@ -89,12 +91,6 @@ export function setupAvatarControls(
   // Random avatar
   btnRandom.addEventListener("click", async () => {
     try {
-    //   const avatars = [
-    //     "/images/randomAvatar/1.jpeg",
-    //     "/images/randomAvatar/2.jpeg",
-    //     "/images/randomAvatar/3.jpeg",
-    //     "/images/randomAvatar/4.jpeg"
-    //   ];
       const randomIndex = Math.floor(Math.random() * 9) + 1;
       const avatarPath = `/images/randomAvatar/${randomIndex}.jpeg`;
 
