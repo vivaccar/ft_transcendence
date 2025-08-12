@@ -89,14 +89,14 @@ export function setupAvatarControls(
   // Random avatar
   btnRandom.addEventListener("click", async () => {
     try {
-      const avatars = [
-        "/images/randomAvatar/1.jpeg",
-        "/images/randomAvatar/2.jpeg",
-        "/images/randomAvatar/3.jpeg",
-        "/images/randomAvatar/4.jpeg"
-      ];
-      const randomIndex = Math.floor(Math.random() * avatars.length);
-      const avatarPath = avatars[randomIndex];
+    //   const avatars = [
+    //     "/images/randomAvatar/1.jpeg",
+    //     "/images/randomAvatar/2.jpeg",
+    //     "/images/randomAvatar/3.jpeg",
+    //     "/images/randomAvatar/4.jpeg"
+    //   ];
+      const randomIndex = Math.floor(Math.random() * 9) + 1;
+      const avatarPath = `/images/randomAvatar/${randomIndex}.jpeg`;
 
       const res = await fetch(avatarPath);
       if (!res.ok) throw new Error("Falha ao carregar avatar local");

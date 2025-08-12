@@ -52,7 +52,7 @@ export function createSettingsUI(): {
   
 	const img = document.createElement("img");
 	img.src = "/images/randomAvatar/0.jpeg";
-	img.className = "w-32 h-32 rounded-full border-4 border-gray-300";
+	img.className = "w-32 h-32 object-cover rounded-full border-4 border-gray-300";
 	profileSection.appendChild(img);
   
 	// choose avatar buttons, texto etc
