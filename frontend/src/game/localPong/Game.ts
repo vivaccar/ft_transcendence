@@ -16,6 +16,54 @@ let player2: Paddle;
 let ball: Ball;
 let keysPressed: { [key: string]: boolean } = {};
 let animationFrameId: number | null = null;
+let currentGameMode: string;
+let lastTime = 0;
+let aiDecisionTimer = 1;
+let aiTargetY = 0;
+
+function makeAIDecision() {
+    const distanceX = player2.x - ball.x;
+    if (ball.speedX < 0) {
+        aiTargetY = myGameArea.canvas!.height / 2;
+        return;
+    }
+
+    const timeToImpact = distanceX / ball.speedX;
+    let predictedY = ball.y + ball.speedY * timeToImpact;
+    const canvasHeight = myGameArea.canvas!.height;
+
+    // Simula ressaltos.
+    while (predictedY < 0 || predictedY > canvasHeight) {
+        if (predictedY < 0) {
+            predictedY = -predictedY;
+        }
+        if (predictedY > canvasHeight) {
+            predictedY = canvasHeight - (predictedY - canvasHeight);
+        }
+    }
+
+    // Margem de erro, pra IA ficar imperfeita.
+    const errorMargin = (Math.random() - 0.5) * player2.height * 1.5;
+    aiTargetY = predictedY + errorMargin;
+}
+
+function executeAIMove() {
+    const paddleCenter = player2.y + player2.height / 2;
+    const tolerance = player2.speed; 
+
+    if (paddleCenter < aiTargetY - tolerance) {
+        keysPressed['arrowup'] = false;
+        keysPressed['arrowdown'] = true;
+    } 
+    else if (paddleCenter > aiTargetY + tolerance) {
+        keysPressed['arrowdown'] = false;
+        keysPressed['arrowup'] = true;
+    }
+    else {
+        keysPressed['arrowup'] = false;
+        keysPressed['arrowdown'] = false;
+    }
+}
 
 // --- O OBJETO SINGLETON GERENCIADOR ---
 const myGameArea: GameArea = {
@@ -24,12 +72,12 @@ const myGameArea: GameArea = {
     state: 'paused',
 
     start() {
-        if (!this.canvas || !this.context) 
-        { 
+        if (!this.canvas || !this.context) {
             console.log("Error! No Canvas or No Context.");
-            return; 
+            return;
         }
         this.state = 'playing';
+        lastTime = performance.now();
         animationFrameId = requestAnimationFrame(updateGameArea);
     },
 
@@ -48,8 +96,20 @@ const myGameArea: GameArea = {
     },
 };
 
-function updateGameArea() {
-    if (myGameArea.state !== 'playing') return;
+function updateGameArea(currentTime: number) {
+    if (myGameArea.state !== 'playing') 
+        return;
+    if (currentGameMode === 'ai') {
+        const deltaTime = (currentTime - lastTime) / 1000;
+        lastTime = currentTime;
+        aiDecisionTimer -= deltaTime;
+
+        if (aiDecisionTimer <= 0) {
+            makeAIDecision();
+            aiDecisionTimer = 1.0;
+        }
+        executeAIMove();
+    }
     handleInput();
     ball.update();
     checkCollisions();
@@ -75,10 +135,18 @@ function draw() {
 }
 
 function handleInput() {
-    if (keysPressed['w'] && player1.y > 0) { player1.y -= player1.speed; }
-    if (keysPressed['s'] && player1.y < myGameArea.canvas!.height - player1.height) { player1.y += player1.speed; }
-    if (keysPressed['arrowup'] && player2.y > 0) { player2.y -= player2.speed; }
-    if (keysPressed['arrowdown'] && player2.y < myGameArea.canvas!.height - player2.height) { player2.y += player2.speed; }
+    if (keysPressed['w'] && player1.y > 0) { 
+        player1.y -= player1.speed; 
+    }
+    if (keysPressed['s'] && player1.y < myGameArea.canvas!.height - player1.height) { 
+        player1.y += player1.speed; 
+    }
+    if (keysPressed['arrowup'] && player2.y > 0) { 
+        player2.y -= player2.speed; 
+    }
+    if (keysPressed['arrowdown'] && player2.y < myGameArea.canvas!.height - player2.height) { 
+        player2.y += player2.speed; 
+    }
 }
 
 function checkCollisions() {
@@ -108,18 +176,15 @@ function updateScoreboard() {
     if (p2ScoreElement) p2ScoreElement.textContent = player2.score.toString();
 }
 
-export function initializeLocalGame(containerId: string, width: number, height: number) {
+export function initializeLocalGame(containerId: string, width: number, height: number, mode: string) {
+    currentGameMode = mode;
     const container = document.getElementById(containerId);
     if (!container) {
         console.error(`ERRO: Contentor com id "${containerId}" não encontrado.`);
         return;
     }
-
     const savedBackground = sessionStorage.getItem('selectedBackground');
 
-    // Cria os elementos do DOM.
-    // provavelmente para mudar o BG, vai ser aqui.
-    // Posso utilizar o canvas e colocar uma img especifica nele.
     container.innerHTML = `
         <div class="text-6xl mb-4 font-mono text-center text-white">
             <span id="game-player1-score">0</span> - <span id="game-player2-score">0</span>
@@ -145,7 +210,6 @@ export function initializeLocalGame(containerId: string, width: number, height: 
     } else {
         myGameArea.canvas.style.backgroundColor = 'black'; // fallback
     }
-
 
     const paddleWidth = 10, paddleHeight = 100, paddleSpeed = 6;
     const ballSize = 10, ballSpeed = 4;
