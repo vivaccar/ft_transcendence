@@ -4,6 +4,8 @@ import { setupAuthLogic, setupRegisterLogic } from "./logic/authLogic";
 import { buildDashboard } from "./pages/dashboardPage";
 import { buildGamePageManVsManLocal } from "./pages/PageHumanVsHumanLocal";
 import { buildHumanGameLocal } from "./game/localPong/Pong";
+import { buildSettingsPage } from "./pages/settingsPage";
+// import { setupSettingsLogic } from "./logic/settingsLogic";
 
 const routes: Record<string, () => void> = {
   "/": () => {
@@ -21,6 +23,9 @@ const routes: Record<string, () => void> = {
   "/dashboard": () => {
     buildDashboard();
   },
+  "/games": () => {
+    buildDashboard();
+  },
   "/ai-game": () => {
   },
   "/human-game-local": () => {
@@ -28,6 +33,9 @@ const routes: Record<string, () => void> = {
   },
   "/game-local": () => {
     buildHumanGameLocal();
+  },
+  "/settings": () => {
+    buildSettingsPage();
   },
 };
 

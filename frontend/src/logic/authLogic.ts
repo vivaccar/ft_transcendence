@@ -1,4 +1,4 @@
-import { login/* , saveToken */, register, google} from '../auth/authService';
+import { login, saveToken, register, google} from '../auth/authService';
 import { navigate } from '../router';
 
 export function setupAuthLogic(): void {
@@ -17,9 +17,8 @@ async function setupGoogleLogic(event: Event): Promise<void> {
 	event.preventDefault();
 
 	try {
-		/* const token =  */await google();
-		//saveToken(token);
-		// alert('Success login');
+		await google();
+		
 		
 		navigate('./dashboard');
 
@@ -34,8 +33,8 @@ async function setupLoginLogic(event: Event): Promise<void> {
 	const username = (document.querySelector<HTMLInputElement>('#usernameLogin')!)?.value;
 	const password = (document.querySelector<HTMLInputElement>('#passwordLogin')!)?.value;
 	try {
-	  /* const token =  */await login({ username, password });
-	//   saveToken(token);
+	  const token = await login({ username, password });
+	  saveToken(token);
 		alert('Success login');
 		navigate('./dashboard');
 	} catch (err) {
