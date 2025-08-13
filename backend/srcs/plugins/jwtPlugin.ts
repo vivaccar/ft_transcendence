@@ -9,7 +9,13 @@ export default fp(async (fastify) => {
   fastify.decorate('authenticate', async function (request, reply) {
     console.log("entrou auth")
     try {
-      await request.jwtVerify();
+      const token = request.cookies.token
+
+      if (!token) {
+        return reply.code(401).send({ error: 'Unauthorized' });
+      }
+    
+      await request.jwtVerify({token});
       if (request.user.partialToken)
          return reply.code(401).send({ error: 'Unauthorized' });
     } catch (err) {
@@ -20,7 +26,13 @@ export default fp(async (fastify) => {
   fastify.decorate('preAuthenticate', async function (request, reply) {
     console.log("entrou pre-auth")
     try {
-      await request.jwtVerify();
+      const token = request.cookies.token
+
+      if (!token) {
+        return reply.code(401).send({ error: 'Unauthorized' });
+      }
+
+      await request.jwtVerify({token});
       if (!request.user.partialToken)
          return reply.code(401).send({ error: 'Unauthorized' });
     } catch (err) {
