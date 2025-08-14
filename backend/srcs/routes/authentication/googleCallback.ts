@@ -4,63 +4,85 @@ import { googleCallbackSwaggerSchema } from "../../schemaSwagger/googleCallbackS
 
 // ESTA FUNCAO É REDIRECIONADA APÓS O USUARIO SE AUTENTICAR PELA API DO GOOGLE!
 export async function googleCallback(app: FastifyInstance) {
-  app.get('/auth/google/callback', { schema: googleCallbackSwaggerSchema } ,async (request, reply) => {
-    const token = await app.googleOAuth2.getAccessTokenFromAuthorizationCodeFlow(request);
+  app.get('/auth/google/callback', { schema: googleCallbackSwaggerSchema }, async (request, reply) => {
+  const token = await app.googleOAuth2.getAccessTokenFromAuthorizationCodeFlow(request);
 
-    const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-      headers: {
-        Authorization: `Bearer ${token.token.access_token}`,
-      },
-    });
+  const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+    headers: {
+      Authorization: `Bearer ${token.token.access_token}`,
+    },
+  });
 
-    const userInfo = await userInfoResponse.json();
-    const userEmail = userInfo.email;
+  const userInfo = await userInfoResponse.json();
+  const userEmail = userInfo.email;
 
-    let user = await app.prisma.user.findUnique({
-      where: { email: userEmail },
-    });
+  let user = await app.prisma.user.findUnique({
+    where: { email: userEmail },
+  });
 
-    if (!user) {
-      let baseUsername = userInfo.name
-        ? userInfo.name.replace(/\s+/g, '').toLowerCase()
-        : 'user';
+  if (!user) {
+    let baseUsername = userInfo.name
+      ? userInfo.name.replace(/\s+/g, '').toLowerCase()
+      : 'user';
 
-      let uniqueUsername = baseUsername;
-      let counter = 1;
+    let uniqueUsername = baseUsername;
+    let counter = 1;
 
-      while (await app.prisma.user.findUnique({ where: { username: uniqueUsername } })) {
-        uniqueUsername = `${baseUsername}${counter}`;
-        counter++;
-      }
-      
-      user = await app.prisma.user.create({
-        data: {
-          username: uniqueUsername, 
-          email: userEmail,
-          passwordHash: null,
-        },
-      });
+    while (await app.prisma.user.findUnique({ where: { username: uniqueUsername } })) {
+      uniqueUsername = `${baseUsername}${counter}`;
+      counter++;
     }
 
-    if (user.has2fa) {
-      const jwtToken = app.jwt.sign({
-        id: user.id,
-        username: user.username,
-        partialToken: true
+    user = await app.prisma.user.create({
+      data: {
+        username: uniqueUsername,
+        email: userEmail,
+        passwordHash: null,
       },
-      { expiresIn: '3m'})
-      return reply.status(200).send({ token: jwtToken, has2fa: true });
-    }
+    });
+  }
 
+  if (user.has2fa) {
     const jwtToken = app.jwt.sign(
       {
         id: user.id,
         username: user.username,
-        partialToken: false
+        partialToken: true,
       },
-      { expiresIn: '7d' }
+      { expiresIn: '3m' }
     );
 
-    return reply.status(200).send({ token: jwtToken, has2fa: false });
-  });
+    // Set cookie with partial token and redirect
+    reply
+      .setCookie('token', jwtToken, {
+        path: '/',
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 180, // 3 minutes
+      })
+      .redirect('http://localhost:8080/dashboard');
+    return;
+  }
+
+  const jwtToken = app.jwt.sign(
+    {
+      id: user.id,
+      username: user.username,
+      partialToken: false,
+    },
+    { expiresIn: '7d' }
+  );
+
+  // Set cookie with full access token
+  reply
+    .setCookie('token', jwtToken, {
+      path: '/',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
+    })
+    .redirect('http://localhost:8080/dashboard');
+});
 }
