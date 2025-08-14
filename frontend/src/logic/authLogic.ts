@@ -35,6 +35,7 @@ async function setupLoginLogic(event: Event): Promise<void> {
 	try {
 	  const token = await login({ username, password });
 	  saveToken(token);
+	  console.log(token);
 		alert('Success login');
 		navigate('./dashboard');
 	} catch (err) {

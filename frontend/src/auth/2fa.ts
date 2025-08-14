@@ -5,6 +5,8 @@ export function setup2FA(toggleInput2FA: HTMLInputElement) {
 	toggleInput2FA.addEventListener("change", async () => {
 
 		const token = getToken();
+		
+
 		if (toggleInput2FA.checked) {
 		  try {
 			const setupRes = await fetch(`${API_ROUTES.setup2FA}`, {

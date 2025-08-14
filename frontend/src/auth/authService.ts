@@ -19,6 +19,8 @@ export async function login(credentials: loginCredentials): Promise<string> {
 	}
 
 	const data = await response.json();
+	sessionStorage.setItem('has2fa', data.has2fa);
+	
 	return data.token;
 }
 

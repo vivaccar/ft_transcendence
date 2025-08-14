@@ -129,7 +129,10 @@ export function createSettingsUI(): {
 	const toggleInput2FA = document.createElement("input");
 	toggleInput2FA.type = "checkbox";
 	toggleInput2FA.className = "sr-only peer";
-  
+
+	const has2FA = sessionStorage.getItem("has2fa") === "true";
+	toggleInput2FA.checked = has2FA;
+
 	const toggleSpan = document.createElement("span");
 	toggleSpan.className =
 	  "w-11 h-6 bg-red-400 rounded-full peer peer-checked:bg-green-500 " +
