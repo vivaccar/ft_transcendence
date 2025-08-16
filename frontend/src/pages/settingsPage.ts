@@ -1,4 +1,4 @@
-import { setupAvatarControls, setupSettingsLogic } from "../logic/settingsLogic";
+import { setupAvatarControls/* , setupSettingsLogic */ } from "../logic/settingsLogic";
 import { renderPage } from "../utils";
 
 export function buildSettingsPage(): void {
@@ -10,7 +10,7 @@ export function buildSettingsPage(): void {
 	const settingsUI = createSettingsUI();
 
 	container.appendChild(settingsUI.container);
-	setupSettingsLogic(settingsUI);
+	// setupSettingsLogic(settingsUI);
 }
 
 export function createSettingsUI(): {
@@ -32,15 +32,11 @@ export function createSettingsUI(): {
   
 	// headerBar e título
 	const headerBar = document.createElement("div");
-	headerBar.style.backgroundColor = "#174B7A";
-	headerBar.style.padding = "12px 16px";
-	headerBar.style.borderTopLeftRadius = "8px";
-	headerBar.style.borderTopRightRadius = "8px";
-	headerBar.style.margin = "0";
+	headerBar.className = "bg-[#174B7A] px-8 py-6 rounded-t-lg flex justify-center items-center";
   
 	const title = document.createElement("h1");
 	title.textContent = "Player Settings";
-	title.className = "text-3xl font-orbitron font-bold mb-0 text-center p-6";
+	title.className = "text-xl font-orbitron font-bold mb-0 text-center";
 	title.style.color = "white";
   
 	headerBar.appendChild(title);

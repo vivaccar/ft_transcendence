@@ -21,15 +21,12 @@ function createStatisticsUI(): {container: HTMLDivElement} {
 	personalNbrBox.style.background = "#D9D9D9";
 
 	const pnheaderBar = document.createElement("div");
-	pnheaderBar.style.backgroundColor = "#174B7A";
-	pnheaderBar.style.padding = "12px 16px";
-	pnheaderBar.style.borderTopLeftRadius = "8px";
-	pnheaderBar.style.borderTopRightRadius = "8px";
+	pnheaderBar.className =
+	  "bg-[#174B7A] px-8 py-6 rounded-t-lg flex justify-center items-center";
 
 	const personalNbrTitle = document.createElement("h1");
 	personalNbrTitle.textContent = "Personal Numbers";
-	personalNbrTitle.className = "text-xl font-orbitron font-bold mb-0 text-center p-6";
-	personalNbrTitle.style.color = "white";
+	personalNbrTitle.className = "text-white text-xl font-orbitron font-bold mb-0 text-center";
 
 	pnheaderBar.appendChild(personalNbrTitle);
 	personalNbrBox.insertBefore(pnheaderBar, personalNbrBox.firstChild);
@@ -154,18 +151,13 @@ function createStatisticsUI(): {container: HTMLDivElement} {
     lastGamesBox.style.background = "#D9D9D9";
 
     const lgheaderBar = document.createElement("div");
-    lgheaderBar.style.backgroundColor = "#174B7A";
-    lgheaderBar.style.padding = "12px 16px";
-    lgheaderBar.style.borderTopLeftRadius = "8px";
-    lgheaderBar.style.borderTopRightRadius = "8px";
-	lgheaderBar.style.position = "sticky";
-	lgheaderBar.style.top = "0";
-	lgheaderBar.style.zIndex = "10"; 
+	lgheaderBar.className = "bg-[#174B7A] px-8 py-6 rounded-t-lg flex justify-center items-center sticky top-0 z-10";
 
-    const lastGametitle = document.createElement("h1");
-    lastGametitle.textContent = "Last Games";
-    lastGametitle.className = "text-xl font-orbitron font-bold mb-0 text-center p-6";
-    lastGametitle.style.color = "white";
+	// Título Last Games
+	const lastGametitle = document.createElement("h1");
+	lastGametitle.textContent = "Last Games";
+	lastGametitle.className = "text-white text-xl font-orbitron font-bold mb-0 text-center";
+
 
     lgheaderBar.appendChild(lastGametitle);
     lastGamesBox.insertBefore(lgheaderBar, lastGamesBox.firstChild);
