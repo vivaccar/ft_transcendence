@@ -10,7 +10,16 @@ type GameArea = {
     stop: () => void;
     clear: () => void;
 };
+//INTERFACE - PRECISO REFATORAR PARA UM ARQUIVO ESPECIFICO
+interface GameSettings {
+  containerId: string;
+  width: number;
+  height: number;
+  mode: string;
+}
 
+
+let lastGameSettings: GameSettings | null = null;
 let player1: Paddle;
 let player2: Paddle;
 let ball: Ball;
@@ -20,6 +29,10 @@ let currentGameMode: string;
 let lastTime = 0;
 let aiDecisionTimer = 1;
 let aiTargetY = 0;
+let winningScore = 2;
+const handleKeyDown = (e: KeyboardEvent) => { keysPressed[e.key.toLowerCase()] = true; };
+const handleKeyUp = (e: KeyboardEvent) => { keysPressed[e.key.toLowerCase()] = false; };
+
 
 function makeAIDecision() {
     const distanceX = player2.x - ball.x;
@@ -159,14 +172,48 @@ function checkCollisions() {
 }
 
 function checkScore() {
+    let winnerName: string | null = null;
+
+    //AQUI, TEM DE VIR A VARIAVEL COM O NOME DO PLAYER
     if (ball.x - ball.size < 0) {
         player2.score++;
-        ball.reset();
+        updateScoreboard();
+        if (player2.score >= winningScore) {
+            winnerName = 'Jogador 2';
+        } else {
+            ball.reset();
+        }
+    //AQUI, TEM DE VIR A VARIAVEL COM O NOME DO PLAYER
     } else if (ball.x + ball.size > myGameArea.canvas!.width) {
         player1.score++;
-        ball.reset();
+        updateScoreboard();
+        if (player1.score >= winningScore) {
+            winnerName = 'Jogador 1';
+        } else {
+            ball.reset();
+        }
     }
-    updateScoreboard();
+
+    // Se a variável winnerName tiver um valor, o jogo acaba.
+    if (winnerName) {
+        endGame(winnerName);
+    }
+}
+
+function endGame(winnerName: string) {
+    myGameArea.stop();
+
+    // 2. Encontra os elementos HTML que vamos manipular
+    //AQUI SAO COMPONENTES E PRECISO REFATORAR PARA FICAREM SEPARADOS NOS COMPONENTES
+    const gameOverScreen = document.getElementById('game-over-screen');
+    const winnerText = document.getElementById('winner-text');
+
+    if (gameOverScreen && winnerText) {
+        winnerText.textContent = `${winnerName} venceu!`;
+        
+        // Remove a classe "hidden" para mostrar o overlay
+        gameOverScreen.classList.remove('hidden');
+    }
 }
 
 function updateScoreboard() {
@@ -176,21 +223,74 @@ function updateScoreboard() {
     if (p2ScoreElement) p2ScoreElement.textContent = player2.score.toString();
 }
 
+function setupRestartButton(): void {
+    const restartButton = document.getElementById('restart-button') as HTMLButtonElement | null;
+
+    // Type Guard: o código só corre se o botão existir no DOM.
+    if (restartButton) {
+        restartButton.addEventListener('click', restartGame);
+    } else {
+        console.warn('Botão de reiniciar não encontrado. A funcionalidade de reinício não estará disponível.');
+    }
+}
+
+function restartGame(): void {
+    // Type Guard: o código só corre se as configurações tiverem sido guardadas.
+    if (lastGameSettings) {
+        // A função de inicialização já chama cleanupGame(), por isso não precisamos de o fazer aqui.
+        initializeLocalGame(
+            lastGameSettings.containerId,
+            lastGameSettings.width,
+            lastGameSettings.height,
+            lastGameSettings.mode,
+        );
+    } else {
+        console.error('Não foi possível reiniciar o jogo: as configurações iniciais não foram encontradas.');
+    }
+}
+
+function cleanupGame(): void {
+    console.log("A limpar a instância anterior do jogo...");
+    
+    // Para o loop de animação, se estiver a correr
+    if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+    }
+
+    // Remove os listeners de eventos da janela para evitar duplicados
+    window.removeEventListener('keydown', handleKeyDown);
+    window.removeEventListener('keyup', handleKeyUp);
+}
+
 export function initializeLocalGame(containerId: string, width: number, height: number, mode: string) {
+    cleanupGame();
+
     currentGameMode = mode;
     const container = document.getElementById(containerId);
+    lastGameSettings = { containerId, width, height, mode, winningScore };
+
     if (!container) {
         console.error(`ERRO: Contentor com id "${containerId}" não encontrado.`);
         return;
     }
     const savedBackground = sessionStorage.getItem('selectedBackground');
 
+    //ISSO É UM COMPONENTE E VAI SER MOVIDO DE PASTA PARA COMPONENTES QUANDO REFATORAR
     container.innerHTML = `
+    <div class="relative w-full h-full"> 
         <div class="text-6xl mb-4 font-mono text-center text-white">
             <span id="game-player1-score">0</span> - <span id="game-player2-score">0</span>
         </div>
         <canvas id="game-canvas" class="bg-black border-2 border-white rounded-lg"></canvas>
-    `;
+        <div id="game-over-screen" class="hidden absolute inset-0 bg-black/70 flex flex-col items-center justify-center gap-6">
+            <h2 id="winner-text" class="text-5xl font-bold text-white font-mono"></h2>
+            <button id="restart-button" class="bg-white text-black font-bold py-3 px-6 rounded-lg hover:bg-gray-200 transition-colors text-xl">
+                Jogar Novamente
+            </button>
+        </div>
+    </div>
+`;
 
     myGameArea.canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
     if (!myGameArea.canvas) {
@@ -217,8 +317,11 @@ export function initializeLocalGame(containerId: string, width: number, height: 
     player2 = new Paddle(myGameArea.canvas.width - paddleWidth * 2, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP2') || 'white');
     ball = new Ball(myGameArea.canvas.width / 2, myGameArea.canvas.height / 2, ballSize, ballSpeed, myGameArea.canvas);
 
-    window.addEventListener('keydown', (e) => { keysPressed[e.key.toLowerCase()] = true; });
-    window.addEventListener('keyup', (e) => { keysPressed[e.key.toLowerCase()] = false; });
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp); 
+
+    //ESSE BOTAO TEM DE DAR A OPÇÃO DE VOLTAR PARA TELAS ESPECIFICATA TAMBEM DE ACORDO COM O DESENHO
+    setupRestartButton();
 
     myGameArea.start();
 }
