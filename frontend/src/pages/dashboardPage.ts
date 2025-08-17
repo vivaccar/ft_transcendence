@@ -1,4 +1,5 @@
 import { Navbar } from '../components/Navbar';
+import { navigate } from '../router';
 
 export function buildDashboard(): void {
 	const title = document.getElementById('pongTitle');
@@ -35,6 +36,11 @@ function buildGameCards(): HTMLElement {
 		card.style.backgroundSize = 'cover';
 		card.style.backgroundPosition = 'center';
 		card.href = `/${url}`;
+
+		card.addEventListener("click", (e) => {
+			e.preventDefault(); 
+			navigate(`/${url}`);
+		});
 	
 		const titleDiv = document.createElement('div');
 		titleDiv.className = 'absolute left-0 w-full bg-black bg-opacity-60 text-white text-center\

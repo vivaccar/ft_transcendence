@@ -40,102 +40,68 @@ function createStatisticsUI(): {container: HTMLDivElement} {
 	// Texto mostrando total de partidas
 	const totalText = document.createElement("p");
 	totalText.textContent = `Total games: ${total}`;
-	totalText.style.textAlign = "center";
-	totalText.style.fontWeight = "bold";
-	totalText.style.marginTop = "24px";
+	totalText.className = "text-center font-orbitron font-bold mt-6";
+
 	personalNbrBox.appendChild(totalText);
 
 	// Barra de vitória/derrota
 	const progressBar = document.createElement("div");
-	progressBar.style.display = "flex";
-	progressBar.style.height = "30px";
-	progressBar.style.borderRadius = "8px";
-	progressBar.style.overflow = "hidden";
-	progressBar.style.margin = "32px 16px 4px 16px";
+	progressBar.className = "flex h-[30px] rounded-lg overflow-hidden mt-8 mx-4 mb-1";
 
+	// Win bar
 	const winBar = document.createElement("div");
 	winBar.style.width = `${winPercent}%`;
-	winBar.style.backgroundColor = "#2ecc71";
-	winBar.style.display = "flex";
-	winBar.style.justifyContent = "center";
-	winBar.style.alignItems = "center";
-	winBar.style.color = "white";
+	winBar.className = "flex justify-center items-center text-white bg-[#2ecc71]";
 
+	// Loss bar
 	const lossBar = document.createElement("div");
 	lossBar.style.width = `${lossPercent}%`;
-	lossBar.style.backgroundColor = "#e74c3c"; 
-	lossBar.style.display = "flex";
-	lossBar.style.justifyContent = "center";
-	lossBar.style.alignItems = "center";
-	lossBar.style.color = "white";
+	lossBar.className = "flex justify-center items-center text-white bg-[#e74c3c]";
 
 	progressBar.appendChild(winBar);
 	progressBar.appendChild(lossBar);
 	personalNbrBox.appendChild(progressBar);
 
-	// Porcentagem abaixo da barra
+	// Percent label
 	const percentLabel = document.createElement("p");
 	percentLabel.textContent = `${winPercent.toFixed(0)}% Victories`;
-	percentLabel.style.textAlign = "center";
-	percentLabel.style.fontWeight = "bold";
-	percentLabel.style.margin = "0 0 16px 0";
-	
+	percentLabel.className = "text-center font-orbitron font-bold mb-4";
 	personalNbrBox.appendChild(percentLabel);
 
+	// Columns container
 	const columnsContainer = document.createElement("div");
-	columnsContainer.style.display = "flex";
-	columnsContainer.style.justifyContent = "center";
-	columnsContainer.style.gap = "16px";
-	columnsContainer.style.marginTop = "32px";
+	columnsContainer.className = "flex justify-center gap-4 mt-8";
 
-	// Coluna de vitórias
+// Coluna de vitórias
 	const winsColumn = document.createElement("div");
-	winsColumn.style.display = "flex";
-	winsColumn.style.flexDirection = "column";
-	winsColumn.style.alignItems = "center";
+	winsColumn.className = "flex flex-col items-center";
 
 	const winsBox = document.createElement("div");
 	winsBox.style.width = "60px";
 	winsBox.style.height = "40px";
-	winsBox.style.backgroundColor = "#2ecc71";
-	winsBox.style.display = "flex";
-	winsBox.style.justifyContent = "center";
-	winsBox.style.alignItems = "center";
-	winsBox.style.borderRadius = "8px";
-	winsBox.style.fontWeight = "bold";
-	winsBox.style.color = "white";
 	winsBox.textContent = `${stats.wins}`;
+	winsBox.className = "flex justify-center items-center rounded-lg font-orbitron font-bold text-white bg-[#2ecc71]";
 
 	const winsLabel = document.createElement("p");
 	winsLabel.textContent = "Wins";
-	winsLabel.style.marginTop = "8px";
-	winsLabel.style.fontWeight = "bold";
+	winsLabel.className = "mt-2 font-orbitron font-bold";
 
 	winsColumn.appendChild(winsBox);
 	winsColumn.appendChild(winsLabel);
 
 	// Coluna de derrotas
 	const lossesColumn = document.createElement("div");
-	lossesColumn.style.display = "flex";
-	lossesColumn.style.flexDirection = "column";
-	lossesColumn.style.alignItems = "center";
+	lossesColumn.className = "flex flex-col items-center";
 
 	const lossesBox = document.createElement("div");
 	lossesBox.style.width = "60px";
 	lossesBox.style.height = "40px";
-	lossesBox.style.backgroundColor = "#e74c3c";
-	lossesBox.style.display = "flex";
-	lossesBox.style.justifyContent = "center";
-	lossesBox.style.alignItems = "center";
-	lossesBox.style.borderRadius = "8px";
-	lossesBox.style.fontWeight = "bold";
-	lossesBox.style.color = "white";
 	lossesBox.textContent = `${stats.losses}`;
+	lossesBox.className = "flex justify-center items-center rounded-lg font-orbitron font-bold text-white bg-[#e74c3c]";
 
 	const lossesLabel = document.createElement("p");
 	lossesLabel.textContent = "Losses";
-	lossesLabel.style.marginTop = "8px";
-	lossesLabel.style.fontWeight = "bold";
+	lossesLabel.className = "mt-2 font-orbitron font-bold";
 
 	lossesColumn.appendChild(lossesBox);
 	lossesColumn.appendChild(lossesLabel);
@@ -187,25 +153,23 @@ function createStatisticsUI(): {container: HTMLDivElement} {
         { result: "Win", you: 2, friend: 1, friendName: "Charlie" },
     ];
 
-    games.forEach(game => {
-        const row = document.createElement("tr");
-
-        const resultCell = document.createElement("td");
-        resultCell.textContent = game.result;
-        resultCell.style.padding = "12px";
-        resultCell.style.textAlign = "center";
-        resultCell.style.color = game.result === "Win" ? "#2ecc71" : "#e74c3c";
-        resultCell.style.fontWeight = "bold";
-
-        const matchCell = document.createElement("td");
-        matchCell.textContent = `You ${game.you} x ${game.friend} ${game.friendName}`;
-        matchCell.style.padding = "12px";
-        matchCell.style.textAlign = "center";
-
-        row.appendChild(resultCell);
-        row.appendChild(matchCell);
-        lastGamesTable.appendChild(row);
-    });
+	games.forEach((game) => {
+		const row = document.createElement("tr");
+	  
+		const resultCell = document.createElement("td");
+		resultCell.textContent = game.result.toUpperCase();
+		resultCell.className = `px-3 py-2 text-center font-orbitron font-bold ${
+		  game.result === "Win" ? "text-[#2ecc71]" : "text-[#e74c3c]"
+		}`;
+	  
+		const matchCell = document.createElement("td");
+		matchCell.textContent = `You ${game.you} x ${game.friend} ${game.friendName}`;
+		matchCell.className = "px-3 py-2 text-center font-orbitron font-bold";
+	  
+		row.appendChild(resultCell);
+		row.appendChild(matchCell);
+		lastGamesTable.appendChild(row);
+	  });
 
     lastGamesBox.appendChild(lastGamesTable);
 
