@@ -1,4 +1,4 @@
-import { setupAvatarControls/* , setupSettingsLogic */ } from "../logic/settingsLogic";
+import { setupAvatarControls, setupSettingsLogic } from "../logic/settingsLogic";
 import { renderPage } from "../utils";
 
 export function buildSettingsPage(): void {
@@ -10,7 +10,7 @@ export function buildSettingsPage(): void {
 	const settingsUI = createSettingsUI();
 
 	container.appendChild(settingsUI.container);
-	// setupSettingsLogic(settingsUI);
+	setupSettingsLogic(settingsUI);
 }
 
 export function createSettingsUI(): {

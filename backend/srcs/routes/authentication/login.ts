@@ -46,7 +46,8 @@ export async function loginRoutes(app: FastifyInstance) {
           path: '/',
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
+          // sameSite: 'lax',
+          sameSite: "none",
           maxAge: 180, // 3 minutos
         })
         .status(200)

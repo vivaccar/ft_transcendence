@@ -7,6 +7,7 @@ import { buildHumanGameLocal } from "./game/localPong/Pong";
 import { buildSettingsPage } from "./pages/settingsPage";
 import { buildStatisticsPage } from "./pages/statisticPage";
 import { buildFriendsPage } from "./pages/friendsPage";
+import { buildRemoteGamePage } from "./pages/remoteGamePage";
 // import { setupSettingsLogic } from "./logic/settingsLogic";
 
 const routes: Record<string, () => void> = {
@@ -32,6 +33,9 @@ const routes: Record<string, () => void> = {
   },
   "/human-game-local": () => {
     buildGamePageManVsManLocal();
+  },
+  "/human-game-remote": () => {
+    buildRemoteGamePage();
   },
   "/game-local": () => {
     buildHumanGameLocal();
