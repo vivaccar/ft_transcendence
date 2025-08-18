@@ -51,18 +51,10 @@ export async function googleCallback(app: FastifyInstance) {
       },
       { expiresIn: '3m' }
     );
+    return reply.redirect(
+  `http://localhost:8080/dashboard?token=${jwtToken}&has2fa=${user.has2fa}`
+);
 
-    // Set cookie with partial token and redirect
-    reply
-      .setCookie('token', jwtToken, {
-        path: '/',
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 180, // 3 minutes
-      })
-      .redirect('http://localhost:8080/dashboard');
-    return;
   }
 
   const jwtToken = app.jwt.sign(
@@ -74,15 +66,7 @@ export async function googleCallback(app: FastifyInstance) {
     { expiresIn: '7d' }
   );
 
-  // Set cookie with full access token
-  reply
-    .setCookie('token', jwtToken, {
-      path: '/',
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
-    })
-    .redirect('http://localhost:8080/dashboard');
+  return reply.redirect(
+  `http://localhost:8080/dashboard?token=${jwtToken}&has2fa=${user.has2fa}`);
 });
 }

@@ -41,17 +41,7 @@ export async function loginRoutes(app: FastifyInstance) {
         { expiresIn: '3m' }
       );
 
-      reply
-        .setCookie('token', token, {
-          path: '/',
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          maxAge: 180, // 3 minutos
-        })
-        .status(200)
-        .send({ has2fa: true });
-      return;
+      return reply.status(200).send({ token: token, has2fa: true });
     }
 
     const token = app.jwt.sign(
@@ -63,15 +53,6 @@ export async function loginRoutes(app: FastifyInstance) {
       { expiresIn: '7d' }
     );
 
-    reply
-      .setCookie('token', token, {
-        path: '/',
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 7 * 24 * 60 * 60, // 7 dias
-      })
-      .status(200)
-      .send({ has2fa: false });
+    return reply.status(200).send({ token: token, has2fa: false });
   });
 }
