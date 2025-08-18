@@ -2,8 +2,6 @@ import '../../style.css';
 import { renderPage } from '../../utils';
 import { initializeLocalGame } from './Game';
 
-// const playButton = document.getElementById('play-pong-btn'); //Isso aqui é apenas para teste do index.html. Index.html nao vai no commit, está só local para evitar conflitos.
-
 export function buildHumanGameLocal(): void {
 	const container = document.createElement('div');
 	container.className = 'flex items-center justify-center h-screen gap-[5rem]';
@@ -24,7 +22,8 @@ export function buildHumanGameLocal(): void {
   	container.appendChild(player2Title);
 	
 	if (gameContainer) {
-		initializeLocalGame('game-container', 600, 400);
+		initializeLocalGame('game-container', 600, 400, 'ai');
+		//initializeLocalGame('game-container', 600, 400, 'human');
 	}
 }
 
