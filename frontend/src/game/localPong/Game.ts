@@ -1,5 +1,6 @@
 import { Ball } from './Ball';
 import { Paddle } from './Paddle';
+import { createGameUI } from '../../components/localGameUi';
 
 // --- TIPOS E ESTADO GLOBAL DO MÓDULO ---
 type GameArea = {
@@ -268,7 +269,7 @@ export function initializeLocalGame(containerId: string, width: number, height: 
 
     currentGameMode = mode;
     const container = document.getElementById(containerId);
-    lastGameSettings = { containerId, width, height, mode, winningScore };
+    lastGameSettings = { containerId, width, height, mode };
 
     if (!container) {
         console.error(`ERRO: Contentor com id "${containerId}" não encontrado.`);
@@ -276,21 +277,9 @@ export function initializeLocalGame(containerId: string, width: number, height: 
     }
     const savedBackground = sessionStorage.getItem('selectedBackground');
 
-    //ISSO É UM COMPONENTE E VAI SER MOVIDO DE PASTA PARA COMPONENTES QUANDO REFATORAR
-    container.innerHTML = `
-    <div class="relative w-full h-full"> 
-        <div class="text-6xl mb-4 font-mono text-center text-white">
-            <span id="game-player1-score">0</span> - <span id="game-player2-score">0</span>
-        </div>
-        <canvas id="game-canvas" class="bg-black border-2 border-white rounded-lg"></canvas>
-        <div id="game-over-screen" class="hidden absolute inset-0 bg-black/70 flex flex-col items-center justify-center gap-6">
-            <h2 id="winner-text" class="text-5xl font-bold text-white font-mono"></h2>
-            <button id="restart-button" class="bg-white text-black font-bold py-3 px-6 rounded-lg hover:bg-gray-200 transition-colors text-xl">
-                Jogar Novamente
-            </button>
-        </div>
-    </div>
-`;
+    container.innerHTML = '';
+    const gameUI = createGameUI();
+    container.appendChild(gameUI);
 
     myGameArea.canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
     if (!myGameArea.canvas) {
