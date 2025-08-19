@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import { meSwaggerSchema } from "../../schemaSwagger/meSchema";
 
 export async function me(app: FastifyInstance) {
-    app.get("/auth/me", { preHandler: [app.authenticate], schema: meSwaggerSchema },async(request, reply) => {
+    app.get("/me", { preHandler: [app.authenticate], schema: meSwaggerSchema },async(request, reply) => {
         
         const user = await app.prisma.user.findUnique({
             where: { id: request.user.id },
