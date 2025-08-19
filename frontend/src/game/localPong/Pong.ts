@@ -1,6 +1,6 @@
 import '../../style.css';
 import { renderPage } from '../../utils';
-import { initializeLocalGame } from './Game';
+import { initializeLocalGame, initializeTournamentGame } from './Game';
 
 export function buildHumanGameLocal(gameType: string): void {
 	const container = document.createElement('div');
@@ -22,7 +22,10 @@ export function buildHumanGameLocal(gameType: string): void {
   	container.appendChild(player2Title);
 	
 	if (gameContainer) {
-		initializeLocalGame('game-container', 600, 400, `${gameType}`);
+		if (`${gameType}` === "tournament")
+			initializeTournamentGame('game-container', 600, 400, `${gameType}`);
+		else
+			initializeLocalGame('game-container', 600, 400, `${gameType}`);
 	}
 }
 

@@ -11,6 +11,7 @@ import { buildRemoteGamePage } from "./pages/remoteGamePage";
 import { buildNotFoundPage } from "./pages/notFoundPage";
 import { protectedRoute } from "./logic/authLogic";
 // import { setupSettingsLogic } from "./logic/settingsLogic";
+import { buildTournamentsPage } from "./pages/tournamentPage";
 
 const routes: Record<string, () => void | Promise<void>> = {
   "/": protectedRoute(() => {
@@ -50,6 +51,9 @@ const routes: Record<string, () => void | Promise<void>> = {
   }),
   "/friends": protectedRoute(() => {
     buildFriendsPage();
+  }),
+  "/tournament": protectedRoute(() => {
+    buildTournamentsPage("human");
   }),
 };
 
