@@ -53,7 +53,7 @@ const routes: Record<string, () => void | Promise<void>> = {
     buildFriendsPage();
   }),
   "/tournament": protectedRoute(() => {
-    buildTournamentsPage("human");
+    buildTournamentsPage("tournament");
   }),
 };
 

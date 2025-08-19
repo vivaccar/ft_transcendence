@@ -34,7 +34,7 @@ function createPlayerSetupUI(
 }
 
 
-export function buildTournamentsPage() {
+export function buildTournamentsPage(gameType: string) {
     // Estado para armazenar as escolhas dos 4 jogadores
     let selectedbackgroundImg = "/images/backgroundGame/back10.jpg";
     const playersData = {
@@ -118,7 +118,7 @@ export function buildTournamentsPage() {
         sessionStorage.setItem("gameMode", "tournament_semi_1");
 
         // Inicia o primeiro jogo do torneio
-        buildHumanGameLocal(`tournament`);
+        buildHumanGameLocal(`${gameType}`);
     });
     container.appendChild(startBtn);
 }
