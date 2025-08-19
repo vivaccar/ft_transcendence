@@ -5,61 +5,43 @@ export const registerMatchSwaggerSchema = {
   summary: 'Register',
   body: {
     type: 'object',
-    required: ['date', 'matchParticipant'],
+    required: ['date', 'participants'],
     properties: {
       date: {
         type: 'string',
-        description: 'match date'
+        format: 'date-time',
+        description: 'Match date'
       },
-      matchParticipant: {
+      participants: {
         type: 'array',
-        description: 'Array of objects containing userId, matchId and goals',
+        description: 'Exactly two participants with username and goals',
+        minItems: 2,
+        maxItems: 2,
         items: {
           type: 'object',
-          required: ['userId', 'matchId', 'goals'],
+          required: ['username', 'goals'],
           properties: {
-            userId: {
-              type: 'number',
-              description: 'User ID'
-            },
-            matchId: {
-              type: 'number',
-              description: 'Match ID'
-            },
-            goals: {
-              type: 'number',
-              description: 'Goals that user scored'
-            }
-		}
-	}
-    },
+            username: { type: 'string', description: 'Username of the player' },
+            goals: { type: 'integer', minimum: 0, description: 'Goals scored by the user' }
+          }
+        }
+      }
+    }
   },
-},
   response: {
     201: {
       description: 'Register OK',
       type: 'object',
       properties: {
-        matchId: {
-          type: 'number',
-          description: 'Match id',
-        },
-        playerOne: {
-            type: 'string',
-            description: 'Player One',
-        },
-		playerTwo: {
-            type: 'string',
-            description: 'Player Two',
-        }
-      },
+        matchId:   { type: 'number', description: 'Match id' },
+        playerOne: { type: 'string', description: 'Player One username' },
+        playerTwo: { type: 'string', description: 'Player Two username' }
+      }
     },
     400: {
       description: 'Validation error: Bad Request',
       type: 'object',
-      properties: {
-        message: { type: 'string' },
-      },
-    },
-  },
-};
+      properties: { message: { type: 'string' } }
+    }
+  }
+}

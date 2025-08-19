@@ -4,16 +4,17 @@ import { registerMatchSwaggerSchema } from "../../schemaSwagger/registerMatchSch
 
 export async function registerMatch(app: FastifyInstance) {
 	app.post('/registerMatch', { schema: registerMatchSwaggerSchema }, async(req, res) => {
-		const matchSchema = z.object({ //cria o esquema de como o zod quer que o request body seja validado
+		const matchSchema = z.object({
 			date: z.string().transform((str) => new Date(str)),
-     		participants: z.array(z.object({
-        		userId: z.int(),
-        		goals: z.int()
-			})).length(2)
-			.refine(([p1, p2]) =>  p1.userId !== p2.userId, {
-				message: 'User IDs must be different',
+			participants: z.array(z.object({
+				username: z.string(),
+				goals: z.number().int().min(0)
+			}))
+			.length(2)
+			.refine(([p1, p2]) => p1.username !== p2.username, {
+				message: 'Usernames must be different'
 			})
-		});
+		})
     	try {
 			const body = matchSchema.parse(req.body) // faz o parse do request body, deixando o corpo da requisicao tipado e seguro para ser utilizado
 			
@@ -22,7 +23,7 @@ export async function registerMatch(app: FastifyInstance) {
 					date: body.date,
 					matchParticipant: {
 						create: body.participants.map(p => ({
-							user: {connect: {id: p.userId}}, 
+							user: {connect: {username: p.username}}, 
 							goals: p.goals
 						})) 
 					}

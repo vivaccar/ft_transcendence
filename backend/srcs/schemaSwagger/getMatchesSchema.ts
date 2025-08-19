@@ -1,10 +1,7 @@
-import { queryObjects } from "node:v8";
-import { int } from "zod";
-
 export const getMatchSwaggerSchema = {
   tags: ['Get Matches'],
   summary: 'Get all matches that a user participated in',
-  querystring: {
+  params: {
     type: 'object',
     required: ['username'],
     properties: {
@@ -23,34 +20,33 @@ export const getMatchSwaggerSchema = {
           type: 'array',
           items: {
             type: 'object',
-            required: ['userId', 'matchId', 'goals', 'match'],
+            required: ['matchId','opponent', 'result', 'goalsUser', 'goalsOpponent', 'dateTime'],
             properties: {
-              userId: {
-                type: 'number',
-                description: 'User ID'
-              },
               matchId: {
                 type: 'number',
-                description: 'Match ID'
+                description: 'Match Id'
               },
-              goals: {
+              opponent: {
+                type: 'string',
+                description: 'Username of the opponent'
+              },
+              result: {
+                type: 'string',
+                enum: ['win', 'loss'],
+                description: 'Result of the match'
+              },
+              goalsUser: {
                 type: 'number',
-                description: 'Goals that user scored'
+                description: 'Goals scored by the user'
               },
-              match: {
-                type: 'object',
-                required: ['id', 'date'],
-                properties: {
-                  id: {
-                    type: 'number',
-                    description: 'ID of the match'
-                  },
-                  date: {
-                    type: 'string',
-                    format: 'date-time',
-                    description: 'Date of the match'
-                  }
-                }
+              goalsOpponent: {
+                type: 'number',
+                description: 'Goals scored by the opponent'
+              },
+              dateTime: {
+                type: 'string',
+                format: 'date-time',
+                description: 'Date and time of the match'
               }
             }
           }
@@ -58,11 +54,11 @@ export const getMatchSwaggerSchema = {
       }
     },
     400: {
-      description: 'Bad request - invalid query or missing parameters',
+      description: 'Bad request - error processing the request',
       type: 'object',
       properties: {
         message: { type: 'string' },
-        error: { type: 'string' }
+        error: { type: 'object' }
       }
     },
     404: {
@@ -70,6 +66,14 @@ export const getMatchSwaggerSchema = {
       type: 'object',
       properties: {
         error: { type: 'string' }
+      }
+    },
+    500: {
+      description: 'Internal Server Error',
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+        error: { type: 'object' }
       }
     }
   }

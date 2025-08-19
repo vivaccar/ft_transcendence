@@ -10,6 +10,8 @@ import { disable2fa } from "./routes/authentication/2fa";
 import { registerMatch } from "./routes/user/registerMatch";
 import { uploadAvatar } from "./routes/user/uploadAvatar";
 import { getMatches } from "./routes/user/getMatches";
+import { getWinsAndLosses } from "./routes/user/getWinsAndLosses";
+import { getGoals } from "./routes/user/getGoals";
 import { me } from "./routes/user/me";
 import { userAvatar } from "./routes/user/getUserAvatar";
 import jwt from "./plugins/jwtPlugin";
@@ -50,6 +52,8 @@ app.register(verify2fa)
 app.register(disable2fa)
 app.register(registerMatch);
 app.register(getMatches);
+app.register(getWinsAndLosses);
+app.register(getGoals);
 app.register(uploadAvatar);
 app.register(userAvatar)
 app.register(me)
