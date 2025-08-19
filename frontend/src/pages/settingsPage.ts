@@ -1,4 +1,4 @@
-import { setupAvatarControls, setupSettingsLogic } from "../logic/settingsLogic";
+import { setupAvatarControls, setupSettingsLogic  } from "../logic/settingsLogic";
 import { renderPage } from "../utils";
 
 export function buildSettingsPage(): void {
