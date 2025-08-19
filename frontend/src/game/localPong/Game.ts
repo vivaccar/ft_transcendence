@@ -199,7 +199,7 @@ function checkScore() {
         player2.score++;
         updateScoreboard();
         if (player2.score >= winningScore) {
-            winnerName = 'Jogador 2';
+            winnerName = 'Player 2';
         } else {
             ball.reset();
         }
@@ -208,7 +208,7 @@ function checkScore() {
         player1.score++;
         updateScoreboard();
         if (player1.score >= winningScore) {
-            winnerName = 'Jogador 1';
+            winnerName = 'Player 1';
         } else {
             ball.reset();
         }
@@ -229,7 +229,7 @@ function endGame(winnerName: string) {
     const winnerText = document.getElementById('winner-text');
 
     if (gameOverScreen && winnerText) {
-        winnerText.textContent = `${winnerName} venceu!`;
+        winnerText.textContent = `${winnerName} won!`;
         
         // Remove a classe "hidden" para mostrar o overlay
         gameOverScreen.classList.remove('hidden');

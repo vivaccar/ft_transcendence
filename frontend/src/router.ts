@@ -30,15 +30,18 @@ const routes: Record<string, () => void> = {
     buildDashboard();
   },
   "/ai-game": () => {
+    buildGamePageManVsManLocal('ai');
+
+    // buildHumanGameLocal('ai');
   },
   "/human-game-local": () => {
-    buildGamePageManVsManLocal();
+    buildGamePageManVsManLocal('human');
   },
   "/human-game-remote": () => {
     buildRemoteGamePage();
   },
   "/game-local": () => {
-    buildHumanGameLocal();
+    buildHumanGameLocal('human');
   },
   "/settings": () => {
     buildSettingsPage();

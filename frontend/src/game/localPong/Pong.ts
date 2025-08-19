@@ -2,7 +2,7 @@ import '../../style.css';
 import { renderPage } from '../../utils';
 import { initializeLocalGame } from './Game';
 
-export function buildHumanGameLocal(): void {
+export function buildHumanGameLocal(gameType: string): void {
 	const container = document.createElement('div');
 	container.className = 'flex items-center justify-center h-screen gap-[5rem]';
 	renderPage(container);
@@ -22,8 +22,7 @@ export function buildHumanGameLocal(): void {
   	container.appendChild(player2Title);
 	
 	if (gameContainer) {
-		initializeLocalGame('game-container', 600, 400, 'ai');
-		//initializeLocalGame('game-container', 600, 400, 'human');
+		initializeLocalGame('game-container', 600, 400, `${gameType}`);
 	}
 }
 

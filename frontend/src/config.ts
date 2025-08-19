@@ -11,5 +11,6 @@ export const API_ROUTES = {
 	
 	setup2FA: `${BACKEND_URL}/2fa/setup`,
 	enable2FA: `${BACKEND_URL}/2fa/enable`,
-	disable2FA: `${BACKEND_URL}/2fa/desable`,
+	disable2FA: `${BACKEND_URL}/2fa/disable`,
+	verify2FA: `${BACKEND_URL}/2fa/verify`,
 };
