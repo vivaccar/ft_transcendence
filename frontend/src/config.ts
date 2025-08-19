@@ -1,4 +1,4 @@
-export const BACKEND_URL = 'http://localhost:3002';
+export const BACKEND_URL = '/api';
 
 export const API_ROUTES = {
 	auth: {
@@ -6,7 +6,7 @@ export const API_ROUTES = {
 		register: `${BACKEND_URL}/auth/register`,
 		loginGoogle: `${BACKEND_URL}/auth/google`,
 	}, 
-	me: `${BACKEND_URL}/auth/me`,
+	me: `${BACKEND_URL}/me`,
 	uploadAvatar: `${BACKEND_URL}/uploadAvatar`,
 	
 	setup2FA: `${BACKEND_URL}/2fa/setup`,
