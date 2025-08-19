@@ -1,6 +1,7 @@
 import { API_ROUTES } from "../config";
-import { getToken, saveToken } from "./authService";
+import { getToken/* , saveToken  */} from "./authService";
 import { navigate } from "../router";
+import { getCookieValue } from "../utils";
 
 export function setup2FA(toggleInput2FA: HTMLInputElement) {
 	toggleInput2FA.addEventListener("change", async () => {
@@ -8,7 +9,7 @@ export function setup2FA(toggleInput2FA: HTMLInputElement) {
 		const token = getToken();
 		
 
-		if (toggleInput2FA.checked && sessionStorage.getItem('has2fa') === 'false') {
+		if (toggleInput2FA.checked && getCookieValue('has2fa') === 'false') {
 		  try {
 			const setupRes = await fetch(`${API_ROUTES.setup2FA}`, {
 			  method: "POST",
@@ -48,7 +49,7 @@ export function setup2FA(toggleInput2FA: HTMLInputElement) {
 			  toggleInput2FA.checked = false;
 			  return;
 			}
-			sessionStorage.setItem('has2fa', 'true');
+			// sessionStorage.setItem('has2fa', 'true');
 			alert("✅ 2FA Enabled successfully!");
 	  
 		  } catch (error) {
@@ -66,7 +67,7 @@ export function setup2FA(toggleInput2FA: HTMLInputElement) {
 				  }
 				});
 
-				sessionStorage.setItem('has2fa', 'false');
+				// sessionStorage.setItem('has2fa', 'false');
 				toggleInput2FA.checked = false;
 				
 				if (!disableRes.ok){
@@ -96,8 +97,8 @@ export async function login2FA(){
 	  });
 	
 	  if (res.ok) {
-		const data = await res.json();
-		saveToken(data.token);
+		// const data = await res.json();
+		// saveToken(data.token);
 
 		navigate("/dashboard");
 	  } else {

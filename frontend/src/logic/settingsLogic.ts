@@ -13,7 +13,7 @@ export async function setupSettingsLogic(elements: ReturnType<typeof createSetti
       const res = await fetch(`${API_ROUTES.me}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          // 'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         // credentials: "include",

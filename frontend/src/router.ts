@@ -8,13 +8,14 @@ import { buildSettingsPage } from "./pages/settingsPage";
 import { buildStatisticsPage } from "./pages/statisticPage";
 import { buildFriendsPage } from "./pages/friendsPage";
 import { buildRemoteGamePage } from "./pages/remoteGamePage";
+import { buildNotFoundPage } from "./pages/notFoundPage";
+import { protectedRoute } from "./logic/authLogic";
 // import { setupSettingsLogic } from "./logic/settingsLogic";
 
-const routes: Record<string, () => void> = {
-  "/": () => {
-    buildLoginPage();
-    setupAuthLogic();
-  },
+const routes: Record<string, () => void | Promise<void>> = {
+  "/": protectedRoute(() => {
+    buildDashboard();
+  }),
   "/login": () => {
     buildLoginPage();
     setupAuthLogic();
@@ -23,35 +24,33 @@ const routes: Record<string, () => void> = {
     buildRegisterPage();
     setupRegisterLogic();
   },
-  "/dashboard": () => {
+  "/dashboard": protectedRoute(() => {
     buildDashboard();
-  },
-  "/games": () => {
+  }),
+  "/games": protectedRoute(() => {
     buildDashboard();
-  },
-  "/ai-game": () => {
-    buildGamePageManVsManLocal('ai');
-
-    // buildHumanGameLocal('ai');
-  },
-  "/human-game-local": () => {
-    buildGamePageManVsManLocal('human');
-  },
-  "/human-game-remote": () => {
+  }),
+  "/ai-game": protectedRoute(() => {
+    buildGamePageManVsManLocal("human");
+  }),
+  "/human-game-local": protectedRoute(() => {
+    buildGamePageManVsManLocal("human");
+  }),
+  "/human-game-remote": protectedRoute(() => {
     buildRemoteGamePage();
-  },
-  "/game-local": () => {
-    buildHumanGameLocal('human');
-  },
-  "/settings": () => {
+  }),
+  "/game-local": protectedRoute(() => {
+    buildHumanGameLocal("human");
+  }),
+  "/settings": protectedRoute(() => {
     buildSettingsPage();
-  },
-  "/statistics": () => {
+  }),
+  "/statistics": protectedRoute(() => {
     buildStatisticsPage();
-  },
-  "/friends": () => {
+  }),
+  "/friends": protectedRoute(() => {
     buildFriendsPage();
-  },
+  }),
 };
 
 export function handleRoute(): void {
@@ -61,9 +60,7 @@ export function handleRoute(): void {
   if (routeHandler) {
     routeHandler();
   } else {
-    // // Rota não encontrada → redireciona para /login, posteriormente, pagina de erro
-    // history.replaceState(null, "", "/login");
-    // routes["/login"]();
+    buildNotFoundPage();
   }
 }
 
