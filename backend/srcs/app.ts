@@ -14,6 +14,8 @@ import { getWinsAndLosses } from "./routes/user/getWinsAndLosses";
 import { getGoals } from "./routes/user/getGoals";
 import { me } from "./routes/user/me";
 import { userAvatar } from "./routes/user/getUserAvatar";
+import { inviteFriend } from "./routes/friendships/inviteFriend";
+import { getInvites } from "./routes/friendships/getInvites";
 import jwt from "./plugins/jwtPlugin";
 import jwtPlugin from "./plugins/jwtPlugin";
 import googleOAuthPlugin from './plugins/google-oauth'
@@ -58,6 +60,7 @@ app.register(getGoals);
 app.register(uploadAvatar);
 app.register(userAvatar)
 app.register(me)
-
+app.register(inviteFriend)
+app.register(getInvites)
 
 export default app
