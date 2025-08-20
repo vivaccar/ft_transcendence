@@ -10,6 +10,7 @@ import { buildFriendsPage } from "./pages/friendsPage";
 import { buildRemoteGamePage } from "./pages/remoteGamePage";
 import { buildNotFoundPage } from "./pages/notFoundPage";
 import { protectedRoute } from "./logic/authLogic";
+import { logoutLogic } from "./logic/authLogic";
 // import { setupSettingsLogic } from "./logic/settingsLogic";
 
 const routes: Record<string, () => void | Promise<void>> = {
@@ -50,6 +51,9 @@ const routes: Record<string, () => void | Promise<void>> = {
   }),
   "/friends": protectedRoute(() => {
     buildFriendsPage();
+  }),
+  "/logout": protectedRoute(() => {
+    logoutLogic();
   }),
 };
 

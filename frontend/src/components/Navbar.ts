@@ -26,9 +26,13 @@ export function Navbar(): HTMLElement {
 	});
 
 	const logout = document.createElement('a');
-	logout.href = '/logout';
 	logout.textContent = 'Logout';
+	logout.href = "#";
 	logout.className = 'inline-block transform transition-transform hover:scale-105';
+	logout.addEventListener("click", (e) => {
+		e.preventDefault();
+		navigate('./logout');
+	});
 
 	nav.appendChild(ul);
 	nav.appendChild(logout);
