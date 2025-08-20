@@ -8,7 +8,8 @@ export async function registerMatch(app: FastifyInstance) {
 			date: z.string().transform((str) => new Date(str)),
 			participants: z.array(z.object({
 				username: z.string(),
-				goals: z.number().int().min(0)
+				goals: z.number().int().min(0),
+				isLocal: z.boolean().optional().default(false)
 			}))
 			.length(2)
 			.refine(([p1, p2]) => p1.username !== p2.username, {
@@ -22,10 +23,13 @@ export async function registerMatch(app: FastifyInstance) {
 				data: {
 					date: body.date,
 					matchParticipant: {
-						create: body.participants.map(p => ({
-							user: {connect: {username: p.username}}, 
-							goals: p.goals
-						})) 
+						create: body.participants.map(p => {
+							if (p.isLocal) {
+								return { localUser: p.username, goals: p.goals }
+							} else {
+								return { user: {connect: {username: p.username}}, goals: p.goals}	
+							}
+						}) 
 					}
 				},
 				include: {
@@ -36,7 +40,9 @@ export async function registerMatch(app: FastifyInstance) {
 					}
 				}
 			})
-		return res.status(201).send({matchId: match.id, playerOne: match.matchParticipant[0].user.username, playerTwo: match.matchParticipant[1].user.username})
+		return res.status(201).send({matchId: match.id, 
+			playerOne: match.matchParticipant[0].user ? match.matchParticipant[0].user.username : match.matchParticipant[0].localUser, 
+			playerTwo: match.matchParticipant[1].user ? match.matchParticipant[1].user.username : match.matchParticipant[1].localUser})
 		} catch(err) {
 			console.error(err)
 			return res.status(400).send({error: err})

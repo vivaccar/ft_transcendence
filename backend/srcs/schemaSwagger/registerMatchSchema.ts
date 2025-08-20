@@ -1,8 +1,6 @@
-import { int } from "zod";
-
 export const registerMatchSwaggerSchema = {
   tags: ['Match'],
-  summary: 'Register',
+  summary: 'Register match with possible local player',
   body: {
     type: 'object',
     required: ['date', 'participants'],
@@ -14,15 +12,16 @@ export const registerMatchSwaggerSchema = {
       },
       participants: {
         type: 'array',
-        description: 'Exactly two participants with username and goals',
+        description: 'Exactly two participants, each can be a registered user or a local player',
         minItems: 2,
         maxItems: 2,
         items: {
           type: 'object',
           required: ['username', 'goals'],
           properties: {
-            username: { type: 'string', description: 'Username of the player' },
-            goals: { type: 'integer', minimum: 0, description: 'Goals scored by the user' }
+            username: { type: 'string', description: 'Username or name of the player' },
+            goals: { type: 'integer', minimum: 0, description: 'Goals scored by the player' },
+            isLocal: { type: 'boolean', description: 'True if the player is local (not registered)', default: false }
           }
         }
       }
@@ -34,8 +33,8 @@ export const registerMatchSwaggerSchema = {
       type: 'object',
       properties: {
         matchId:   { type: 'number', description: 'Match id' },
-        playerOne: { type: 'string', description: 'Player One username' },
-        playerTwo: { type: 'string', description: 'Player Two username' }
+        playerOne: { type: 'string', description: 'Player One username or local name' },
+        playerTwo: { type: 'string', description: 'Player Two username or local name' }
       }
     },
     400: {

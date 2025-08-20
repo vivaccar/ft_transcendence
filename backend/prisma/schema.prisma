@@ -19,8 +19,8 @@ model User {
 	has2fa				Boolean @default(false)
 	secret2fa			String?
 	matches				MatchParticipant[]
-	friends				User[] @relation("UserFriends") // amigos este user adicionou - self relationship
-	friendsOf			User[] @relation("UserFriends") // users que adicionaram este user como amigo - self-relationship
+	friendshipsA		Friendship[] @relation("FriendA")
+	friendshipsB		Friendship[] @relation("FriendB")
 	avatar				Bytes?
 }
 
@@ -42,6 +42,20 @@ model MatchParticipant { //intermediary table to relate users to matches (many-t
 	matchId				Int //foreign key
 
 	goals				Int
+}
+
+model	Friendship {
+	id					Int @id @default(autoincrement()) //primary key
+
+	friendA				User @relation("FriendA", fields: [friendAId], references: [id])
+	friendAId			Int 
+
+	friendB				User @relation("FriendB", fields: [friendBId], references: [id])
+	friendBId			Int
+
+	status				String //pendente ou aceite
+
+	@@unique([friendAId, friendBId])
 }
 
 /* 

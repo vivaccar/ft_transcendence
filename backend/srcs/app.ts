@@ -8,7 +8,6 @@ import { enable2fa } from "./routes/authentication/2fa";
 import { verify2fa } from "./routes/authentication/2fa";
 import { disable2fa } from "./routes/authentication/2fa";
 import { registerMatch } from "./routes/user/registerMatch";
-import { registerMatchLocal } from "./routes/user/registerMatchLocal";
 import { uploadAvatar } from "./routes/user/uploadAvatar";
 import { getMatches } from "./routes/user/getMatches";
 import { getWinsAndLosses } from "./routes/user/getWinsAndLosses";
@@ -53,12 +52,12 @@ app.register(enable2fa)
 app.register(verify2fa)
 app.register(disable2fa)
 app.register(registerMatch);
-app.register(registerMatchLocal);
 app.register(getMatches);
 app.register(getWinsAndLosses);
 app.register(getGoals);
 app.register(uploadAvatar);
 app.register(userAvatar)
 app.register(me)
+
 
 export default app
