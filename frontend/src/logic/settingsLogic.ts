@@ -4,31 +4,42 @@ import { getToken } from "../auth/authService";
 import { setup2FA } from "../auth/2fa";
 
 export async function setupSettingsLogic(elements: ReturnType<typeof createSettingsUI>) {
-  const { emailInput, usernameInput, img, submitBtn, toggleInput2FA } = elements;
+  const { 
+    emailInput, 
+    usernameInput, 
+    img, 
+    oldPasswordInput, 
+    passwordInput, 
+    confirmPasswordInput, 
+    submitBtn,
+    editBtn,
+    toggleInput2FA 
+  } = elements;
   
   const token = getToken();
+  let currentUsername = '';
+
   async function loadUserProfile() {
 
     try {
       const res = await fetch(`${API_ROUTES.me}`, {
         method: 'GET',
         headers: {
-          // 'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        // credentials: "include",
       });
       if (!res.ok) throw new Error('Failed to fetch user data');
       const data = await res.json();
 
-	  console.log(data);
 
       emailInput.value = data.email || '';
       usernameInput.value = data.username || '';
-      img.src = data.avatar || "/images/randomAvatar/0.jpeg"; //find when don't have img
+      img.src = data.avatar || "/images/randomAvatar/0.jpeg"; 
       toggleInput2FA.checked = data.has2fa || false;
       sessionStorage.setItem('id', data.id);
+      oldPasswordInput.value = '';
 
+      currentUsername = data.username || ''; 
     } catch (err) {
       alert('Error loading profile: ' + err);
     }
@@ -37,31 +48,67 @@ export async function setupSettingsLogic(elements: ReturnType<typeof createSetti
   // Submit logic to update user profile
   submitBtn.addEventListener("click", async (e) => {
     e.preventDefault();
-
-    const updatedData = {
-      email: emailInput.value,
-      username: usernameInput.value,
-      // password: ..., // se quiser enviar senha
-      twoFAEnabled: toggleInput2FA.checked,
-    };
-
+  
     try {
-      const res = await fetch('/me', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedData),
-        // credentials: "include",
-      });
-
-      if (!res.ok) {
-        throw new Error('Failed to update user profile');
+      // 1. Atualizar username (se mudou)
+      if (usernameInput.value && usernameInput.value !== currentUsername) {
+        const resUsername = await fetch(API_ROUTES.username, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ newUsername: usernameInput.value }),
+        });
+  
+        const data = await resUsername.json();
+        if (!resUsername.ok) {
+          alert("Error updating username: " + data.message);
+          return;
+        }
+        console.log(data.message);
       }
+  
+      // 2. Atualizar senha (se usuário preencheu os campos)
+      if (oldPasswordInput.value && passwordInput.value && confirmPasswordInput.value) {
+        if (passwordInput.value !== confirmPasswordInput.value) {
+          alert("New passwords do not match!");
+          return;
+        }
+  
+        const resPassword = await fetch(API_ROUTES.password, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            oldPassword: oldPasswordInput.value,
+            newPassword: passwordInput.value,
+          }),
+        });
+  
+        const data = await resPassword.json();
+        if (!resPassword.ok) {
+          alert("Error updating password: " + data.message);
+          return;
+        }
+        console.log(data.message);
+      }
+  
+      // alert("Profile updated successfully!");
+      currentUsername = usernameInput.value;
+
+      usernameInput.className = 'inputBlocked';
+		  usernameInput.disabled = true;
+		  oldPasswordInput.classList.add('hidden');
+		  passwordInput.classList.add('hidden');
+		  confirmPasswordInput.classList.add('hidden');
+		  submitBtn.classList.add('hidden');
+		  editBtn.classList.remove('hidden');
 
     } catch (err) {
-      alert(err);
+      alert("Unexpected error: " + err);
     }
   });
 
