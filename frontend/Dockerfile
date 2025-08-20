@@ -2,37 +2,38 @@
 # Usa a imagem oficial do Node.js como base
 FROM node:20-alpine AS build
 
-# Define o diretório de trabalho dentro do contêiner
 WORKDIR /app
-
-# Copia os arquivos de dependências
 COPY package*.json ./
-
-# Instala as dependências do projeto
 RUN npm install
-
-# Copia o resto dos arquivos da aplicação
 COPY . .
-
-# Executa o build de produção com Vite
 RUN npm run build
 
-# Stage 2: Serve a aplicação com Nginx
-# Usa uma imagem leve do Nginx
+# Stage 2: Nginx
 FROM nginx:1.27-alpine AS production
 
-# Remove a configuração padrão do Nginx
+# Instala openssl para criar o certificado
+RUN apk add --no-cache openssl
+
+# Remove configuração default
 RUN rm /etc/nginx/conf.d/default.conf
 
-# Copia o arquivo de configuração customizado do Nginx
-# Você precisará criar este arquivo (ver abaixo)
+# Cria diretório para os certificados
+RUN mkdir -p /etc/nginx/ssl
+
+# Gera certificado self-signed
+RUN openssl req -x509 -nodes -days 365 \
+    -newkey rsa:2048 \
+    -keyout /etc/nginx/ssl/selfsigned.key \
+    -out /etc/nginx/ssl/selfsigned.crt \
+    -subj "/CN=localhost"
+
+# Copia configuração customizada do nginx
 COPY nginx.conf /etc/nginx/conf.d
 
-# Copia os arquivos estáticos gerados no build do stage anterior
+# Copia arquivos estáticos
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Expõe a porta 80
-EXPOSE 80
+# Expõe HTTP e HTTPS
+EXPOSE 80 443
 
-# Comando para iniciar o Nginx
 CMD ["nginx", "-g", "daemon off;"]

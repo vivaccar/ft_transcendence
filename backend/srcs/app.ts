@@ -24,16 +24,17 @@ import swaggerPlugin from "./plugins/swaggerPlugin";
 import cors from "@fastify/cors";
 import multipart from "@fastify/multipart";
 
-const app = Fastify({ logger: true })
+const app = Fastify({ logger: true,  trustProxy: true })
 
 app.register(cors, {
-  origin: 'http://localhost:8080',
+  origin: ['https://localhost', 'http://localhost:5173'],
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
 });
 
-app.register(fastifyCookie, {
+/* app.register(fastifyCookie, {
   secret: process.env.COOKIE_SECRET!,
-})
+}) */
 app.register(swaggerPlugin)
 app.register(dbPlugin);
 app.register(jwtPlugin);

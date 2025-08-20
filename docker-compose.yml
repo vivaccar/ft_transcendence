@@ -2,8 +2,10 @@ services:
   backend:
     build: backend/.
     container_name: backend
+    expose:
+      - "3002"
     ports:
-      - 3002:3002
+      - "3002:3002"
     networks:
         - meu-network
   frontend:
@@ -13,6 +15,7 @@ services:
       container_name: frontend
       ports:
         - "8080:80"
+        - "443:443"
       restart: unless-stopped
       networks:
         - meu-network
