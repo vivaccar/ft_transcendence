@@ -36,7 +36,7 @@ export async function getMatches(app: FastifyInstance) {
 			
 			const formattedMatches = matches.map(match => {
 				const currentUser = match.matchParticipant.find(p => p.userId === userObject.id)
-				const opponent = match.matchParticipant.find(p => p.userId !== userObject.id)
+				const opponent = match.matchParticipant.find(p => p.userId !== userObject.id || p.userId == null ) 
 				
 				if (!currentUser || !opponent) {
 					console.warn(`[getMatches] Invalid match ${match.id} - missing participants`)
@@ -50,7 +50,7 @@ export async function getMatches(app: FastifyInstance) {
 				}
 				return {
 					matchId: match.id,
-					opponent: opponent.user.username,
+					opponent: opponent.user ? opponent.user.username : opponent.localUser,
 					result: result,
 					goalsUser: currentUser.goals,
 					goalsOpponent: opponent.goals,

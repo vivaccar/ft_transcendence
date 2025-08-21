@@ -1,12 +1,12 @@
 import { createSettingsUI } from "../pages/settingsPage";
 import { API_ROUTES } from "../config";
-// import { getToken } from "../auth/authService";
+import { getToken } from "../auth/authService";
 import { setup2FA } from "../auth/2fa";
 
 export async function setupSettingsLogic(elements: ReturnType<typeof createSettingsUI>) {
   const { emailInput, usernameInput, img, submitBtn, toggleInput2FA } = elements;
   
-  // const token = getToken();
+  const token = getToken();
   async function loadUserProfile() {
 
     try {
@@ -16,7 +16,7 @@ export async function setupSettingsLogic(elements: ReturnType<typeof createSetti
           // 'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        credentials: "include",
+        // credentials: "include",
       });
       if (!res.ok) throw new Error('Failed to fetch user data');
       const data = await res.json();
@@ -49,10 +49,11 @@ export async function setupSettingsLogic(elements: ReturnType<typeof createSetti
       const res = await fetch('/me', {
         method: 'PUT',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(updatedData),
-        credentials: "include",
+        // credentials: "include",
       });
 
       if (!res.ok) {
@@ -108,14 +109,14 @@ export function setupAvatarControls(
       const formData = new FormData();
       formData.append("avatar", file);
 
-      // const token = getToken();
+      const token = getToken();
 
       const uploadResponse = await fetch(`${API_ROUTES.uploadAvatar}`, {
         method: "POST",
-        // headers: {
-        //   "Authorization": `Bearer ${token}`
-        // },
-        credentials: "include",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+        // credentials: "include",
         body: formData
       });
 
@@ -134,16 +135,16 @@ export function setupAvatarControls(
 async function uploadAvatar(file: File): Promise<void> {
   const formData: FormData = new FormData();
   formData.append("avatar", file);
-  // const token = getToken();
+  const token = getToken();
 
   try {
     const res: Response = await fetch(`${API_ROUTES.uploadAvatar}`, {
       method: "POST",
       body: formData,
-      // headers: {
-      //   'Authorization': `Bearer ${token}`
-      // }
-      credentials: "include",
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+      // credentials: "include",
     });
 
     if (!res.ok) {

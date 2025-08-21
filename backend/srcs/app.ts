@@ -17,6 +17,8 @@ import { userAvatar } from "./routes/user/getUserAvatar";
 import { updateUsername } from "./routes/user/updateUsername";
 import { updatePassword } from "./routes/user/changePassword";
 import { logout } from "./routes/authentication/logout";
+import { inviteFriend } from "./routes/friendships/inviteFriend";
+import { getInvites } from "./routes/friendships/getInvites";
 import jwt from "./plugins/jwtPlugin";
 import jwtPlugin from "./plugins/jwtPlugin";
 import googleOAuthPlugin from './plugins/google-oauth'
@@ -64,5 +66,8 @@ app.register(updateUsername);
 app.register(updatePassword);
 app.register(logout);
 app.register(me);
+app.register(userAvatar)
+app.register(inviteFriend)
+app.register(getInvites)
 
 export default app

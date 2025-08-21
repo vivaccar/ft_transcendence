@@ -116,7 +116,7 @@ export function createSettingsUI(): {
   
 	const twoFAText = document.createElement("span");
 	twoFAText.textContent = "Enable 2FA";
-	twoFAText.className = "text-lg font-medium";
+	twoFAText.className = "text-lg font-orbitron font-medium";
 	twoFAContainer.appendChild(twoFAText);
   
 	const toggleLabel = document.createElement("label");
@@ -126,16 +126,17 @@ export function createSettingsUI(): {
 	toggleInput2FA.type = "checkbox";
 	toggleInput2FA.className = "sr-only peer";
 
-	const has2FA = sessionStorage.getItem("has2fa") === "true";
+	const has2FA = sessionStorage.getItem('has2fa') === 'true'
 	toggleInput2FA.checked = has2FA;
 
 	const toggleSpan = document.createElement("span");
-	toggleSpan.className =
-	  "w-11 h-6 bg-red-400 rounded-full peer peer-checked:bg-green-500 " +
-	  "after:content-[''] after:absolute after:top-[2px] after:left-[2px] " +
-	  "after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all " +
-	  "peer-checked:after:translate-x-full peer-checked:after:border-white";
-  
+	toggleSpan.className = "w-11 h-6 rounded-full transition-colors relative " +
+		(has2FA ? "bg-green-500" : "bg-red-400") + " " +
+		"peer-checked:bg-green-500 " +
+		"after:content-[''] after:absolute after:top-[2px] after:bg-white " +
+		"after:rounded-full after:h-5 after:w-5 after:transition-all " +
+		(has2FA ? "after:translate-x-full after:border-white" : "after:left-[2px]") + " " +
+		"peer-checked:after:translate-x-full peer-checked:after:border-white";
 	toggleLabel.appendChild(toggleInput2FA);
 	toggleLabel.appendChild(toggleSpan);
 	twoFAContainer.appendChild(toggleLabel);
@@ -147,7 +148,7 @@ export function createSettingsUI(): {
 	// submit button
 	const submitBtn = document.createElement("button");
 	submitBtn.textContent = "Submit";
-	submitBtn.className = "px-5 py-2 bg-[#5FBE00] font-orbitron text-white rounded hover:bg-[#133A58] transition";
+	submitBtn.className = "px-5 py-2 bg-[#5FBE00] text-lg font-orbitron font-bold text-white rounded hover:bg-[#133A58] transition";
 	container.appendChild(submitBtn);
   
 	return {

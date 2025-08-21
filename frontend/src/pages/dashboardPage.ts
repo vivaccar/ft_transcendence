@@ -22,9 +22,9 @@ function buildGameCards(): HTMLElement {
 	container.className = 'min-h-screen flex items-center justify-center gap-16';
 
 	const cards = [
-		{ title: 'Man vs AI', imgSrc: '/images/dashboardCards/card1.jpeg', url: 'ai-game' },
-		{ title: 'Man vs Man\nLocal', imgSrc: '/images/dashboardCards/card2.jpeg', url: 'human-game-local' },
-		{ title: 'Man vs Man\nRemote', imgSrc: '/images/dashboardCards/card5.jpeg', url: 'human-game-remote' },
+		{ title: 'Human vs AI', imgSrc: '/images/dashboardCards/card1.jpeg', url: 'ai-game' },
+		{ title: 'Human vs Human\nLocal', imgSrc: '/images/dashboardCards/card2.jpeg', url: 'human-game-local' },
+		{ title: 'Human vs Human\nRemote', imgSrc: '/images/dashboardCards/card5.jpeg', url: 'human-game-remote' },
 		{ title: 'Tournament', imgSrc: '/images/dashboardCards/card3.jpeg', url: 'tournament' },
 	];
 
