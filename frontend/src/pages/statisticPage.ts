@@ -13,7 +13,7 @@ export function buildStatisticsPage(): void {
 
 function createStatisticsUI(): {container: HTMLDivElement} {
     const container = document.createElement("div");
-    container.className = "flex items-center justify-center w-screen h-screen gap-6";
+    container.className = "flex items-center justify-center w-screen h-[calc(100vh-64px)] gap-6";
 
     // ---------------- Personal Numbers ----------------
     const personalNbrBox = document.createElement("div");

@@ -3,14 +3,14 @@ export function buildLoginPage(): void {
 	if (!app) return;
 	
 	app.innerHTML = `
-	<h1 id="pongTitle" class="font-orbitron font-semibold text-gray-50 text-6xl mt-64 text-center" > | PONG GAME | </h1>
-	<div id="authBox" class="min-h-screen flex items-center justify-center -mt-32">
+	<div id="authBox" class="h-screen flex flex-col gap-16 items-center justify-center">
+		<h1 id="pongTitle" class="font-orbitron font-semibold text-gray-50 text-6xl text-center" > | PONG GAME | </h1>
 		<div id="login" class="whiteBox">
 			<h2 class="boxTitle">Welcome Back</h2>
 	
 			<form id="loginForm" class="space-y-4">
 		  
-				<button id="googleBtn" type="submit" class="btn border border-gray-300 shadow-md px-4 py-2 rounded !bg-gray-50 !text-gray-800 flex items-center justify-center gap-2 w-full">
+				<button id="googleBtn" type="button" class="btn border border-gray-300 shadow-md px-4 py-2 rounded !bg-gray-50 !text-gray-800 flex items-center justify-center gap-2 w-full">
   					<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" class="w-5 h-5" />
   					Continue with Google
 				</button>

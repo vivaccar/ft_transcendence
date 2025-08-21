@@ -19,7 +19,7 @@ export function buildDashboard(): void {
 
 function buildGameCards(): HTMLElement {
 	const container = document.createElement('div');
-	container.className = 'min-h-screen flex items-center justify-center gap-16';
+	container.className = 'h-screen flex items-center justify-center gap-16';
 
 	const cards = [
 		{ title: 'Human vs AI', imgSrc: '/images/dashboardCards/card1.jpeg', url: 'ai-game' },
