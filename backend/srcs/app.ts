@@ -14,6 +14,9 @@ import { getWinsAndLosses } from "./routes/user/getWinsAndLosses";
 import { getGoals } from "./routes/user/getGoals";
 import { me } from "./routes/user/me";
 import { userAvatar } from "./routes/user/getUserAvatar";
+import { updateUsername } from "./routes/user/updateUsername";
+import { updatePassword } from "./routes/user/changePassword";
+import { logout } from "./routes/authentication/logout";
 import jwt from "./plugins/jwtPlugin";
 import jwtPlugin from "./plugins/jwtPlugin";
 import googleOAuthPlugin from './plugins/google-oauth'
@@ -23,16 +26,17 @@ import swaggerPlugin from "./plugins/swaggerPlugin";
 import cors from "@fastify/cors";
 import multipart from "@fastify/multipart";
 
-const app = Fastify({ logger: true })
+const app = Fastify({ logger: true,  trustProxy: true })
 
 app.register(cors, {
-  origin: 'http://localhost:8080',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: ['https://localhost', 'http://localhost:5173'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
 });
 
-app.register(fastifyCookie, {
+/* app.register(fastifyCookie, {
   secret: process.env.COOKIE_SECRET!,
-})
+}) */
 app.register(swaggerPlugin)
 app.register(dbPlugin);
 app.register(jwtPlugin);
@@ -55,7 +59,10 @@ app.register(getMatches);
 app.register(getWinsAndLosses);
 app.register(getGoals);
 app.register(uploadAvatar);
-app.register(userAvatar)
-app.register(me)
+app.register(userAvatar);
+app.register(updateUsername);
+app.register(updatePassword);
+app.register(logout);
+app.register(me);
 
 export default app
