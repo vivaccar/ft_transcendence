@@ -2,6 +2,7 @@ import { login, saveToken, register, google} from '../auth/authService';
 import { navigate } from '../router';
 import { login2FA } from '../auth/2fa';
 import { getCookieValue } from '../utils';
+import { API_ROUTES } from '../config';
 
 
 export function setupAuthLogic(): void {
@@ -68,12 +69,12 @@ export function setupRegisterLogic(): void {
 
 export async function isAuthenticated(): Promise<boolean> {
 	try {
-		const res = await fetch("/api/me", {
+		const res = await fetch(API_ROUTES.me, {
 		method: "GET",
-		credentials: "include" // 🔑 manda os cookies junto
+		credentials: "include"
 		});
   
-	return res.ok; // 200 → autenticado, 401 → não autenticado
+	return res.ok; 
 	} catch (e) {
 		console.error(e);
 		return false;
@@ -88,4 +89,21 @@ export function protectedRoute(handler: () => void | Promise<void>) {
 	  }
 	  await handler();
 	};
-  }
+}
+
+export async function logoutLogic(): Promise<void> {
+	try {
+		const res = await fetch(API_ROUTES.auth.logout, {
+		method: "POST",
+		credentials: "include"
+		});
+  
+		if(res.ok){
+			navigate('./login');
+		} else {
+			alert('Logout can\'t be happened.');
+		}
+	} catch (e) {
+		console.error(e);
+	}
+}
