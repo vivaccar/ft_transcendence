@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { getMatchSwaggerSchema } from "../../schemaSwagger/getMatchesSchema"
 
 export async function getMatches(app: FastifyInstance) {
-	app.get('/users/:username/getMatches', { schema: getMatchSwaggerSchema } , async(req, res) => {
+	app.get('/users/:username/getMatches', { preHandler: [app.authenticate] ,  schema: getMatchSwaggerSchema } , async(req, res) => {
 		 const { username } = req.params as { username: string }
 		try {
 			const userObject = await app.prisma.user.findUnique ({
@@ -36,7 +36,7 @@ export async function getMatches(app: FastifyInstance) {
 			
 			const formattedMatches = matches.map(match => {
 				const currentUser = match.matchParticipant.find(p => p.userId === userObject.id)
-				const opponent = match.matchParticipant.find(p => p.userId !== userObject.id)
+				const opponent = match.matchParticipant.find(p => p.userId !== userObject.id || p.userId == null ) 
 				
 				if (!currentUser || !opponent) {
 					console.warn(`[getMatches] Invalid match ${match.id} - missing participants`)
@@ -50,7 +50,7 @@ export async function getMatches(app: FastifyInstance) {
 				}
 				return {
 					matchId: match.id,
-					opponent: opponent.user.username,
+					opponent: opponent.user ? opponent.user.username : opponent.localUser,
 					result: result,
 					goalsUser: currentUser.goals,
 					goalsOpponent: opponent.goals,

@@ -1,3 +1,5 @@
+import { navigate } from "../router";
+
 export function createGameUI(): HTMLElement {
     // 1. Criar o elemento raiz
     const root = document.createElement('div');
@@ -33,28 +35,29 @@ export function createGameUI(): HTMLElement {
 
     const winnerText = document.createElement('h2');
     winnerText.id = 'winner-text';
-    winnerText.className = 'text-5xl font-bold text-white font-mono';
+    winnerText.className = 'text-5xl font-orbitron font-bold text-white font-mono';
 
     // 5. Criar um contêiner para os botões ficarem lado a lado
     const buttonContainer = document.createElement('div');
-    buttonContainer.className = 'flex flex-row gap-4'; // Alinha os botões horizontalmente com um espaçamento
+    buttonContainer.className = 'flex flex-row gap-8'; // Alinha os botões horizontalmente com um espaçamento
 
     // 6. Botão de reiniciar
     const restartButton = document.createElement('button');
     restartButton.id = 'restart-button';
-    restartButton.className = 'bg-white text-black font-bold py-3 px-6 rounded-lg hover:bg-gray-200 transition-colors text-xl';
-    restartButton.textContent = 'Jogar Novamente';
+    restartButton.className = "bg-[#193D5E] text-white px-4 py-2 rounded-md font-orbitron font-semibold cursor-pointer transition-colors hover:bg-indigo-600";
+    restartButton.textContent = 'Play again';
 
     // 7. Botão "Página Principal"
     const homeButton = document.createElement('button');
-    homeButton.textContent = 'Página Principal';
-    homeButton.className = 'bg-gray-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-500 transition-colors text-xl';
+    homeButton.textContent = 'Games Page';
+    homeButton.className = "bg-[#193D5E] text-white px-4 py-2 rounded-md font-orbitron font-semibold cursor-pointer transition-colors hover:bg-indigo-600";
 
     // ISSO TEM DE SER MUDADO! 
 	// AÇÃO DE REDIRECIONAMENTO!
 	// PRECISA MUDAR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // JA MUDEI!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     homeButton.onclick = () => {
-        window.location.href = '/'; 
+        navigate('./games');
     };
 
     // Adicionar os botões ao seu contêiner

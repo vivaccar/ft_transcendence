@@ -1,5 +1,8 @@
 import { login, saveToken, register, google} from '../auth/authService';
 import { navigate } from '../router';
+import { login2FA } from '../auth/2fa';
+import { getCookieValue } from '../utils';
+
 
 export function setupAuthLogic(): void {
 	const loginForm = document.querySelector<HTMLFormElement>('#loginForm');
@@ -18,10 +21,6 @@ async function setupGoogleLogic(event: Event): Promise<void> {
 
 	try {
 		await google();
-		
-		
-		navigate('./dashboard');
-
 	  } catch (err) {
 		alert(err);
 	  }
@@ -33,11 +32,13 @@ async function setupLoginLogic(event: Event): Promise<void> {
 	const username = (document.querySelector<HTMLInputElement>('#usernameLogin')!)?.value;
 	const password = (document.querySelector<HTMLInputElement>('#passwordLogin')!)?.value;
 	try {
-	  const token = await login({ username, password });
-	  saveToken(token);
-	  console.log(token);
-		alert('Success login');
-		navigate('./dashboard');
+		const token = await login({ username, password });
+	  	saveToken(token);
+	  	if (getCookieValue('has2fa') === 'true'){
+			login2FA();
+		} else {
+			navigate("/dashboard");
+	  	}
 	} catch (err) {
 	  alert(err);
 	}	
@@ -65,3 +66,26 @@ export function setupRegisterLogic(): void {
 	});
   }
 
+export async function isAuthenticated(): Promise<boolean> {
+	try {
+		const res = await fetch("/api/me", {
+		method: "GET",
+		credentials: "include" // 🔑 manda os cookies junto
+		});
+  
+	return res.ok; // 200 → autenticado, 401 → não autenticado
+	} catch (e) {
+		console.error(e);
+		return false;
+	}
+}
+
+export function protectedRoute(handler: () => void | Promise<void>) {
+	return async () => {
+	  if (!(await isAuthenticated())) {
+		navigate("/login");
+		return;
+	  }
+	  await handler();
+	};
+  }

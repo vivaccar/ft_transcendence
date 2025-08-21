@@ -1,15 +1,11 @@
 import { FastifyInstance } from "fastify";
 
 export async function userAvatar(app: FastifyInstance) {
-    app.get('/users/:id/avatar', async (request, reply) => {
-        const userId = Number((request.params as { id: string }).id);
-
-        if (isNaN(userId)) {
-            return reply.status(400).send({ error: 'Invalid user id' });
-        }
+    app.get('/users/:username/avatar',{ preHandler: [app.authenticate] }, async (request, reply) => {
+        const { username } = req.params as { username: string }
 
         const user = await app.prisma.user.findUnique({
-            where: { id: userId },
+            where: { username: username },
             select: { avatar: true },
         });
 
