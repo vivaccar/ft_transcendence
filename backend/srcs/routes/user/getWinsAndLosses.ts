@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { getWinsAndLossesSwaggerSchema } from "../../schemaSwagger/getWinsAndLossesSchema"
 
 export async function getWinsAndLosses(app: FastifyInstance) {
-	app.get('/users/:username/getWinsAndLosses', { schema: getWinsAndLossesSwaggerSchema } , async(req, res) => {
+	app.get('/users/:username/getWinsAndLosses', { preHandler: [app.authenticate], schema: getWinsAndLossesSwaggerSchema } , async(req, res) => {
 		const { username } = req.params as { username: string }
 		try {
 			const userObject = await app.prisma.user.findUnique ({

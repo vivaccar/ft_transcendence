@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { registerMatchSwaggerSchema } from "../../schemaSwagger/registerMatchSchema"
 
 export async function registerMatch(app: FastifyInstance) {
-	app.post('/registerMatch', { schema: registerMatchSwaggerSchema }, async(req, res) => {
+	app.post('/registerMatch', { preHandler: [app.authenticate], schema: registerMatchSwaggerSchema }, async(req, res) => {
 		const matchSchema = z.object({
 			date: z.string().transform((str) => new Date(str)),
 			participants: z.array(z.object({

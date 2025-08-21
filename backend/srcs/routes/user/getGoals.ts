@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { getGoalsSwaggerSchema } from "../../schemaSwagger/getGoalsSchema"
 
 export async function getGoals(app: FastifyInstance) {
-	app.get('/users/:username/getGoals', { schema: getGoalsSwaggerSchema } , async(req, res) => {
+	app.get('/users/:username/getGoals', { preHandler: [app.authenticate] , schema: getGoalsSwaggerSchema } , async(req, res) => {
 		const { username } = req.params as { username: string }
 		try {
 			const userObject = await app.prisma.user.findUnique ({

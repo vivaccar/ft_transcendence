@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { getMatchSwaggerSchema } from "../../schemaSwagger/getMatchesSchema"
 
 export async function getMatches(app: FastifyInstance) {
-	app.get('/users/:username/getMatches', { schema: getMatchSwaggerSchema } , async(req, res) => {
+	app.get('/users/:username/getMatches', { preHandler: [app.authenticate] ,  schema: getMatchSwaggerSchema } , async(req, res) => {
 		 const { username } = req.params as { username: string }
 		try {
 			const userObject = await app.prisma.user.findUnique ({
