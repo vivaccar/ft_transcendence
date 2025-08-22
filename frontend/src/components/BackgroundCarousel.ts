@@ -8,7 +8,7 @@ export function BackgroundCarousel(onSelect: (bgId: string) => void): HTMLElemen
 	let currentIndex = 0;
 
 	const container = document.createElement('div');
-	container.className = 'flex items-center justify-center w-4/5 max-w-3xl h-72 md:h-96 rounded-lg overflow-hidden relative';
+	container.className = 'flex items-center justify-center w-4/5 max-w-3xl h-72 md:h-96 rounded-lg overflow-hidden relative border border-[#00F0FF]';
 
 	const image = document.createElement('img');
 	image.src = backgrounds[currentIndex].imgSrc;

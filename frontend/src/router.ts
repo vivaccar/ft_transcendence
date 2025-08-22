@@ -4,12 +4,20 @@ import { setupAuthLogic, setupRegisterLogic } from "./logic/authLogic";
 import { buildDashboard } from "./pages/dashboardPage";
 import { buildGamePageManVsManLocal } from "./pages/PageHumanVsHumanLocal";
 import { buildHumanGameLocal } from "./game/localPong/Pong";
+import { buildSettingsPage } from "./pages/settingsPage";
+import { buildStatisticsPage } from "./pages/statisticPage";
+import { buildFriendsPage } from "./pages/friendsPage";
+import { buildRemoteGamePage } from "./pages/remoteGamePage";
+import { buildNotFoundPage } from "./pages/notFoundPage";
+import { protectedRoute } from "./logic/authLogic";
+import { logoutLogic } from "./logic/authLogic";
+// import { setupSettingsLogic } from "./logic/settingsLogic";
+import { buildTournamentsPage } from "./pages/tournamentPage";
 
-const routes: Record<string, () => void> = {
-  "/": () => {
-    buildLoginPage();
-    setupAuthLogic();
-  },
+const routes: Record<string, () => void | Promise<void>> = {
+  "/": protectedRoute(() => {
+    buildDashboard();
+  }),
   "/login": () => {
     buildLoginPage();
     setupAuthLogic();
@@ -18,17 +26,39 @@ const routes: Record<string, () => void> = {
     buildRegisterPage();
     setupRegisterLogic();
   },
-  "/dashboard": () => {
+  "/dashboard": protectedRoute(() => {
     buildDashboard();
-  },
-  "/ai-game": () => {
-  },
-  "/human-game-local": () => {
-    buildGamePageManVsManLocal();
-  },
-  "/game-local": () => {
-    buildHumanGameLocal();
-  },
+  }),
+  "/games": protectedRoute(() => {
+    buildDashboard();
+  }),
+  "/ai-game": protectedRoute(() => {
+    buildGamePageManVsManLocal("human");
+  }),
+  "/human-game-local": protectedRoute(() => {
+    buildGamePageManVsManLocal("human");
+  }),
+  "/human-game-remote": protectedRoute(() => {
+    buildRemoteGamePage();
+  }),
+  "/game-local": protectedRoute(() => {
+    buildHumanGameLocal("human");
+  }),
+  "/settings": protectedRoute(() => {
+    buildSettingsPage();
+  }),
+  "/statistics": protectedRoute(() => {
+    buildStatisticsPage();
+  }),
+  "/friends": protectedRoute(() => {
+    buildFriendsPage();
+  }),
+  "/tournament": protectedRoute(() => {
+    buildTournamentsPage("tournament");
+  }),
+  "/logout": protectedRoute(() => {
+    logoutLogic();
+  }),
 };
 
 export function handleRoute(): void {
@@ -38,9 +68,7 @@ export function handleRoute(): void {
   if (routeHandler) {
     routeHandler();
   } else {
-    // // Rota não encontrada → redireciona para /login, posteriormente, pagina de erro
-    // history.replaceState(null, "", "/login");
-    // routes["/login"]();
+    buildNotFoundPage();
   }
 }
 

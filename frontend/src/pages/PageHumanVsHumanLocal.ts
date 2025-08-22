@@ -1,9 +1,10 @@
 import { renderPage } from "../utils";
 import { BackgroundCarousel } from "../components/BackgroundCarousel";
 import { ColorSelector } from "../components/ColorSelector";
-import { navigate } from "../router";
+// import { navigate } from "../router";
+import { buildHumanGameLocal } from "../game/localPong/Pong";
 
-export function buildGamePageManVsManLocal() {
+export function buildGamePageManVsManLocal(gameType: string) {
 	let selectedColorP1: string | null = null;
 	let selectedColorP2: string | null = null;
   		let selectedbackgroundImg = "/images/backgroundGame/back10.jpg";
@@ -13,7 +14,11 @@ export function buildGamePageManVsManLocal() {
   	renderPage(container);
 
   	const title = document.createElement("h1");
-  	title.textContent = 'Man vs Man';
+	if (gameType == 'human') {
+		title.textContent = `Human vs Human`;
+	} else {
+		title.textContent = `Human vs AI`;
+	}
   	title.className = "text-white font-orbitron font-bold text-4xl mb-8";
   	container.appendChild(title);
 	
@@ -34,14 +39,10 @@ export function buildGamePageManVsManLocal() {
 		selectedColorP1 = color;
   	};
   
-  	// Player 2
-  	const onSelectColorP2 = (color: string) => {
-		selectedColorP2 = color;
-  	};
-  
+	  
   	const playersContainer = document.createElement("div");
   	playersContainer.className = "flex gap-[5rem] mt-6";
-	
+	  
   	const player1Wrapper = document.createElement("div");
   	player1Wrapper.className = "flex flex-col items-center";
   	const player1Title = document.createElement("h2");
@@ -49,17 +50,23 @@ export function buildGamePageManVsManLocal() {
   	player1Title.className = "text-white font-orbitron font-bold mb-2";
   	player1Wrapper.appendChild(player1Title);
   	player1Wrapper.appendChild(ColorSelector(onSelectColorP1));
-	
-  	const player2Wrapper = document.createElement("div");
-  	player2Wrapper.className = "flex flex-col items-center";
-  	const player2Title = document.createElement("h2");
-  	player2Title.textContent = "Player 2";
-  	player2Title.className = "text-white font-orbitron font-bold mb-2";
-  	player2Wrapper.appendChild(player2Title);
-  	player2Wrapper.appendChild(ColorSelector(onSelectColorP2));
-	
+	  
   	playersContainer.appendChild(player1Wrapper);
-  	playersContainer.appendChild(player2Wrapper);
+	  
+  	// Player 2
+	if (gameType == 'human'){
+		const onSelectColorP2 = (color: string) => {
+		  selectedColorP2 = color;
+		};
+		const player2Wrapper = document.createElement("div");
+		player2Wrapper.className = "flex flex-col items-center";
+		const player2Title = document.createElement("h2");
+		player2Title.textContent = "Player 2";
+		player2Title.className = "text-white font-orbitron font-bold mb-2";
+		player2Wrapper.appendChild(player2Title);
+		player2Wrapper.appendChild(ColorSelector(onSelectColorP2));
+		playersContainer.appendChild(player2Wrapper);
+	}
 	
   	container.appendChild(playersContainer);
 
@@ -73,7 +80,8 @@ export function buildGamePageManVsManLocal() {
     sessionStorage.setItem("selectedColorP2", selectedColorP2 ?? "white");
     sessionStorage.setItem("selectedBackground", selectedbackgroundImg);
 
-    navigate("./game-local");
+    buildHumanGameLocal(`${gameType}`);
+	
   });
   container.appendChild(startBtn);
 }

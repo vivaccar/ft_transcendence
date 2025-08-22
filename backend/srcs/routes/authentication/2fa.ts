@@ -106,10 +106,15 @@ export async function verify2fa(app:FastifyInstance) {
         { expiresIn: '7d' }
         );
 
-        return reply.status(200).send({
-            token: token,
-        })
-
+        reply
+          .setCookie("token", token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "lax",
+            path: "/",
+          });
+        
+        return reply.status(200).send({ message: "Login successful" });
     })
 }
 

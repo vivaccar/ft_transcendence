@@ -1,5 +1,6 @@
 import { Ball } from './Ball';
 import { Paddle } from './Paddle';
+import { createGameUI } from '../../components/localGameUi';
 
 // --- TIPOS E ESTADO GLOBAL DO MÓDULO ---
 type GameArea = {
@@ -62,7 +63,7 @@ function makeAIDecision() {
 
 function executeAIMove() {
     const paddleCenter = player2.y + player2.height / 2;
-    const tolerance = player2.speed; 
+    const tolerance = 8; 
 
     if (paddleCenter < aiTargetY - tolerance) {
         keysPressed['arrowup'] = false;
@@ -112,9 +113,10 @@ const myGameArea: GameArea = {
 function updateGameArea(currentTime: number) {
     if (myGameArea.state !== 'playing') 
         return;
+    const deltaTime = (currentTime - lastTime) / 1000;
+    lastTime = currentTime;
+
     if (currentGameMode === 'ai') {
-        const deltaTime = (currentTime - lastTime) / 1000;
-        lastTime = currentTime;
         aiDecisionTimer -= deltaTime;
 
         if (aiDecisionTimer <= 0) {
@@ -123,8 +125,8 @@ function updateGameArea(currentTime: number) {
         }
         executeAIMove();
     }
-    handleInput();
-    ball.update();
+    handleInput(deltaTime);
+    ball.update(deltaTime);
     checkCollisions();
     checkScore();
     myGameArea.clear();
@@ -147,26 +149,44 @@ function draw() {
     ball.draw(ctx);
 }
 
-function handleInput() {
+function handleInput(deltaTime: number) {
+
+    const effectivePaddleSpeed = player1.speed;
+
     if (keysPressed['w'] && player1.y > 0) { 
-        player1.y -= player1.speed; 
+        player1.y -= effectivePaddleSpeed * deltaTime; 
     }
     if (keysPressed['s'] && player1.y < myGameArea.canvas!.height - player1.height) { 
-        player1.y += player1.speed; 
+        player1.y += effectivePaddleSpeed * deltaTime; 
     }
     if (keysPressed['arrowup'] && player2.y > 0) { 
-        player2.y -= player2.speed; 
+        player2.y -= effectivePaddleSpeed * deltaTime; 
     }
     if (keysPressed['arrowdown'] && player2.y < myGameArea.canvas!.height - player2.height) { 
-        player2.y += player2.speed; 
+        player2.y += effectivePaddleSpeed * deltaTime; 
     }
 }
 
 function checkCollisions() {
-    if (ball.x - ball.size < player1.x + player1.width && ball.x - ball.size > player1.x && ball.y > player1.y && ball.y < player1.y + player1.height) {
+    
+    if (ball.speedX < 0 && 
+        ball.x - ball.size < player1.x + player1.width && 
+        ball.x + ball.size > player1.x && 
+        ball.y + ball.size > player1.y && 
+        ball.y - ball.size < player1.y + player1.height) 
+    {
+        ball.x = player1.x + player1.width + ball.size; //reposiciona para evitar que a bola entre na raquete
         ball.speedX *= -1;
     }
-    if (ball.x + ball.size > player2.x && ball.x + ball.size < player2.x + player2.width && ball.y > player2.y && ball.y < player2.y + player2.height) {
+
+    if (ball.speedX > 0 && 
+        ball.x + ball.size > player2.x && 
+        ball.x - ball.size < player2.x + player2.width && 
+        ball.y + ball.size > player2.y && 
+        ball.y - ball.size < player2.y + player2.height) 
+    {
+        
+        ball.x = player2.x - ball.size;
         ball.speedX *= -1;
     }
 }
@@ -179,7 +199,7 @@ function checkScore() {
         player2.score++;
         updateScoreboard();
         if (player2.score >= winningScore) {
-            winnerName = 'Jogador 2';
+            winnerName = 'Player 2';
         } else {
             ball.reset();
         }
@@ -188,7 +208,7 @@ function checkScore() {
         player1.score++;
         updateScoreboard();
         if (player1.score >= winningScore) {
-            winnerName = 'Jogador 1';
+            winnerName = 'Player 1';
         } else {
             ball.reset();
         }
@@ -209,7 +229,7 @@ function endGame(winnerName: string) {
     const winnerText = document.getElementById('winner-text');
 
     if (gameOverScreen && winnerText) {
-        winnerText.textContent = `${winnerName} venceu!`;
+        winnerText.textContent = `${winnerName} won!`;
         
         // Remove a classe "hidden" para mostrar o overlay
         gameOverScreen.classList.remove('hidden');
@@ -268,7 +288,7 @@ export function initializeLocalGame(containerId: string, width: number, height: 
 
     currentGameMode = mode;
     const container = document.getElementById(containerId);
-    lastGameSettings = { containerId, width, height, mode, winningScore };
+    lastGameSettings = { containerId, width, height, mode };
 
     if (!container) {
         console.error(`ERRO: Contentor com id "${containerId}" não encontrado.`);
@@ -276,21 +296,9 @@ export function initializeLocalGame(containerId: string, width: number, height: 
     }
     const savedBackground = sessionStorage.getItem('selectedBackground');
 
-    //ISSO É UM COMPONENTE E VAI SER MOVIDO DE PASTA PARA COMPONENTES QUANDO REFATORAR
-    container.innerHTML = `
-    <div class="relative w-full h-full"> 
-        <div class="text-6xl mb-4 font-mono text-center text-white">
-            <span id="game-player1-score">0</span> - <span id="game-player2-score">0</span>
-        </div>
-        <canvas id="game-canvas" class="bg-black border-2 border-white rounded-lg"></canvas>
-        <div id="game-over-screen" class="hidden absolute inset-0 bg-black/70 flex flex-col items-center justify-center gap-6">
-            <h2 id="winner-text" class="text-5xl font-bold text-white font-mono"></h2>
-            <button id="restart-button" class="bg-white text-black font-bold py-3 px-6 rounded-lg hover:bg-gray-200 transition-colors text-xl">
-                Jogar Novamente
-            </button>
-        </div>
-    </div>
-`;
+    container.innerHTML = '';
+    const gameUI = createGameUI();
+    container.appendChild(gameUI);
 
     myGameArea.canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
     if (!myGameArea.canvas) {
@@ -311,8 +319,8 @@ export function initializeLocalGame(containerId: string, width: number, height: 
         myGameArea.canvas.style.backgroundColor = 'black'; // fallback
     }
 
-    const paddleWidth = 10, paddleHeight = 100, paddleSpeed = 6;
-    const ballSize = 10, ballSpeed = 4;
+    const paddleWidth = 10, paddleHeight = 100, paddleSpeed = 300;
+    const ballSize = 10, ballSpeed = 300;
     player1 = new Paddle(paddleWidth, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP1') || 'white');
     player2 = new Paddle(myGameArea.canvas.width - paddleWidth * 2, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP2') || 'white');
     ball = new Ball(myGameArea.canvas.width / 2, myGameArea.canvas.height / 2, ballSize, ballSpeed, myGameArea.canvas);

@@ -1,3 +1,5 @@
+import { navigate } from "../router";
+
 export function Navbar(): HTMLElement {
 	const nav = document.createElement('nav');
 	nav.className = 'bg-[#174B7A] text-white font-orbitron font-semibold px-8 py-4 flex justify-between items-center';
@@ -13,14 +15,24 @@ export function Navbar(): HTMLElement {
 		a.href = `/${text.toLowerCase()}`;
 		a.textContent = text;
 		a.className = 'inline-block transform transition-transform hover:scale-105';
+
+		a.addEventListener("click", (e) => {
+			e.preventDefault();
+			navigate(`/${text.toLowerCase()}`);
+		});
+
 		li.appendChild(a);
 		ul.appendChild(li);
 	});
 
 	const logout = document.createElement('a');
-	logout.href = '/logout';
 	logout.textContent = 'Logout';
+	logout.href = "#";
 	logout.className = 'inline-block transform transition-transform hover:scale-105';
+	logout.addEventListener("click", (e) => {
+		e.preventDefault();
+		navigate('./logout');
+	});
 
 	nav.appendChild(ul);
 	nav.appendChild(logout);

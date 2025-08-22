@@ -26,12 +26,18 @@ export class Ball {
         ctx.fill();
     }
 
-    update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-
-        if (this.y - this.size < 0 || this.y + this.size > this.canvas.height) {
+    update(deltaTime: number) {
+        this.x += this.speedX * deltaTime;
+        this.y += this.speedY * deltaTime;
+    
+        if (this.y - this.size < 0) {
+        this.speedY *= -1;
+        this.y = this.size;
+        } 
+        
+        else if (this.y + this.size > this.canvas.height) {
             this.speedY *= -1;
+            this.y = this.canvas.height - this.size;
         }
     }
 
