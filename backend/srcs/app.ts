@@ -66,7 +66,6 @@ app.register(updateUsername);
 app.register(updatePassword);
 app.register(logout);
 app.register(me);
-app.register(userAvatar)
 app.register(inviteFriend)
 app.register(getInvites)
 
