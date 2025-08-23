@@ -10,7 +10,6 @@ export async function getMatches(app: FastifyInstance) {
 				where: { username: username }
 			})
 			if (!userObject) {
-				console.log(`[getMatches] User not found: ${username}`)
 				return res.status(404).send({error: 'username not found in database'})
 			}
 			
@@ -39,7 +38,6 @@ export async function getMatches(app: FastifyInstance) {
 				const opponent = match.matchParticipant.find(p => p.userId !== userObject.id || p.userId == null ) 
 				
 				if (!currentUser || !opponent) {
-					console.warn(`[getMatches] Invalid match ${match.id} - missing participants`)
 					return null
 				}
 				let result: string
@@ -57,8 +55,6 @@ export async function getMatches(app: FastifyInstance) {
 					dateTime: match.date
 				}
 			})
-
-			console.log(`[getMatches] Returning ${formattedMatches.length} formatted matches`)
 			return res.status(200).send({ matches: formattedMatches })
 		} catch(error) {
 			console.error('Error in getMatches:', error)

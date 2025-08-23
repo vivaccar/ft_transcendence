@@ -1,8 +1,9 @@
 import { FastifyInstance } from "fastify"
 import { z } from 'zod'
+import { inviteFriendSwaggerSchema } from "../../schemaSwagger/inviteFriendSchema"
 
 export async function inviteFriend(app: FastifyInstance) {
-	app.post('/inviteFriend', { preHandler: [app.authenticate] }, /*  { schema: registerMatchSwaggerSchema }, */ async(req, res) => {
+	app.post('/inviteFriend', { preHandler: [app.authenticate], schema: inviteFriendSwaggerSchema }, async(req, res) => {
 		const friendSchema = z.object({
 			newFriend: z.string(),
 		})
@@ -14,6 +15,9 @@ export async function inviteFriend(app: FastifyInstance) {
 			
 			if (!newFriend) {
 				 return res.status(404).send({ error: "User not found in database" })
+			}
+			if (newFriend.id == currentUser.id) {
+				 return res.status(404).send({ error: "User cannot request friendship with yourself" })
 			}
 			
 			const existingFriendship = await app.prisma.friendship.findFirst({ 
