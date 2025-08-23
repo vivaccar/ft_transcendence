@@ -2,26 +2,25 @@ import { FastifyInstance } from "fastify"
 import { z } from 'zod'
 
 export async function inviteFriend(app: FastifyInstance) {
-	app.post('/inviteFriend',/*  { schema: registerMatchSwaggerSchema }, */ async(req, res) => {
+	app.post('/inviteFriend', { preHandler: [app.authenticate] }, /*  { schema: registerMatchSwaggerSchema }, */ async(req, res) => {
 		const friendSchema = z.object({
-			friendA: z.string(),
-			friendB: z.string(),
+			newFriend: z.string(),
 		})
     	try {
 			const body = friendSchema.parse(req.body) // faz o parse do request body, deixando o corpo da requisicao tipado e seguro para ser utilizado
 			
-			const userA = app.prisma.user.findUnique({where: { username: body.friendA }})
-			const userB = app.prisma.user.findUnique({where: { username: body.friendB }})
+			const currentUser = req.user
+			const newFriend = await app.prisma.user.findUnique({where: { username: body.newFriend }})
 			
-			if (!userA || !userB) {
-				 return res.status(404).send({ error: "One or more users not found in database" })
+			if (!newFriend) {
+				 return res.status(404).send({ error: "User not found in database" })
 			}
 			
 			const existingFriendship = await app.prisma.friendship.findFirst({ 
 				where: {
 					OR: [
-						{ friendAId: userA.id, friendBId: userB.id },
-						{ friendAId: userB.id, friendBId: userA.id }
+						{ friendAId: currentUser.id, friendBId: newFriend.id },
+						{ friendAId: newFriend.id, friendBId: currentUser.id }
 					]
 				}});
 			if (existingFriendship) {
@@ -30,14 +29,14 @@ export async function inviteFriend(app: FastifyInstance) {
 
 			const friendship = await app.prisma.friendship.create ({
 				data: {
-					friendA: {connect: { username: body.friendA }},
-					friendB: {connect: { username: body.friendB }},
+					friendA: {connect: { id: currentUser.id }},
+					friendB: {connect: { id: newFriend.id }},
 					status: "pending"
 				}
 			})
 			return res.status(201).send({
-				friendA: body.friendA,
-				friendB: body.friendB,
+				friendA: currentUser.username,
+				friendB: newFriend.username,
 				status: "pending"
 			})
 		} catch(err) {
