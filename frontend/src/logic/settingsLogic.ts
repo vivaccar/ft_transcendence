@@ -31,12 +31,13 @@ export async function setupSettingsLogic(elements: ReturnType<typeof createSetti
       if (!res.ok) throw new Error('Failed to fetch user data');
       const data = await res.json();
 
-
       emailInput.value = data.email || '';
       usernameInput.value = data.username || '';
-      img.src = data.avatar || "/images/randomAvatar/0.jpeg"; 
+      // img.src = data.avatar || "/images/randomAvatar/0.jpeg"; 
+      // console.log('a', img);
       toggleInput2FA.checked = data.has2fa || false;
       sessionStorage.setItem('id', data.id);
+      sessionStorage.setItem('googleUser', data.googleUser);
       oldPasswordInput.value = '';
 
       currentUsername = data.username || ''; 

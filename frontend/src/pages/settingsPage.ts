@@ -83,7 +83,6 @@ export function createSettingsUI(): {
 	setupAvatarControls(img, btnUpload, btnRandom);
   
 	// form
-	// form
 	const form = document.createElement("form");
 	form.className = "flex flex-col gap-2 p-4 pt-0 font-orbitron";
 
@@ -174,9 +173,12 @@ export function createSettingsUI(): {
 
 		usernameInput.className = 'inputUnblocked';
 		usernameInput.disabled = false;
-		oldPasswordInput.classList.remove('hidden');
-		passwordInput.classList.remove('hidden');
-		confirmPasswordInput.classList.remove('hidden');
+		if (sessionStorage.getItem('googleUser') === 'false'){
+
+			oldPasswordInput.classList.remove('hidden');
+			passwordInput.classList.remove('hidden');
+			confirmPasswordInput.classList.remove('hidden');
+		} 
 		submitBtn.classList.remove('hidden');
 		editBtn.classList.add('hidden');
 	});
