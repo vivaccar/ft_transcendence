@@ -30,8 +30,19 @@ const tournamentGameArea: GameArea = {
         lastTime = performance.now();
         animationFrameId = requestAnimationFrame(updateTournamentGameArea);
     },
-    clear() { if (this.context && this.canvas) this.context.clearRect(0, 0, this.canvas.width, this.canvas.height); },
-    stop() { if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; } this.state = 'ended'; },
+    clear() { 
+        if (this.context && this.canvas) 
+            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height); 
+        },
+    stop() {
+        console.log("Entoru no STOP");
+        if (animationFrameId) { 
+            cancelAnimationFrame(animationFrameId); 
+            animationFrameId = null; 
+        } 
+        console.log("ENDED");
+        this.state = 'ended'; 
+    },
 };
 
 // ✅ FUNÇÃO DE TRANSIÇÃO (Lógica do Cérebro do Torneio - Parte 1)
@@ -116,17 +127,29 @@ function tournamentCheckScore() {
     let winnerName: string | null = null;
     const p1Name = sessionStorage.getItem('playerName1')!;
     const p2Name = sessionStorage.getItem('playerName2')!;
+
+    // Encontra os elementos do placar uma vez
+    const p1ScoreElement = document.getElementById('game-player1-score');
+    const p2ScoreElement = document.getElementById('game-player2-score');
+
     if (ball.x - ball.size < 0) {
         player2.score++;
-        (document.getElementById('game-player2-score')!).textContent = player2.score.toString();
+        // VERIFICA SE O ELEMENTO EXISTE ANTES DE O USAR
+        if (p2ScoreElement) {
+            p2ScoreElement.textContent = player2.score.toString();
+        }
         if (player2.score >= winningScore) winnerName = p2Name;
         else ball.reset();
     } else if (ball.x + ball.size > tournamentGameArea.canvas!.width) {
         player1.score++;
-        (document.getElementById('game-player1-score')!).textContent = player1.score.toString();
+        // VERIFICA SE O ELEMENTO EXISTE ANTES DE O USAR
+        if (p1ScoreElement) {
+            p1ScoreElement.textContent = player1.score.toString();
+        }
         if (player1.score >= winningScore) winnerName = p1Name;
         else ball.reset();
     }
+    
     if (winnerName) tournamentEndGame(winnerName);
 }
 
@@ -176,7 +199,8 @@ function checkCollisions() {
 }
 
 function updateTournamentGameArea(currentTime: number) {
-    if (tournamentGameArea.state !== 'playing') return;
+    if (tournamentGameArea.state !== 'playing') 
+        return;
     const deltaTime = (currentTime - lastTime) / 1000;
     lastTime = currentTime;
     handleInput(deltaTime);

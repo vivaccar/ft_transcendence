@@ -57,7 +57,7 @@ function makeAIDecision() {
     }
 
     // Margem de erro, pra IA ficar imperfeita.
-    const errorMargin = (Math.random() - 0.5) * player2.height * 1.5;
+    const errorMargin = (Math.random() - 0.5) * player2.height * 2;
     aiTargetY = predictedY + errorMargin;
 }
 
