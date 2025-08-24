@@ -1,9 +1,9 @@
 import { FastifyInstance } from "fastify"
 import { z } from 'zod'
-import { inviteFriendSwaggerSchema } from "../../schemaSwagger/inviteFriendSchema"
+//import { inviteFriendSwaggerSchema } from "../../schemaSwagger/inviteFriendSchema"
 
-export async function inviteFriend(app: FastifyInstance) {
-	app.post('/inviteFriend', { preHandler: [app.authenticate], schema: inviteFriendSwaggerSchema }, async(req, res) => {
+export async function acceptInvite(app: FastifyInstance) {
+	app.patch('/acceptInvite', { preHandler: [app.authenticate]/* , schema: inviteFriendSwaggerSchema  */}, async(req, res) => {
 		const friendSchema = z.object({
 			newFriend: z.string(),
 		})
@@ -16,24 +16,19 @@ export async function inviteFriend(app: FastifyInstance) {
 			if (!newFriend) {
 				 return res.status(404).send({ error: "User not found in database" })
 			}
-			if (newFriend.id == currentUser.id) {
-				 return res.status(404).send({ error: "User cannot request friendship with yourself" })
-			}
 			
-			const existingFriendship = await app.prisma.friendship.findFirst({ 
+			const existingFriendship = await app.prisma.friendship.update({ 
 				where: {
 					OR: [
 						{ friendAId: currentUser.id, friendBId: newFriend.id },
 						{ friendAId: newFriend.id, friendBId: currentUser.id }
 					]
 				}});
-			if (existingFriendship) {
-				return res.status(409).send({ error: "Friendship already exists between these users"})
+			if (!existingFriendship) {
+				return res.status(409).send({ error: "Friendship not found in database"})
 			}
 
-			//arrumar aqui
-			const [id1. ]
-			const friendship = await app.prisma.friendship.create ({
+			const friendship = await app.prisma.friendship.update ({
 				data: {
 					friendA: {connect: { id: currentUser.id }},
 					friendB: {connect: { id: newFriend.id }},
