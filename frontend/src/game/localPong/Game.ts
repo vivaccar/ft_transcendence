@@ -176,6 +176,7 @@ function checkCollisions() {
         ball.y - ball.size < player1.y + player1.height) 
     {
         ball.x = player1.x + player1.width + ball.size; //reposiciona para evitar que a bola entre na raquete
+        //varaivel pra contar toque pro player 1
         ball.speedX *= -1;
     }
 
@@ -187,6 +188,7 @@ function checkCollisions() {
     {
         
         ball.x = player2.x - ball.size;
+        //varaivel pra contar toque pro player 1
         ball.speedX *= -1;
     }
 }
@@ -321,6 +323,7 @@ export function initializeLocalGame(containerId: string, width: number, height: 
 
     const paddleWidth = 10, paddleHeight = 100, paddleSpeed = 300;
     const ballSize = 10, ballSpeed = 300;
+    //ARRUMAR UM JEITO DE COLOCAR UM NICK NO USUARIO PARA INTEGRACAO COM BACKEND
     player1 = new Paddle(paddleWidth, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP1') || 'white');
     player2 = new Paddle(myGameArea.canvas.width - paddleWidth * 2, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP2') || 'white');
     ball = new Ball(myGameArea.canvas.width / 2, myGameArea.canvas.height / 2, ballSize, ballSpeed, myGameArea.canvas);
