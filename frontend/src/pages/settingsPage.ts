@@ -49,7 +49,7 @@ export function createSettingsUI(): {
 	profileSection.className = "flex items-center mb-2 gap-6 p-8 pb-4";
   
 	const img = document.createElement("img");
-	img.src = "/images/randomAvatar/0.jpeg";
+	// img.src = "/images/randomAvatar/0.jpeg";
 	img.className = "w-32 h-32 object-cover rounded-full border-4 border-gray-300";
 	profileSection.appendChild(img);
   

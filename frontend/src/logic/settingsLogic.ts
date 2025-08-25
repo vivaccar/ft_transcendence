@@ -2,6 +2,7 @@ import { createSettingsUI } from "../pages/settingsPage";
 import { API_ROUTES } from "../config";
 import { getToken } from "../auth/authService";
 import { setup2FA } from "../auth/2fa";
+import { setUserInfo } from "../utils";
 
 export async function setupSettingsLogic(elements: ReturnType<typeof createSettingsUI>) {
   const { 
@@ -35,9 +36,6 @@ export async function setupSettingsLogic(elements: ReturnType<typeof createSetti
       usernameInput.value = data.username || '';
       img.src = data.avatar ? `${data.avatar}?t=${Date.now()}` : "/images/randomAvatar/0.jpeg";
       toggleInput2FA.checked = data.has2fa || false;
-      sessionStorage.setItem('id', data.id);
-      sessionStorage.setItem('username', data.username);
-      sessionStorage.setItem('googleUser', data.googleUser);
       oldPasswordInput.value = '';
 
       currentUsername = data.username || ''; 
@@ -107,6 +105,7 @@ export async function setupSettingsLogic(elements: ReturnType<typeof createSetti
 		  confirmPasswordInput.classList.add('hidden');
 		  submitBtn.classList.add('hidden');
 		  editBtn.classList.remove('hidden');
+      setUserInfo();
 
     } catch (err) {
       alert("Unexpected error: " + err);

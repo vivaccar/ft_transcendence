@@ -32,7 +32,7 @@ export async function inviteFriend(app: FastifyInstance) {
 			}
 
 			//arrumar aqui
-			const [id1. ]
+			// const [id1. ]
 			const friendship = await app.prisma.friendship.create ({
 				data: {
 					friendA: {connect: { id: currentUser.id }},

@@ -1,7 +1,9 @@
 import { Navbar } from '../components/Navbar';
 import { navigate } from '../router';
+import { setUserInfo } from '../utils';
 
 export function buildDashboard(): void {
+	setUserInfo();
 	const title = document.getElementById('pongTitle');
 	title?.remove();
 	

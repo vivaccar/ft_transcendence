@@ -1,17 +1,18 @@
 import { renderPage } from "../utils";
+import { getMatches, getUserStats } from "../logic/statisticLogic";
 
-export function buildStatisticsPage(): void {
+export async function buildStatisticsPage(): Promise<void> {
 	const container = document.createElement("div");
 	container.className = "flex flex-col items-center justify-center h-screen gap-6";
 
 	renderPage(container);
 
-	const statisticsUI = createStatisticsUI();
+	const statisticsUI = await createStatisticsUI();
 
 	container.appendChild(statisticsUI.container);
 }
 
-function createStatisticsUI(): {container: HTMLDivElement} {
+async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
     const container = document.createElement("div");
     container.className = "flex items-center justify-center w-screen h-[calc(100vh-64px)] gap-6";
 
@@ -31,10 +32,9 @@ function createStatisticsUI(): {container: HTMLDivElement} {
 	pnheaderBar.appendChild(personalNbrTitle);
 	personalNbrBox.insertBefore(pnheaderBar, personalNbrBox.firstChild);
 
-	// exemplo, depois vai mudar para a logica do backend
-	const stats = { wins: 7, losses: 3 };
+	const stats = await getUserStats();
 	const total = stats.wins + stats.losses;
-	const winPercent = (stats.wins / total) * 100;
+	const winPercent = total > 0 ? (stats.wins / total) * 100 : 0;
 	const lossPercent = 100 - winPercent;
 
 	// Texto mostrando total de partidas
@@ -132,26 +132,7 @@ function createStatisticsUI(): {container: HTMLDivElement} {
     lastGamesTable.style.width = "100%";
     lastGamesTable.style.borderCollapse = "collapse";
 
-    const games = [
-        { result: "Win", you: 3, friend: 0, friendName: "Alice" },
-        { result: "Loss", you: 1, friend: 2, friendName: "Bob" },
-        { result: "Win", you: 2, friend: 1, friendName: "Charlie" },
-		{ result: "Win", you: 3, friend: 0, friendName: "Alice" },
-        { result: "Loss", you: 1, friend: 2, friendName: "Bob" },
-        { result: "Win", you: 2, friend: 1, friendName: "Charlie" },
-		{ result: "Win", you: 3, friend: 0, friendName: "Alice" },
-        { result: "Loss", you: 1, friend: 2, friendName: "Bob" },
-        { result: "Win", you: 2, friend: 1, friendName: "Charlie" },
-		{ result: "Win", you: 3, friend: 0, friendName: "Alice" },
-        { result: "Loss", you: 1, friend: 2, friendName: "Bob" },
-        { result: "Win", you: 2, friend: 1, friendName: "Charlie" },
-		{ result: "Win", you: 3, friend: 0, friendName: "Alice" },
-        { result: "Loss", you: 1, friend: 2, friendName: "Bob" },
-        { result: "Win", you: 2, friend: 1, friendName: "Charlie" },
-		{ result: "Win", you: 3, friend: 0, friendName: "Alice" },
-        { result: "Loss", you: 1, friend: 2, friendName: "Bob" },
-        { result: "Win", you: 2, friend: 1, friendName: "Charlie" },
-    ];
+    const games = await getMatches();
 
 	games.forEach((game) => {
 		const row = document.createElement("tr");
