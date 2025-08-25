@@ -1,65 +1,46 @@
-import { int } from "zod";
-
 export const registerMatchSwaggerSchema = {
   tags: ['Match'],
-  summary: 'Register',
+  summary: 'Register match with possible local player',
   body: {
     type: 'object',
-    required: ['date', 'matchParticipant'],
+    required: ['date', 'participants'],
     properties: {
       date: {
         type: 'string',
-        description: 'match date'
+        format: 'date-time',
+        description: 'Match date'
       },
-      matchParticipant: {
+      participants: {
         type: 'array',
-        description: 'Array of objects containing userId, matchId and goals',
+        description: 'Exactly two participants, each can be a registered user or a local player',
+        minItems: 2,
+        maxItems: 2,
         items: {
           type: 'object',
-          required: ['userId', 'matchId', 'goals'],
+          required: ['username', 'goals'],
           properties: {
-            userId: {
-              type: 'number',
-              description: 'User ID'
-            },
-            matchId: {
-              type: 'number',
-              description: 'Match ID'
-            },
-            goals: {
-              type: 'number',
-              description: 'Goals that user scored'
-            }
-		}
-	}
-    },
+            username: { type: 'string', description: 'Username or name of the player' },
+            goals: { type: 'integer', minimum: 0, description: 'Goals scored by the player' },
+            isLocal: { type: 'boolean', description: 'True if the player is local (not registered)', default: false }
+          }
+        }
+      }
+    }
   },
-},
   response: {
     201: {
       description: 'Register OK',
       type: 'object',
       properties: {
-        matchId: {
-          type: 'number',
-          description: 'Match id',
-        },
-        playerOne: {
-            type: 'string',
-            description: 'Player One',
-        },
-		playerTwo: {
-            type: 'string',
-            description: 'Player Two',
-        }
-      },
+        matchId:   { type: 'number', description: 'Match id' },
+        playerOne: { type: 'string', description: 'Player One username or local name' },
+        playerTwo: { type: 'string', description: 'Player Two username or local name' }
+      }
     },
     400: {
       description: 'Validation error: Bad Request',
       type: 'object',
-      properties: {
-        message: { type: 'string' },
-      },
-    },
-  },
-};
+      properties: { message: { type: 'string' } }
+    }
+  }
+}
