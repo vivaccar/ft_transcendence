@@ -5,3 +5,5 @@ user-service/node_modules/
 frontend-service/
 
 Subject/
+
+backend/prisma/dev.db
