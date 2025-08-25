@@ -222,7 +222,7 @@ function checkScore() {
     }
 }
 
-function endGame(winnerName: string) {
+async function endGame(winnerName: string) {
     myGameArea.stop();
 
     // 2. Encontra os elementos HTML que vamos manipular
@@ -235,6 +235,33 @@ function endGame(winnerName: string) {
         
         // Remove a classe "hidden" para mostrar o overlay
         gameOverScreen.classList.remove('hidden');
+    }
+
+    const matchData = {
+        date: "test",
+        matchParticipant: [
+            {
+                userId: 0,
+                matchId: 0,
+                goals: 2
+            },
+            {
+                userId: 1,
+                matchId: 2,
+                goals: 4
+            }
+        ]
+    }
+    
+    try {
+        await fetch('/api/matches', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(matchData),
+        });
+        console.log("Partida salva com sucesso!");
+    } catch (err) {
+        console.error("Erro ao salvar partida:", err);
     }
 }
 

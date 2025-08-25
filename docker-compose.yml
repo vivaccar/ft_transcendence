@@ -14,7 +14,6 @@ services:
         dockerfile: Dockerfile
       container_name: frontend
       ports:
-        - "8080:80"
         - "443:443"
       restart: unless-stopped
       networks:
