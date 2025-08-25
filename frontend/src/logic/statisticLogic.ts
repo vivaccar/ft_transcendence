@@ -35,7 +35,7 @@ export async function getMatches(): Promise<Game[]> {
 		you: match.goalsUser,
 		friend: match.goalsOpponent,
 		friendName: match.opponent,
-		// date: new Date(match.dateTime),
+		date: new Date(match.dateTime),
 	  }));
   
 	  return games;
@@ -43,4 +43,4 @@ export async function getMatches(): Promise<Game[]> {
 	  console.error("Erro em getMatches:", error);
 	  return [];
 	}
-  }
+}

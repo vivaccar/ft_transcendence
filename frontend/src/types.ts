@@ -19,4 +19,5 @@ export interface Game {
 	you: number;
 	friend: number;
 	friendName: string;
-  }
+	dateTime: Date;
+}
