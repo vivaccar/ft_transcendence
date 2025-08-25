@@ -33,10 +33,10 @@ export async function setupSettingsLogic(elements: ReturnType<typeof createSetti
 
       emailInput.value = data.email || '';
       usernameInput.value = data.username || '';
-      // img.src = data.avatar || "/images/randomAvatar/0.jpeg"; 
-      // console.log('a', img);
+      img.src = data.avatar ? `${data.avatar}?t=${Date.now()}` : "/images/randomAvatar/0.jpeg";
       toggleInput2FA.checked = data.has2fa || false;
       sessionStorage.setItem('id', data.id);
+      sessionStorage.setItem('username', data.username);
       sessionStorage.setItem('googleUser', data.googleUser);
       oldPasswordInput.value = '';
 

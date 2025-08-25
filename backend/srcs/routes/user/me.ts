@@ -13,7 +13,10 @@ export async function me(app: FastifyInstance) {
         }
         
         const backendUrl = process.env.BACKEND_URL
-        const avatarUrl = `${backendUrl}/users/${user.id}/avatar`;
+        // const avatarUrl = `${backendUrl}/users/${user.id}/avatar`;
+        const avatarUrl = user.avatar
+            ? `${backendUrl}/users/${user.id}/avatar`
+            : `/images/randomAvatar/0.jpeg`;
         if (user.passwordHash) {
             var googleUser = false
         }
