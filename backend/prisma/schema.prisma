@@ -43,6 +43,7 @@ model MatchParticipant { //intermediary table to relate users to matches (many-t
 	matchId				Int //foreign key
 
 	goals				Int
+	touches				Int @default(0)
 }
 
 model	Friendship {

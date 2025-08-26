@@ -1,7 +1,8 @@
 import { FastifyInstance } from "fastify"
+import { getInvitesSwaggerSchema } from "../../schemaSwagger/getInvitesSchema"
 
 export async function getInvites(app: FastifyInstance) {
-	app.get('/users/:username/getInvites',/*  { schema: registerMatchSwaggerSchema }, */ async(req, res) => {
+	app.get('/users/:username/getInvites', { preHandler: [app.authenticate], schema: getInvitesSwaggerSchema }, async(req, res) => {
 		const { username } = req.params as { username: string }
 		try {
 			const userObject = await app.prisma.user.findUnique ({
