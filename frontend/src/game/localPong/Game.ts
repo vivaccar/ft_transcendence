@@ -236,29 +236,28 @@ async function endGame(winnerName: string) {
         // Remove a classe "hidden" para mostrar o overlay
         gameOverScreen.classList.remove('hidden');
     }
-
-    const matchData = {
-        date: "test",
-        matchParticipant: [
-            {
-                userId: 0,
-                matchId: 0,
-                goals: 2
-            },
-            {
-                userId: 1,
-                matchId: 2,
-                goals: 4
-            }
-        ]
-    }
     
     try {
-        await fetch('/api/matches', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(matchData),
-        });
+        await fetch("/api/registerMatch", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      date: "2025-08-26T15:00:00Z", // precisa ser ISO 8601
+      participants: [
+        {
+          username: "vini",
+          goals: 2,
+          isLocal: true
+        },
+        {
+          username: "vinicius10",
+          goals: 1,
+          isLocal: false
+        }
+      ]
+    })})
         console.log("Partida salva com sucesso!");
     } catch (err) {
         console.error("Erro ao salvar partida:", err);
