@@ -16,4 +16,7 @@ export const API_ROUTES = {
 	enable2FA: `${BACKEND_URL}/2fa/enable`,
 	disable2FA: `${BACKEND_URL}/2fa/disable`,
 	verify2FA: `${BACKEND_URL}/2fa/verify`,
+
+	getMatches: (username: string) => `${BACKEND_URL}/users/${username}/getMatches`,
+	getWinsAndLosses: (username: string) => `${BACKEND_URL}/users/${username}/getWinsAndLosses`,
 };
