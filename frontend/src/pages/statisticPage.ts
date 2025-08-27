@@ -162,7 +162,13 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	    score.className = "text-gray-600 font-orbitron";
 
 	    const date = document.createElement("p");
-	    date.textContent = `Date: ${new Date(game.dateTime).toLocaleString()}`;
+	    date.textContent = `Date: ${game.dateTime.toLocaleString("pt-PT", {
+			day: "2-digit",
+			month: "2-digit",
+			year: "numeric",
+			hour: "2-digit",
+			minute: "2-digit"
+		  })}`;
 	    date.className = "text-gray-600 font-orbitron";
 
 		const touches = document.createElement("p");
