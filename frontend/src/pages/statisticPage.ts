@@ -172,7 +172,7 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	    date.className = "text-gray-600 font-orbitron";
 
 		const touches = document.createElement("p");
-	    touches.textContent = `Touches: You 6 x 3 ${game.friendName}`; //fake data
+	    touches.textContent = `Touches: You ${game.touchesUser} x ${game.touchesOpponent} ${game.friendName}`; //fake data
 	    touches.className = "text-gray-600 font-orbitron";
 
 	    const closeBtn = document.createElement("button");

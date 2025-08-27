@@ -35,6 +35,8 @@ export async function getMatches(): Promise<Game[]> {
 		you: match.goalsUser,
 		friend: match.goalsOpponent,
 		friendName: match.opponent,
+		touchesOpponent: match.touchesOpponent,
+		touchesUser: match.touchesUser,
 		dateTime: new Date(match.dateTime),
 	  }));
   
