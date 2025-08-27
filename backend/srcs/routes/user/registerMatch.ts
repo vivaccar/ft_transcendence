@@ -7,7 +7,7 @@ export async function registerMatch(app: FastifyInstance) {
 		const matchSchema = z.object({
 			date: z.string(),
 			participants: z.array(z.object({
-				username: z.string(),
+				username: z.string().optional(),
 				goals: z.number().int().min(0),
 				isLocal: z.boolean().optional().default(false),
 				touches: z.number().int().min(0)
@@ -30,7 +30,7 @@ export async function registerMatch(app: FastifyInstance) {
 							} else {
 								return { user: {connect: {username: p.username}}, goals: p.goals, touches: p.touches}	
 							}
-						}) 
+						})
 					}
 				},
 				include: {

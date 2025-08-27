@@ -27,6 +27,7 @@ export async function setupSettingsLogic(elements: ReturnType<typeof createSetti
         headers: {
           'Content-Type': 'application/json'
         },
+        credentials: "include",
       });
       if (!res.ok) throw new Error('Failed to fetch user data');
       const data = await res.json();

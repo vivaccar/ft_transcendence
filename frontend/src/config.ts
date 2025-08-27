@@ -11,6 +11,7 @@ export const API_ROUTES = {
 	uploadAvatar: `${BACKEND_URL}/uploadAvatar`,
 	username: `${BACKEND_URL}/user/username`,
 	password: `${BACKEND_URL}/user/password`,
+	registerMatch: `${BACKEND_URL}/registerMatch`,
 	
 	setup2FA: `${BACKEND_URL}/2fa/setup`,
 	enable2FA: `${BACKEND_URL}/2fa/enable`,

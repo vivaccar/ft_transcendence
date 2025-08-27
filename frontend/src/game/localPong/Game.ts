@@ -1,6 +1,7 @@
 import { Ball } from './Ball';
 import { Paddle } from './Paddle';
 import { createGameUI } from '../../components/localGameUi';
+import { API_ROUTES } from '../../config';
 
 // --- TIPOS E ESTADO GLOBAL DO MÓDULO ---
 type GameArea = {
@@ -176,7 +177,7 @@ function checkCollisions() {
         ball.y - ball.size < player1.y + player1.height) 
     {
         ball.x = player1.x + player1.width + ball.size; //reposiciona para evitar que a bola entre na raquete
-        //varaivel pra contar toque pro player 1
+        player1.touches++;
         ball.speedX *= -1;
     }
 
@@ -188,7 +189,7 @@ function checkCollisions() {
     {
         
         ball.x = player2.x - ball.size;
-        //varaivel pra contar toque pro player 1
+        player2.touches++;
         ball.speedX *= -1;
     }
 }
@@ -238,23 +239,25 @@ async function endGame(winnerName: string) {
     }
     
     try {
-        await fetch("/api/registerMatch", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+        await fetch(`${API_ROUTES.registerMatch}`, {
+        method: "POST",
+        headers: {
+        "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      date: "2025-08-26T15:00:00Z", // precisa ser ISO 8601
+      date: new Date().toISOString(), // precisa ser ISO 8601
       participants: [
         {
-          username: "vini",
-          goals: 2,
-          isLocal: true
+          username: player1.name,
+          goals: player1.score,
+          isLocal: false,
+          touches: player1.touches
         },
         {
-          username: "vinicius10",
-          goals: 1,
-          isLocal: false
+          username: player2.name,
+          goals: player2.score,
+          isLocal: true,
+          touches: player2.touches
         }
       ]
     })})
@@ -291,6 +294,8 @@ function restartGame(): void {
             lastGameSettings.width,
             lastGameSettings.height,
             lastGameSettings.mode,
+            player1.name,
+            player2.name
         );
     } else {
         console.error('Não foi possível reiniciar o jogo: as configurações iniciais não foram encontradas.');
@@ -311,7 +316,7 @@ function cleanupGame(): void {
     window.removeEventListener('keyup', handleKeyUp);
 }
 
-export function initializeLocalGame(containerId: string, width: number, height: number, mode: string) {
+export function initializeLocalGame(containerId: string, width: number, height: number, mode: string, player1Name: string, player2Name: string) {
     cleanupGame();
 
     currentGameMode = mode;
@@ -350,8 +355,8 @@ export function initializeLocalGame(containerId: string, width: number, height: 
     const paddleWidth = 10, paddleHeight = 100, paddleSpeed = 300;
     const ballSize = 10, ballSpeed = 300;
     //ARRUMAR UM JEITO DE COLOCAR UM NICK NO USUARIO PARA INTEGRACAO COM BACKEND
-    player1 = new Paddle(paddleWidth, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP1') || 'white');
-    player2 = new Paddle(myGameArea.canvas.width - paddleWidth * 2, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP2') || 'white');
+    player1 = new Paddle(paddleWidth, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP1') || 'white', player1Name);
+    player2 = new Paddle(myGameArea.canvas.width - paddleWidth * 2, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP2') || 'white', player2Name);
     ball = new Ball(myGameArea.canvas.width / 2, myGameArea.canvas.height / 2, ballSize, ballSpeed, myGameArea.canvas);
 
     window.addEventListener('keydown', handleKeyDown);
