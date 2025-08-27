@@ -20,4 +20,13 @@ export function getCookieValue(name: string): string | null {
 	  if (key === name) return decodeURIComponent(value);
 	}
 	return null;
-  }
+}
+
+export async function setUserInfo() {
+	const res = await fetch("/api/me");
+	if (!res.ok) throw new Error("Failed to fetch user profile");
+	const data = await res.json();
+	sessionStorage.setItem('username', data.username) ;
+	sessionStorage.setItem('userId', data.id);
+	sessionStorage.setItem('googleUser', data.googleUser);
+}

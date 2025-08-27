@@ -10,7 +10,9 @@ import { buildFriendsPage } from "./pages/friendsPage";
 import { buildRemoteGamePage } from "./pages/remoteGamePage";
 import { buildNotFoundPage } from "./pages/notFoundPage";
 import { protectedRoute } from "./logic/authLogic";
+import { logoutLogic } from "./logic/authLogic";
 // import { setupSettingsLogic } from "./logic/settingsLogic";
+import { buildTournamentsPage } from "./pages/tournamentPage";
 
 const routes: Record<string, () => void | Promise<void>> = {
   "/": protectedRoute(() => {
@@ -31,7 +33,7 @@ const routes: Record<string, () => void | Promise<void>> = {
     buildDashboard();
   }),
   "/ai-game": protectedRoute(() => {
-    buildGamePageManVsManLocal("human");
+    buildGamePageManVsManLocal("ai");
   }),
   "/human-game-local": protectedRoute(() => {
     buildGamePageManVsManLocal("human");
@@ -50,6 +52,12 @@ const routes: Record<string, () => void | Promise<void>> = {
   }),
   "/friends": protectedRoute(() => {
     buildFriendsPage();
+  }),
+  "/tournament": protectedRoute(() => {
+    buildTournamentsPage("tournament");
+  }),
+  "/logout": protectedRoute(() => {
+    logoutLogic();
   }),
 };
 

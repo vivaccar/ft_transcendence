@@ -13,13 +13,20 @@ export async function me(app: FastifyInstance) {
         }
         
         const backendUrl = process.env.BACKEND_URL
-        const avatarUrl = `${backendUrl}/users/${user.id}/avatar`;
+        const avatarUrl = `${backendUrl}/users/${user.username}/avatar`;
+        if (user.passwordHash) {
+            var googleUser = false
+        }
+        else {
+            googleUser = true
+        }
 
         return reply.status(200).send({
             id: user.id,
             username: user.username,
             email: user.email,
-            avatar: avatarUrl
+            avatar: avatarUrl,
+            googleUser: googleUser
         })
     })
 }

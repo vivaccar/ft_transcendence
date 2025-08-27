@@ -16,7 +16,7 @@ export function buildRemoteGamePage(): void {
 
 function createRemoteGameUI(): {container: HTMLDivElement} {
 	const container = document.createElement("div");
-    container.className = "flex items-center justify-center w-screen h-screen gap-6";
+    container.className = "flex items-center justify-center w-screen h-[calc(100vh-64px)] gap-6";
 
 	const cards = [
 		{ title: 'Host', imgSrc: '/images/remoteGame/host.jpeg', action: buildHostPage },

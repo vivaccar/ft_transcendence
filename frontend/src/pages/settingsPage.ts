@@ -21,10 +21,12 @@ export function createSettingsUI(): {
 	passwordInput: HTMLInputElement,
 	confirmPasswordInput: HTMLInputElement,
 	submitBtn: HTMLButtonElement,
-	toggleInput2FA: HTMLInputElement
+	editBtn: HTMLButtonElement,
+	toggleInput2FA: HTMLInputElement,
+	oldPasswordInput: HTMLInputElement
   } {
 	const container = document.createElement("div");
-	container.className = "flex flex-col items-center justify-center h-screen gap-6";
+	container.className = "flex flex-col items-center justify-center h-[calc(100vh-64px)] gap-4";
   
 	const box = document.createElement("div");
 	box.className = "bg-white text-gray-900 rounded-xl shadow-lg w-full max-w-2xl";
@@ -44,10 +46,10 @@ export function createSettingsUI(): {
   
 	// profile section
 	const profileSection = document.createElement("div");
-	profileSection.className = "flex items-center mb-10 gap-10 p-8";
+	profileSection.className = "flex items-center mb-2 gap-6 p-8 pb-4";
   
 	const img = document.createElement("img");
-	img.src = "/images/randomAvatar/0.jpeg";
+	// img.src = "/images/randomAvatar/0.jpeg";
 	img.className = "w-32 h-32 object-cover rounded-full border-4 border-gray-300";
 	profileSection.appendChild(img);
   
@@ -82,37 +84,50 @@ export function createSettingsUI(): {
   
 	// form
 	const form = document.createElement("form");
-	form.className = "flex flex-col gap-4 p-8 pt-0 font-orbitron";
-  
+	form.className = "flex flex-col gap-2 p-4 pt-0 font-orbitron";
+
+	// Email
 	const emailInput = document.createElement("input");
 	emailInput.type = "email";
 	emailInput.placeholder = "Email";
-	emailInput.className = "p-2 rounded bg-gray-100 border border-gray-300";
+	emailInput.className = "inputBlocked";
+	emailInput.disabled = true;
 	form.appendChild(emailInput);
-  
+
+	// Username
 	const usernameInput = document.createElement("input");
 	usernameInput.type = "text";
 	usernameInput.placeholder = "Username";
-	usernameInput.className = "p-2 rounded bg-gray-100 border border-gray-300";
+	usernameInput.className = "inputBlocked";
+	usernameInput.disabled = true;
+
 	form.appendChild(usernameInput);
-  
+
+	// Current Password
+	const oldPasswordInput = document.createElement("input");
+	oldPasswordInput.type = "password";
+	oldPasswordInput.placeholder = "Current Password";
+	oldPasswordInput.className = "p-2 rounded bg-gray-100 border border-gray-300 hidden";
+	form.appendChild(oldPasswordInput);
+
+	// New Password
 	const passwordInput = document.createElement("input");
 	passwordInput.type = "password";
 	passwordInput.placeholder = "New Password";
-	passwordInput.className = "p-2 rounded bg-gray-100 border border-gray-300";
+	passwordInput.className = "p-2 rounded bg-gray-100 border border-gray-300 hidden";
 	form.appendChild(passwordInput);
-  
+
+	// Confirm Password
 	const confirmPasswordInput = document.createElement("input");
 	confirmPasswordInput.type = "password";
 	confirmPasswordInput.placeholder = "Confirm Password";
-	confirmPasswordInput.className = "p-2 rounded bg-gray-100 border border-gray-300";
+	confirmPasswordInput.className = "p-2 rounded bg-gray-100 border border-gray-300 hidden";
 	form.appendChild(confirmPasswordInput);
-  
+
 	box.appendChild(form);
-  
 	// 2FA toggle
 	const twoFAContainer = document.createElement("div");
-	twoFAContainer.className = "flex items-center mt-4 gap-6 p-8 pt-0";
+	twoFAContainer.className = "flex items-center mt-4 gap-6 p-4 pb-0 pt-0";
   
 	const twoFAText = document.createElement("span");
 	twoFAText.textContent = "Enable 2FA";
@@ -148,17 +163,42 @@ export function createSettingsUI(): {
 	// submit button
 	const submitBtn = document.createElement("button");
 	submitBtn.textContent = "Submit";
-	submitBtn.className = "px-5 py-2 bg-[#5FBE00] text-lg font-orbitron font-bold text-white rounded hover:bg-[#133A58] transition";
-	container.appendChild(submitBtn);
+	submitBtn.className = 'px-6 py-3 bg-[#174B7A] font-orbitron font-bold text-white rounded-lg shadow-md hover:bg-[#133A58] active:bg-[#0F2A3D] transition-colors duration-200 mt-6 self-center hidden';
+
+	const editBtn = document.createElement("button");
+ 	editBtn.textContent = "Edit";
+ 	editBtn.className = 'px-6 py-3 bg-[#174B7A] font-orbitron font-bold text-white rounded-lg shadow-md hover:bg-[#133A58] active:bg-[#0F2A3D] transition-colors duration-200 mt-6 self-center';
+ 	editBtn.addEventListener("click", async (e) => {
+		e.preventDefault();
+
+		usernameInput.className = 'inputUnblocked';
+		usernameInput.disabled = false;
+		if (sessionStorage.getItem('googleUser') === 'false'){
+
+			oldPasswordInput.classList.remove('hidden');
+			passwordInput.classList.remove('hidden');
+			confirmPasswordInput.classList.remove('hidden');
+		} 
+		submitBtn.classList.remove('hidden');
+		editBtn.classList.add('hidden');
+	});
+
+	const btnWrapper = document.createElement("div");
+	btnWrapper.className = "flex justify-center mt-1 mb-2";
+	btnWrapper.appendChild(submitBtn);
+	btnWrapper.appendChild(editBtn);
+	box.appendChild(btnWrapper);
   
 	return {
 	  container,
 	  emailInput,
 	  usernameInput,
 	  img,
+	  oldPasswordInput,
 	  passwordInput,
 	  confirmPasswordInput,
 	  submitBtn,
+	  editBtn,
 	  toggleInput2FA,
 	};
   }

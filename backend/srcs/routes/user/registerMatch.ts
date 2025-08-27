@@ -5,9 +5,9 @@ import { registerMatchSwaggerSchema } from "../../schemaSwagger/registerMatchSch
 export async function registerMatch(app: FastifyInstance) {
 	app.post('/registerMatch', { preHandler: [app.authenticate], schema: registerMatchSwaggerSchema }, async(req, res) => {
 		const matchSchema = z.object({
-			date: z.string().transform((str) => new Date(str)),
+			date: z.string(),
 			participants: z.array(z.object({
-				username: z.string(),
+				username: z.string().optional(),
 				goals: z.number().int().min(0),
 				isLocal: z.boolean().optional().default(false),
 				touches: z.number().int().min(0)
@@ -30,7 +30,7 @@ export async function registerMatch(app: FastifyInstance) {
 							} else {
 								return { user: {connect: {username: p.username}}, goals: p.goals, touches: p.touches}	
 							}
-						}) 
+						})
 					}
 				},
 				include: {

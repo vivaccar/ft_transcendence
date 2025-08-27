@@ -12,7 +12,7 @@ export function buildFriendsPage(): void {
 
 function createFriendsUI(): HTMLDivElement {
 	const container = document.createElement("div");
-	container.className = "flex items-center justify-center w-screen h-screen gap-6";
+	container.className = "flex items-center justify-center w-screen h-[calc(100vh-64px)] gap-6";
 
 	// ---------------- Friends Box ----------------// 
 	const friendsBox = document.createElement("div");

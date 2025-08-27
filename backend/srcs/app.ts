@@ -28,6 +28,8 @@ import fastifyCookie from '@fastify/cookie'
 import swaggerPlugin from "./plugins/swaggerPlugin";
 import cors from "@fastify/cors";
 import multipart from "@fastify/multipart";
+import websocket from '@fastify/websocket';
+import gameWs from './routes/websocket/gameWs';
 
 const app = Fastify({ logger: true,  trustProxy: true })
 
@@ -70,5 +72,7 @@ app.register(me);
 app.register(inviteFriend)
 app.register(getInvites)
 //app.register(acceptInvite)
+app.register(websocket);
+app.register(gameWs);
 
 export default app
