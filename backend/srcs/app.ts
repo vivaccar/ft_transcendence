@@ -19,6 +19,7 @@ import { updatePassword } from "./routes/user/changePassword";
 import { logout } from "./routes/authentication/logout";
 import { inviteFriend } from "./routes/friendships/inviteFriend";
 import { getInvites } from "./routes/friendships/getInvites";
+import { acceptInvite } from "./routes/friendships/acceptInvite";
 import jwt from "./plugins/jwtPlugin";
 import jwtPlugin from "./plugins/jwtPlugin";
 import googleOAuthPlugin from './plugins/google-oauth'
@@ -70,6 +71,7 @@ app.register(logout);
 app.register(me);
 app.register(inviteFriend)
 app.register(getInvites)
+//app.register(acceptInvite)
 app.register(websocket);
 app.register(gameWs);
 
