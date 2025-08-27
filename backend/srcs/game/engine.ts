@@ -78,6 +78,22 @@ export class GameSession {
 	start() {
 		if (this.players.length !== 2) return; // Só começa com 2 jogadores
 
+		const player1 = this.players[0]; // Host
+        const player2 = this.players[1]; // Guest
+
+		console.log(`[GameSession ${this.sessionId}] Iniciando jogo. Notificando ambos os jogadores.`);
+
+		player1.ws.send(JSON.stringify({
+            type: 'gameStart',
+            opponentId: player2.id
+        }));
+
+        // Envia a mensagem para o Player 2 com o ID do oponente correto
+        player2.ws.send(JSON.stringify({
+            type: 'gameStart',
+            opponentId: player1.id
+        }));
+
 		this.broadcast({ type: 'gameStart', opponentId: this.players[1].id });
 		this.lastTime = Date.now();
 		this.gameInterval = setInterval(() => this.update(), 1000 / 60); // 60 updates por segundo
@@ -149,20 +165,30 @@ export class GameSession {
 
 	// Envia o estado atual para todos os jogadores na sessão
 	private broadcastState() {
-		const state = {
-			type: 'gameStateUpdate',
-			ball: { x: this.ball.x, y: this.ball.y },
-			paddles: this.players.map(p => ({ id: p.id, x: p.x, y: p.y })),
-			scores: { p1: this.players[0].score, p2: this.players[1].score }
-		};
-		this.broadcast(state);
-	}
+        // Garante que só envia o estado se tivermos ambos os jogadores
+        if (this.players.length < 2) return;
 
-	// Função utilitária para enviar uma mensagem para ambos os jogadores
-	private broadcast(message: object) {
-		const msgString = JSON.stringify(message);
-		this.players.forEach(player => player.ws.send(msgString));
-	}
+        const state = {
+            type: 'gameStateUpdate',
+            payload: { // <<< Envolvemos o estado num 'payload' para consistência
+                ball: { x: this.ball.x, y: this.ball.y },
+                paddles: this.players.map(p => ({ id: p.id, x: p.x, y: p.y })),
+                scores: { p1: this.players[0].score, p2: this.players[1].score }
+            }
+        };
+        this.broadcast(state);
+    }
+
+	 // Função utilitária para enviar uma mensagem para ambos os jogadores
+    private broadcast(message: object) {
+        const msgString = JSON.stringify(message);
+        this.players.forEach(player => {
+            // Verificação de segurança para só enviar se a conexão estiver aberta
+            if (player.ws.readyState === WebSocket.OPEN) {
+                player.ws.send(msgString)
+            }
+        });
+    }
 
 	handlePlayerMove(playerId: string, data: { key: 'w' | 's' | 'ArrowUp' | 'ArrowDown'; keyState: 'keydown' | 'keyup' }) {
 		const player = this.players.find(p => p.id === playerId);
@@ -203,5 +229,6 @@ export class GameSession {
 
 		// Remove o jogador que saiu da lista
 		this.players = this.players.filter(p => p.id !== playerId);
+		console.log(`[GameSession ${this.sessionId}] Jogador ${playerId} removido. Jogadores restantes: ${this.players.length}`);
 	}
 }

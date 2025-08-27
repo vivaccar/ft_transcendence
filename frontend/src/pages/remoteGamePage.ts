@@ -1,24 +1,14 @@
-// /frontend/src/pages/remoteGamePage.ts
+// /frontend/src/pages/remoteGamePage.ts (VERSÃO CORRIGIDA)
 
 import { renderPage } from "../utils";
 import { connectWebSocket, sendMessage } from "../socketService";
-
-// Componentes da UI de setup
 import { BackgroundCarousel } from "../components/BackgroundCarousel";
 import { ColorSelector } from "../components/ColorSelector";
-
-// Funções importadas do nosso motor de renderização "burro"
-// Incluindo TODAS as funções necessárias: init, start, update, showGameOver e stop.
 import { initGame, startGame, updateGameState, showGameOver, stopGame } from "../game/remotePong/RemoteGame";
 
-/**
- * Esta é a função central que ouve TODAS as mensagens do servidor.
- * Ela age como um controlador, direcionando a ação correta com base no tipo de mensagem.
- */
+// A função handleServerMessage está PERFEITA, não precisa de alterações.
 function handleServerMessage(data: any) {
-    // Log geral para CADA mensagem recebida
     console.log(`📡 [WS RECEBIDO] Tipo: ${data.type}`, data);
-
     switch (data.type) {
         case 'matchCreated':
             console.log("✅ [LÓGICA] Partida criada com sucesso. Exibindo ID da sessão:", data.sessionId);
@@ -27,77 +17,58 @@ function handleServerMessage(data: any) {
                 waitingText.innerHTML = `Partida criada!<br>Partilhe este ID com o seu amigo:<br><strong class="text-2xl mt-2 block">${data.sessionId}</strong>`;
             }
             break;
-
         case 'gameStart':
             console.log("🚀 [LÓGICA] Recebido sinal de 'gameStart'. Iniciando a transição para a tela de jogo...");
-            
             const appContainer = document.querySelector('#app > div');
             if (!appContainer) {
                 console.error("🐛 [ERRO] Container principal da aplicação não encontrado! Não é possível iniciar o jogo.");
                 return;
             };
-
             console.log("🧹 [UI] Limpando a tela de setup/espera...");
             appContainer.innerHTML = '';
-
             console.log("🎨 [UI] Inicializando a UI do jogo (canvas, placar)...");
             initGame(appContainer as HTMLElement);
-
             console.log("▶️ [JOGO] Iniciando o loop de renderização (requestAnimationFrame)...");
             startGame();
             break;
-
         case 'gameStateUpdate':
             console.log("🔄 [JOGO] Atualização de estado recebida.");
             updateGameState(data.payload);
             break;
-
         case 'gameOver':
             console.log(`🏆 [JOGO] Fim de jogo! Vencedor: ${data.payload.winnerName}`);
-            showGameOver(data.payload.winnerName); // A função showGameOver já chama stopGame internamente no RemoteGame.ts
+            showGameOver(data.payload.winnerName);
             break;
-
         case 'error':
             console.error(`🐛 [ERRO SERVIDOR] Mensagem de erro recebida:`, data.message);
             alert(`Erro do servidor: ${data.message}`);
-            
-            // AQUI ESTÁ A CHAMADA IMPORTANTE PARA stopGame
             console.log("🛑 [JOGO] Parando o jogo devido a um erro.");
-            stopGame(); 
-
+            stopGame();
             const joinBtn = document.getElementById('join-btn') as HTMLButtonElement | null;
             if (joinBtn) {
                 console.log("🔧 [UI] Reativando o botão 'Join' após erro.");
                 joinBtn.disabled = false;
             }
             break;
-        
         default:
             console.warn(`🤔 [WS] Mensagem de tipo desconhecido recebida: ${data.type}`);
     }
 }
 
-
-/**
- * Página de setup para o jogador que vai ser o anfitrião (Host).
- */
 function buildHostPage(): void {
+    // ... (nenhuma mudança no início da função)
     console.log("🛠️ [UI] Construindo a página 'Host Setup'...");
     let selectedColor: string | null = "white";
     let selectedBackgroundImg = "/images/backgroundGame/back10.jpg";
-
     const container = document.createElement("div");
     container.className = "flex flex-col items-center justify-center h-screen";
     renderPage(container);
-
     const title = document.createElement("h1");
     title.textContent = "Host Setup";
     title.className = "text-white font-orbitron font-bold text-4xl mb-8";
     container.appendChild(title);
-
     const onSelectBackground = (bg: string) => { selectedBackgroundImg = bg; };
     container.appendChild(BackgroundCarousel(onSelectBackground));
-
     const onSelectColor = (color: string) => { selectedColor = color; };
     const colorWrapper = document.createElement("div");
     colorWrapper.className = "flex flex-col items-center mt-6";
@@ -107,17 +78,27 @@ function buildHostPage(): void {
     colorWrapper.appendChild(colorTitle);
     colorWrapper.appendChild(ColorSelector(onSelectColor));
     container.appendChild(colorWrapper);
-
     const startBtn = document.createElement("button");
     startBtn.textContent = "Criar Partida Online";
     startBtn.className = "mt-6 px-6 py-2 bg-green-600 text-white font-orbitron font-bold rounded hover:bg-green-700 transition";
     container.appendChild(startBtn);
 
+
     startBtn.addEventListener("click", () => {
         console.log("➡️ [AÇÃO] Botão 'Criar Partida Online' clicado.");
-        sessionStorage.setItem("playerColor", selectedColor ?? "white");
-        sessionStorage.setItem("selectedBackground", selectedBackgroundImg);
-        console.log("💾 [DADOS] Cor e background salvos na sessionStorage.");
+
+        // 🔥 MUDANÇA AQUI: Criamos o objeto 'gameSettings' completo
+        const gameSettings = {
+            p1_color: selectedColor ?? "white",
+            p2_color: "white", // Cor Padrão para o oponente
+            background: selectedBackgroundImg,
+            // Podemos adicionar aliases se quisermos, mas por agora é simples
+            p1_alias: "Host",
+            p2_alias: "Guest"
+        };
+        sessionStorage.setItem('gameSettings', JSON.stringify(gameSettings));
+        console.log("💾 [DADOS] Objeto 'gameSettings' salvo na sessionStorage.", gameSettings);
+        // 🔥 FIM DA MUDANÇA
 
         container.innerHTML = "";
         const waitingMsg = document.createElement("h2");
@@ -136,45 +117,34 @@ function buildHostPage(): void {
     });
 }
 
-/**
- * Página de setup para o jogador que vai entrar numa partida (Guest).
- */
 function buildGuestPage(): void {
+    // ... (nenhuma mudança no início da função)
     console.log("🛠️ [UI] Construindo a página 'Join Game'...");
     let selectedColor: string | null = "white";
     let matchId: string = "";
-
     const container = document.createElement("div");
     container.className = "flex flex-col items-center justify-center h-screen space-y-10";
     renderPage(container);
-
     const title = document.createElement("h1");
     title.textContent = "Join Game";
     title.className = "text-white font-orbitron font-bold text-4xl mb-8";
     container.appendChild(title);
-
     const box = document.createElement("div");
     box.className = "flex flex-col items-center bg-black/50 border border-[#00F0FF] rounded px-10 py-8";
     container.appendChild(box);
-
     const inputWrapper = document.createElement("div");
     inputWrapper.className = "flex flex-col items-center mb-6";
     box.appendChild(inputWrapper);
-
     const matchLabel = document.createElement("label");
     matchLabel.textContent = "Enter Match ID";
     matchLabel.className = "text-white font-orbitron font-bold mb-2";
     inputWrapper.appendChild(matchLabel);
-
     const matchInput = document.createElement("input");
     matchInput.type = "text";
     matchInput.placeholder = "e.g. 12345";
     matchInput.className = "px-4 py-2 rounded border border-gray-400 text-black";
-    matchInput.addEventListener("input", (e) => {
-        matchId = (e.target as HTMLInputElement).value;
-    });
+    matchInput.addEventListener("input", (e) => { matchId = (e.target as HTMLInputElement).value; });
     inputWrapper.appendChild(matchInput);
-
     const onSelectColor = (color: string) => { selectedColor = color; };
     const colorWrapper = document.createElement("div");
     colorWrapper.className = "flex flex-col items-center mt-2";
@@ -184,7 +154,6 @@ function buildGuestPage(): void {
     colorTitle.className = "text-white font-orbitron font-bold mb-2";
     colorWrapper.appendChild(colorTitle);
     colorWrapper.appendChild(ColorSelector(onSelectColor));
-
     const joinBtn = document.createElement("button");
     joinBtn.id = 'join-btn';
     joinBtn.textContent = "Join Match";
@@ -200,8 +169,17 @@ function buildGuestPage(): void {
         }
         joinBtn.disabled = true;
 
-        sessionStorage.setItem("playerColor", selectedColor ?? "white");
-        console.log("💾 [DADOS] Cor salva na sessionStorage.");
+        // 🔥 MUDANÇA AQUI: Criamos o objeto 'gameSettings' completo
+        const gameSettings = {
+            p1_color: "white", // Cor Padrão para o oponente
+            p2_color: selectedColor ?? "white",
+            background: "/images/backgroundGame/back10.jpg", // Background Padrão
+            p1_alias: "Host",
+            p2_alias: "Guest"
+        };
+        sessionStorage.setItem('gameSettings', JSON.stringify(gameSettings));
+        console.log("💾 [DADOS] Objeto 'gameSettings' salvo na sessionStorage.", gameSettings);
+        // 🔥 FIM DA MUDANÇA
         
         console.log("🔌 [WS] Tentando conectar ao WebSocket...");
         connectWebSocket(handleServerMessage);
@@ -213,19 +191,15 @@ function buildGuestPage(): void {
     });
 }
 
-/**
- * Cria a UI inicial com os dois cartões de escolha: "Host" ou "Guest".
- */
+// As funções createRemoteGameUI e buildRemoteGamePage estão PERFEITAS, não precisam de alterações.
 function createRemoteGameUI(): HTMLDivElement {
     console.log("🎨 [UI] Criando a UI de seleção (Host/Guest)...");
     const container = document.createElement("div");
     container.className = "flex items-center justify-center w-full h-full gap-6";
-
     const cards = [
         { title: 'Host', imgSrc: '/images/remoteGame/host.jpeg', action: buildHostPage },
         { title: 'Guest', imgSrc: '/images/remoteGame/guest.jpeg', action: buildGuestPage },
     ];
-
     cards.forEach(({ title, imgSrc, action }) => {
         const card = document.createElement('a');
         card.className = 'relative w-80 h-3/4 overflow-hidden rounded border border-[#00F0FF] cursor-pointer transform transition-transform duration-300 hover:scale-105';
@@ -233,33 +207,23 @@ function createRemoteGameUI(): HTMLDivElement {
         card.style.backgroundSize = 'cover';
         card.style.backgroundPosition = 'center';
         card.href = "#";
-
         card.addEventListener("click", (e) => {
             e.preventDefault();
             console.log(`➡️ [AÇÃO] Cartão '${title}' clicado.`);
             action();
         });
-        
         const titleDiv = document.createElement('div');
         titleDiv.className = 'absolute bottom-0 left-0 w-full bg-black bg-opacity-60 text-white text-center py-3 font-orbitron font-bold text-lg';
         titleDiv.textContent = title;
         card.appendChild(titleDiv);
         container.appendChild(card);
     });
-
     return container;
 }
-
-
-/**
- * A função de entrada principal que é exportada e chamada pelo router.
- * Ela constrói a página inicial do jogo remoto.
- */
 export function buildRemoteGamePage(): void {
     console.log("🚀 [ROTA] Iniciando a construção da 'remoteGamePage'.");
     const container = document.createElement("div");
     container.className = "flex flex-col items-center justify-center h-screen";
     renderPage(container);
-
     container.appendChild(createRemoteGameUI());
 }
