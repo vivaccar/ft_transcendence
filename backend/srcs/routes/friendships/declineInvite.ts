@@ -1,9 +1,9 @@
 import { FastifyInstance } from "fastify"
 import { z } from 'zod'
-import { inviteFriendSwaggerSchema } from "../../schemaSwagger/inviteFriendSchema"
+//import { inviteFriendSwaggerSchema } from "../../schemaSwagger/inviteFriendSchema"
 
-export async function inviteFriend(app: FastifyInstance) {
-	app.post('/inviteFriend', { preHandler: [app.authenticate], schema: inviteFriendSwaggerSchema }, async(req, res) => {
+export async function declineInvite(app: FastifyInstance) {
+	app.delete('/declineInvite', { preHandler: [app.authenticate]/* , schema: inviteFriendSwaggerSchema  */}, async(req, res) => {
 		const friendSchema = z.object({
 			newFriend: z.string(),
 		})
@@ -16,9 +16,7 @@ export async function inviteFriend(app: FastifyInstance) {
 			if (!newFriend) {
 				 return res.status(404).send({ error: "User not found in database" })
 			}
-			if (newFriend.id == currentUser.id) {
-				 return res.status(404).send({ error: "User cannot request friendship with yourself" })
-			}
+
 			const [id1, id2] = currentUser.id < newFriend.id 
 			? [currentUser.id, newFriend.id] 
 			: [newFriend.id, currentUser.id]
@@ -30,22 +28,22 @@ export async function inviteFriend(app: FastifyInstance) {
 						friendBId: id2 
 					}
 				}});
-			if (existingFriendship) {
-				return res.status(409).send({ error: "Friendship already exists between these users"})
+			if (!existingFriendship) {
+				return res.status(409).send({ error: "Friendship not found in database"})
+			}
+			if (existingFriendship.status == "accepted") {
+				return res.status(409).send({ error: "Invite was already accepted"})
 			}
 
-			const friendship = await app.prisma.friendship.create ({
-				data: {
-					friendA: {connect: { id: id1 }},
-					friendB: {connect: { id: id2 }},
-					status: "pending"
+			const deleteFriendship = await app.prisma.friendship.delete ({
+				where: {
+					friendAId_friendBId: {
+						friendAId: id1,
+						friendBId: id2 
+					}
 				}
 			})
-			return res.status(201).send({
-				friendA: currentUser.username,
-				friendB: newFriend.username,
-				status: "pending"
-			})
+			return res.status(201).send( `Friendship between ${currentUser.username} and ${newFriend.username} was declined and deleted from database`)
 		} catch(err) {
 			console.error(err)
 			return res.status(400).send({error: err})
