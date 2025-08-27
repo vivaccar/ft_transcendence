@@ -30,13 +30,21 @@ export async function inviteFriend(app: FastifyInstance) {
 			if (existingFriendship) {
 				return res.status(409).send({ error: "Friendship already exists between these users"})
 			}
+			
+			//arrumar aqui - o id do user esta vindo errado do req.user (authenticate)
+			console.log("req user", currentUser)
+			console.log("current user:", currentUser.username)
+			console.log("current user ID:", currentUser.id)
+			console.log("new friend:", newFriend.username)
+			console.log("new friend ID:", newFriend.id)
+			const [id1, id2] = currentUser.id < newFriend.id 
+			? [currentUser.id, newFriend.id] 
+			: [newFriend.id, currentUser.id]
 
-			//arrumar aqui
-			const [id1. ]
 			const friendship = await app.prisma.friendship.create ({
 				data: {
-					friendA: {connect: { id: currentUser.id }},
-					friendB: {connect: { id: newFriend.id }},
+					friendA: {connect: { id: id1 }},
+					friendB: {connect: { id: id2 }},
 					status: "pending"
 				}
 			})

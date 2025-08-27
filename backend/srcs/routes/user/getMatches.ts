@@ -51,7 +51,9 @@ export async function getMatches(app: FastifyInstance) {
 					opponent: opponent.user ? opponent.user.username : opponent.localUser,
 					result: result,
 					goalsUser: currentUser.goals,
+					touchesUser: currentUser.touches,
 					goalsOpponent: opponent.goals,
+					touchesOpponent: opponent.touches,
 					dateTime: match.date
 				}
 			})
