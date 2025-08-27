@@ -49,7 +49,7 @@ export function createSettingsUI(): {
 	profileSection.className = "flex items-center mb-2 gap-6 p-8 pb-4";
   
 	const img = document.createElement("img");
-	img.src = "/images/randomAvatar/0.jpeg";
+	// img.src = "/images/randomAvatar/0.jpeg";
 	img.className = "w-32 h-32 object-cover rounded-full border-4 border-gray-300";
 	profileSection.appendChild(img);
   
@@ -82,7 +82,6 @@ export function createSettingsUI(): {
 
 	setupAvatarControls(img, btnUpload, btnRandom);
   
-	// form
 	// form
 	const form = document.createElement("form");
 	form.className = "flex flex-col gap-2 p-4 pt-0 font-orbitron";
@@ -174,9 +173,12 @@ export function createSettingsUI(): {
 
 		usernameInput.className = 'inputUnblocked';
 		usernameInput.disabled = false;
-		oldPasswordInput.classList.remove('hidden');
-		passwordInput.classList.remove('hidden');
-		confirmPasswordInput.classList.remove('hidden');
+		if (sessionStorage.getItem('googleUser') === 'false'){
+
+			oldPasswordInput.classList.remove('hidden');
+			passwordInput.classList.remove('hidden');
+			confirmPasswordInput.classList.remove('hidden');
+		} 
 		submitBtn.classList.remove('hidden');
 		editBtn.classList.add('hidden');
 	});

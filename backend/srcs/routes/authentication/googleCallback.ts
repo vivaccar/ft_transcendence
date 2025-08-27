@@ -75,7 +75,7 @@ export async function googleCallback(app: FastifyInstance) {
             path: "/",
           });
 
-        return reply.redirect("http://localhost:8080/dashboard");
+        return reply.redirect("https://localhost/dashboard");
       }
 
       const jwtToken = app.jwt.sign(
@@ -101,7 +101,7 @@ export async function googleCallback(app: FastifyInstance) {
           path: "/",
         });
 
-      return reply.redirect("http://localhost:8080/dashboard");
+      return reply.redirect("https://localhost/dashboard");
     }
   );
 }
