@@ -1,11 +1,14 @@
 import { FastifyInstance } from "fastify"
 
 export async function ping(app: FastifyInstance) {
-  app.post("/ping", { preHandler: [app.authenticate] }, async (request, reply) => {
-    const user = request.user as { username: string } | undefined;
+  app.post("/ping", async (request, reply) => {
+    let user: { username: string } | null = null;
 
-    if (!user) {
-      return reply.status(200).send({ message: "User not found" });
+    try {
+      const payload = await request.jwtVerify({ onlyCookie: true });
+      user = payload as { username: string };
+    } catch {
+      return reply.status(200).send({ message: "Ping ignored: user not logged in" });
     }
 
     try {
@@ -16,8 +19,8 @@ export async function ping(app: FastifyInstance) {
       console.log("\n\n PING REGISTRADO: ", updatedUser.lastPing.toString())
       return { message: "Ping registered" };
     } catch (err) {
-      console.error("Error", err);
-      return reply.status(200).send({ message: "pinging" });
+      console.error("Error updating ping", err);
+      return reply.status(200).send({ message: "Ping continues" });
     }
   });
 }

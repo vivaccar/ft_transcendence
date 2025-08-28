@@ -24,5 +24,7 @@ export interface Game {
 	you: number;
 	friend: number;
 	friendName: string;
+	touchesOpponent: number;
+	touchesUser: number;
 	dateTime: Date;
 }

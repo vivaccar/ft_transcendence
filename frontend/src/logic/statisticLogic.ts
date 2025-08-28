@@ -48,9 +48,11 @@ export async function getMatches(): Promise<Game[]> {
 		you: match.goalsUser,
 		friend: match.goalsOpponent,
 		friendName: match.opponent,
-		date: new Date(match.dateTime),
-	  })).sort((a, b) => b.date.getTime() - a.date.getTime());
-  
+		touchesOpponent: match.touchesOpponent,
+		touchesUser: match.touchesUser,
+		dateTime: new Date(match.dateTime),
+	  })).sort((a: { dateTime: Date }, b: { dateTime: Date }) => b.dateTime.getTime() - a.dateTime.getTime());
+	  console.log(data);
 	  return games;
 	} catch (error) {
 	  console.error("Erro em getMatches:", error);

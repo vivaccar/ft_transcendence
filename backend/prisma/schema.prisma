@@ -60,10 +60,3 @@ model	Friendship {
 	@@unique([friendAId, friendBId])
 }
 
-/* 
-model Tournament {
-	id 				Int @id @default(autoincrement()) // primary key
-	name			String @unique
-
-	//players[]		User 
-} */
