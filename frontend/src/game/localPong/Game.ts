@@ -202,7 +202,7 @@ function checkScore() {
         player2.score++;
         updateScoreboard();
         if (player2.score >= winningScore) {
-            winnerName = 'Player 2';
+            winnerName = player2.name;
         } else {
             ball.reset();
         }
@@ -211,7 +211,7 @@ function checkScore() {
         player1.score++;
         updateScoreboard();
         if (player1.score >= winningScore) {
-            winnerName = 'Player 1';
+            winnerName = player1.name;
         } else {
             ball.reset();
         }
@@ -353,7 +353,7 @@ export function initializeLocalGame(containerId: string, width: number, height: 
     }
 
     const paddleWidth = 10, paddleHeight = 100, paddleSpeed = 300;
-    const ballSize = 10, ballSpeed = 300;
+    const ballSize = 10, ballSpeed = 350;
     //ARRUMAR UM JEITO DE COLOCAR UM NICK NO USUARIO PARA INTEGRACAO COM BACKEND
     player1 = new Paddle(paddleWidth, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP1') || 'white', player1Name);
     player2 = new Paddle(myGameArea.canvas.width - paddleWidth * 2, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP2') || 'white', player2Name);
