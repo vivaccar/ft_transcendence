@@ -19,6 +19,7 @@ import { updatePassword } from "./routes/user/changePassword";
 import { logout } from "./routes/authentication/logout";
 import { inviteFriend } from "./routes/friendships/inviteFriend";
 import { getInvites } from "./routes/friendships/getInvites";
+import { ping } from "./routes/user/ping";
 import jwt from "./plugins/jwtPlugin";
 import jwtPlugin from "./plugins/jwtPlugin";
 import googleOAuthPlugin from './plugins/google-oauth'
@@ -54,10 +55,10 @@ app.register(multipart), {
 
 	}
 };
-app.register(setup2fa)
-app.register(enable2fa)
-app.register(verify2fa)
-app.register(disable2fa)
+app.register(setup2fa);
+app.register(enable2fa);
+app.register(verify2fa);
+app.register(disable2fa);
 app.register(registerMatch);
 app.register(getMatches);
 app.register(getWinsAndLosses);
@@ -68,8 +69,9 @@ app.register(updateUsername);
 app.register(updatePassword);
 app.register(logout);
 app.register(me);
-app.register(inviteFriend)
-app.register(getInvites)
+app.register(ping);
+app.register(inviteFriend);
+app.register(getInvites);
 app.register(websocket);
 app.register(gameWs);
 
