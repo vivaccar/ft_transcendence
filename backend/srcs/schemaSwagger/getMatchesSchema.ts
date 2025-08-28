@@ -20,11 +20,15 @@ export const getMatchSwaggerSchema = {
           type: 'array',
           items: {
             type: 'object',
-            required: ['matchId','opponent', 'result', 'goalsUser', 'touchesUser', 'goalsOpponent','touchesOpponent', 'dateTime'],
+            required: ['matchId', 'user','opponent', 'result', 'goalsUser', 'touchesUser', 'goalsOpponent','touchesOpponent', 'dateTime'],
             properties: {
               matchId: {
                 type: 'number',
                 description: 'Match Id'
+              },
+              user: {
+                type: 'string',
+                description: 'Username of current user'
               },
               opponent: {
                 type: 'string',

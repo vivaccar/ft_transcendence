@@ -1,4 +1,4 @@
-import type { UserStats, Game } from "../types";
+import type { UserStats,UserGoals, Game } from "../types";
 import { API_ROUTES } from "../config";
 
 export async function getUserStats(): Promise<UserStats> {
@@ -9,6 +9,18 @@ export async function getUserStats(): Promise<UserStats> {
 		throw new Error("Failed to fetch wins ans losses");
 	}
 	const statsdata: UserStats = await statsRes.json();
+	
+	return statsdata;
+}
+
+export async function getUserGoals(): Promise<UserGoals> {
+	const username = sessionStorage.getItem('username');
+
+	const statsRes= await fetch(API_ROUTES.getGoals(username!));
+	if(!statsRes.ok) {
+		throw new Error("Failed to fetch goals");
+	}
+	const statsdata: UserGoals = await statsRes.json();
 	
 	return statsdata;
 }
@@ -32,11 +44,12 @@ export async function getMatches(): Promise<Game[]> {
   
 	  const games = data.matches.map((match: any) => ({
 		result: match.result === "win" ? "Win" : "Loss",
+		youName: match.user,
 		you: match.goalsUser,
 		friend: match.goalsOpponent,
 		friendName: match.opponent,
 		date: new Date(match.dateTime),
-	  }));
+	  })).sort((a, b) => b.date.getTime() - a.date.getTime());
   
 	  return games;
 	} catch (error) {

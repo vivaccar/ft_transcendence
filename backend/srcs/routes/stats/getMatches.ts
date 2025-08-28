@@ -48,6 +48,7 @@ export async function getMatches(app: FastifyInstance) {
 				}
 				return {
 					matchId: match.id,
+					user: userObject.username,
 					opponent: opponent.user ? opponent.user.username : opponent.localUser,
 					result: result,
 					goalsUser: currentUser.goals,

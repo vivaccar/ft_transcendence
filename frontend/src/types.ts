@@ -14,8 +14,13 @@ export interface UserStats {
 	losses: number;
 }
 
+export interface UserGoals {
+	goalsPro: number;
+	goalsCon: number;
+}
 export interface Game {
 	result: "Win" | "Loss";
+	youName: string;
 	you: number;
 	friend: number;
 	friendName: string;

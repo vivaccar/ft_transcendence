@@ -1,5 +1,5 @@
 import { renderPage } from "../utils";
-import { getMatches, getUserStats } from "../logic/statisticLogic";
+import { getMatches, getUserStats, getUserGoals } from "../logic/statisticLogic";
 import type { Game } from "../types";
 
 export async function buildStatisticsPage(): Promise<void> {
@@ -40,14 +40,20 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 
 	// Texto mostrando total de partidas
 	const totalText = document.createElement("p");
-	totalText.textContent = `Total games: ${total}`;
-	totalText.className = "text-center font-orbitron font-bold mt-6";
+	totalText.textContent = `GAMES`;
+	totalText.className = "text-center font-orbitron font-bold mt-2 text-2xl";
 
 	personalNbrBox.appendChild(totalText);
+	
+	// Percent label
+	const percentLabel = document.createElement("p");
+	percentLabel.textContent = `Winning percentage: ${winPercent.toFixed(0)}%`;
+	percentLabel.className = "text-center font-orbitron font-bold";
+	personalNbrBox.appendChild(percentLabel);
 
 	// Barra de vitória/derrota
 	const progressBar = document.createElement("div");
-	progressBar.className = "flex h-[30px] rounded-lg overflow-hidden mt-8 mx-4 mb-1";
+	progressBar.className = "flex h-[30px] rounded-lg overflow-hidden mt-2 mx-4 mb-1";
 
 	// Win bar
 	const winBar = document.createElement("div");
@@ -63,15 +69,10 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	progressBar.appendChild(lossBar);
 	personalNbrBox.appendChild(progressBar);
 
-	// Percent label
-	const percentLabel = document.createElement("p");
-	percentLabel.textContent = `${winPercent.toFixed(0)}% Victories`;
-	percentLabel.className = "text-center font-orbitron font-bold mb-4";
-	personalNbrBox.appendChild(percentLabel);
 
 	// Columns container
 	const columnsContainer = document.createElement("div");
-	columnsContainer.className = "flex justify-center gap-4 mt-8";
+	columnsContainer.className = "flex justify-center gap-4 mt-4";
 
 	// Coluna de vitórias
 	const winsColumn = document.createElement("div");
@@ -85,7 +86,7 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 
 	const winsLabel = document.createElement("p");
 	winsLabel.textContent = "Wins";
-	winsLabel.className = "mt-2 font-orbitron font-bold";
+	winsLabel.className = "mt-1 font-orbitron font-bold";
 
 	winsColumn.appendChild(winsBox);
 	winsColumn.appendChild(winsLabel);
@@ -102,7 +103,7 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 
 	const lossesLabel = document.createElement("p");
 	lossesLabel.textContent = "Losses";
-	lossesLabel.className = "mt-2 font-orbitron font-bold";
+	lossesLabel.className = "mt-1 font-orbitron font-bold";
 
 	lossesColumn.appendChild(lossesBox);
 	lossesColumn.appendChild(lossesLabel);
@@ -111,6 +112,80 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	columnsContainer.appendChild(lossesColumn);
 
 	personalNbrBox.appendChild(columnsContainer);
+
+	// POINTS 
+	const goals = await getUserGoals();
+	const totalGoals = goals.goalsPro + goals.goalsCon;
+	const goalsProPercent = total > 0 ? (goals.goalsPro / totalGoals) * 100 : 0;
+	const goalsConPercent = 100 - goalsProPercent;
+
+	const totalGoalsText = document.createElement("p");
+	totalGoalsText.textContent = `POINTS`;
+	totalGoalsText.className = "text-center font-orbitron font-bold mt-6 text-2xl";
+
+	personalNbrBox.appendChild(totalGoalsText);
+
+	// Barra de pontos feitos/concedidos
+	const progressGoalsBar = document.createElement("div");
+	progressGoalsBar.className = "flex h-[30px] rounded-lg overflow-hidden mt-2 mx-4 mb-1";
+
+	// goals pro bar
+	const goalsProBar = document.createElement("div");
+	goalsProBar.style.width = `${goalsProPercent}%`;
+	goalsProBar.className = "flex justify-center items-center text-white bg-[#2ecc71]";
+
+	// goals con bar
+	const goalsConBar = document.createElement("div");
+	goalsConBar.style.width = `${goalsConPercent}%`;
+	goalsConBar.className = "flex justify-center items-center text-white bg-[#e74c3c]";
+
+	progressGoalsBar.appendChild(goalsProBar);
+	progressGoalsBar.appendChild(goalsConBar);
+	personalNbrBox.appendChild(progressGoalsBar);
+ 
+	
+	// Columns container
+	const columnsContainerGoals = document.createElement("div");
+	columnsContainerGoals.className = "flex justify-center gap-4 mt-4";
+
+	// Coluna de goals pro
+	const goalsProColumn = document.createElement("div");
+	goalsProColumn.className = "flex flex-col items-center";
+
+	const goalsProBox = document.createElement("div");
+	goalsProBox.style.width = "60px";
+	goalsProBox.style.height = "40px";
+	goalsProBox.textContent = `${goals.goalsPro}`;
+	goalsProBox.className = "flex justify-center items-center rounded-lg font-orbitron font-bold text-white bg-[#2ecc71]";
+
+	const goalsProLabel = document.createElement("p");
+	goalsProLabel.textContent = "Scored";
+	goalsProLabel.className = "mt-2 font-orbitron font-bold";
+
+	goalsProColumn.appendChild(goalsProBox);
+	goalsProColumn.appendChild(goalsProLabel);
+
+	// Coluna de goals con
+	const goalsConColumn = document.createElement("div");
+	goalsConColumn.className = "flex flex-col items-center";
+
+	const goalsConBox = document.createElement("div");
+	goalsConBox.style.width = "60px";
+	goalsConBox.style.height = "40px";
+	goalsConBox.textContent = `${goals.goalsCon}`;
+	goalsConBox.className = "flex justify-center items-center rounded-lg font-orbitron font-bold text-white bg-[#e74c3c]";
+
+	const goalsConLabel = document.createElement("p");
+	goalsConLabel.textContent = "Conceded";
+	goalsConLabel.className = "mt-2 font-orbitron font-bold";
+
+	goalsConColumn.appendChild(goalsConBox);
+	goalsConColumn.appendChild(goalsConLabel);
+
+	columnsContainerGoals.appendChild(goalsProColumn);
+	columnsContainerGoals.appendChild(goalsConColumn);
+
+	personalNbrBox.appendChild(columnsContainerGoals)
 
     // ---------------- Last Games ----------------
 	const lastGamesBox = document.createElement("div");
@@ -150,15 +225,21 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	    modal.className = "bg-white rounded-lg p-6 max-w-md w-full flex flex-col gap-4 shadow-lg";
 
 	    const title = document.createElement("h2");
-	    title.textContent = `Game vs ${game.friendName}`;
-	    title.className = "text-xl font-orbitron font-bold";
+	    title.textContent = `${game.youName} vs ${game.friendName}`;
+	    title.className = "flex justify-center text-xl font-orbitron font-bold";
 
 	    const result = document.createElement("p");
-	    result.textContent = `Result: ${game.result}`;
-	    result.className = `font-orbitron font-bold ${game.result === "Win" ? "text-[#2ecc71]" : "text-[#e74c3c]"}`;
+	    result.textContent = game.result == 'Win' ? `WIN` : `LOSS`;
+	    result.className = `flex justify-center font-orbitron font-bold ${game.result === "Win" ? "text-[#2ecc71]" : "text-[#e74c3c]"}`;
+		
+		/* MARCELO PAROU AQUI SUA INVESTIDA NO FRONTEND
+		const goalsProBar2 = document.createElement("div");
+		goalsProBar2.style.width = `${game.you}%`;
+		goalsProBar2.className = "flex justify-center items-center text-white bg-[#2ecc71]"; */
+		
 
 	    const score = document.createElement("p");
-	    score.textContent = `Score: You ${game.you} x ${game.friend} ${game.friendName}`;
+	    score.textContent = `Score: ${game.youName} ${game.you} x ${game.friend} ${game.friendName}`;
 	    score.className = "text-gray-600 font-orbitron";
 
 	    const date = document.createElement("p");
@@ -166,7 +247,7 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	    date.className = "text-gray-600 font-orbitron";
 
 		const touches = document.createElement("p");
-	    touches.textContent = `Touches: You 6 x 3 ${game.friendName}`; //fake data
+	    touches.textContent = `Touches: ${game.youName} 6 x 3 ${game.friendName}`; //fake data
 	    touches.className = "text-gray-600 font-orbitron";
 
 	    const closeBtn = document.createElement("button");
@@ -199,7 +280,7 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	    result.className = `font-orbitron font-bold ${game.result === "Win" ? "text-[#2ecc71]" : "text-[#e74c3c]"}`;
 
 	    const match = document.createElement("span");
-	    match.textContent = `You x ${game.friendName}`;
+	    match.textContent = `${game.youName} x ${game.friendName}`;
 	    match.className = "font-orbitron";
 
 	    info.appendChild(result);

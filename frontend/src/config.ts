@@ -21,4 +21,5 @@ export const API_ROUTES = {
 
 	getMatches: (username: string) => `${BACKEND_URL}/users/${username}/getMatches`,
 	getWinsAndLosses: (username: string) => `${BACKEND_URL}/users/${username}/getWinsAndLosses`,
+	getGoals: (username: string) => `${BACKEND_URL}/users/${username}/getGoals`,
 };
