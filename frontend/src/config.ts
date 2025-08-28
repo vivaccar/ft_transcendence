@@ -12,6 +12,7 @@ export const API_ROUTES = {
 	username: `${BACKEND_URL}/user/username`,
 	password: `${BACKEND_URL}/user/password`,
 	registerMatch: `${BACKEND_URL}/registerMatch`,
+	ping: `${BACKEND_URL}/ping`,
 	
 	setup2FA: `${BACKEND_URL}/2fa/setup`,
 	enable2FA: `${BACKEND_URL}/2fa/enable`,

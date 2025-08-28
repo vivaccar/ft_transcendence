@@ -73,7 +73,13 @@ export async function googleCallback(app: FastifyInstance) {
             secure: true,
             sameSite: "lax",
             path: "/",
-          });
+          })          
+          .setCookie("google", "true", {
+            httpOnly: false, // front pode ler esta flag
+            secure: true,
+            sameSite: "lax",
+            path: "/",
+          })
 
         return reply.redirect("https://localhost/dashboard");
       }

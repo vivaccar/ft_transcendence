@@ -21,22 +21,28 @@ export async function getFriends(app: FastifyInstance) {
 					status: "accepted"
 				},
 				include: {
-					friendA: { select: { username: true }},
-					friendB: { select: { username: true }}
+					friendA: { select: { username: true , lastPing: true}},
+					friendB: { select: { username: true , lastPing: true}}
 				}
 			})
 			
 			const formattedList = friendList.map(friendship => {
-				const friend = friendship.friendA.username != userObject.username ? friendship.friendA : friendship.friendB 
+				const friend = friendship.friendA.username != userObject.username
+				? friendship.friendA 
+				: friendship.friendB
+
+				if (!friend) {
+					return null
+				}
 				const status = friendship.status
-				const currentTime = Date.now()
-				const isOnline = friend.lastPing + 20000 > currentTime
+				const currentTime = BigInt(Date.now())
+				const isOnline = friend.lastPing + BigInt(20000) > currentTime
 				return {
 					friend: friend.username,
 					status: status,
 					isOnline: isOnline
 				}
-			})
+			}).filter(Boolean);
 			return res.status(200).send({ friendships: formattedList })
 		} catch(err) {
 			console.error(err)

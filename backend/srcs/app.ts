@@ -22,6 +22,8 @@ import { getInvites } from "./routes/friendships/getInvites";
 import { acceptInvite } from "./routes/friendships/acceptInvite";
 import { declineInvite } from "./routes/friendships/declineInvite";
 import { unfriend } from "./routes/friendships/unfriend";
+import { getFriends } from "./routes/friendships/getFriends";
+import { ping } from "./routes/user/ping";
 import jwt from "./plugins/jwtPlugin";
 import jwtPlugin from "./plugins/jwtPlugin";
 import googleOAuthPlugin from './plugins/google-oauth'
@@ -57,10 +59,10 @@ app.register(multipart), {
 
 	}
 };
-app.register(setup2fa)
-app.register(enable2fa)
-app.register(verify2fa)
-app.register(disable2fa)
+app.register(setup2fa);
+app.register(enable2fa);
+app.register(verify2fa);
+app.register(disable2fa);
 app.register(registerMatch);
 app.register(getMatches);
 app.register(getWinsAndLosses);
@@ -76,6 +78,8 @@ app.register(getInvites)
 app.register(acceptInvite)
 app.register(declineInvite)
 app.register(unfriend)
+app.register(getFriends)
+app.register(ping);
 app.register(websocket);
 app.register(gameWs);
 
