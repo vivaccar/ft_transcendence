@@ -49,7 +49,6 @@ export function setup2FA(toggleInput2FA: HTMLInputElement) {
 			  toggleInput2FA.checked = false;
 			  return;
 			}
-			// sessionStorage.setItem('has2fa', 'true');
 			alert("✅ 2FA Enabled successfully!");
 	  
 		  } catch (error) {
@@ -69,7 +68,7 @@ export function setup2FA(toggleInput2FA: HTMLInputElement) {
 
 				// sessionStorage.setItem('has2fa', 'false');
 				toggleInput2FA.checked = false;
-				
+				navigate('/settings');
 				if (!disableRes.ok){
 					const err = await disableRes.json();
 			  		alert(`Error desabling 2FA: ${err.message}`);

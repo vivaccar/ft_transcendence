@@ -84,6 +84,9 @@ export async function isAuthenticated(): Promise<boolean> {
 export function protectedRoute(handler: () => void | Promise<void>) {
 	return async () => {
 	  if (!(await isAuthenticated())) {
+		if(getCookieValue('has2fa') === 'true' && getCookieValue('google') === 'true'){
+			login2FA();
+		}
 		navigate("/login");
 		return;
 	  }
