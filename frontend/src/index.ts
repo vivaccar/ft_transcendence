@@ -1,20 +1,6 @@
 import "./style.css";
 import { handleRoute } from "./router";
-
-async function pingBackend(): Promise<void> {
-  try {
-    const res = await fetch('/api/ping', {
-      method: 'POST',
-    });
-    if (res.status === 401) return;
-
-  } catch (err) {}
-}
-
-function startPing(intervalSeconds: number): void {
-  pingBackend(); // ping
-  setInterval(pingBackend, intervalSeconds * 1000);
-}
+import { startPing } from "./logic/ping";
 
 
 function startApp(): void {
