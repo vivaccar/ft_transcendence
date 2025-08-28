@@ -1,25 +1,25 @@
 import { FastifyInstance } from "fastify"
 import { z } from 'zod'
-//import { inviteFriendSwaggerSchema } from "../../schemaSwagger/inviteFriendSchema"
+import { acceptInviteSwaggerSchema } from "../../schemaSwagger/acceptInviteSchema"
 
 export async function acceptInvite(app: FastifyInstance) {
-	app.patch('/acceptInvite', { preHandler: [app.authenticate]/* , schema: inviteFriendSwaggerSchema  */}, async(req, res) => {
+	app.patch('/acceptInvite', { preHandler: [app.authenticate], schema: acceptInviteSwaggerSchema }, async(req, res) => {
 		const friendSchema = z.object({
-			newFriend: z.string(),
+			friend: z.string(),
 		})
     	try {
 			const body = friendSchema.parse(req.body) // faz o parse do request body, deixando o corpo da requisicao tipado e seguro para ser utilizado
 			
 			const currentUser = req.user
-			const newFriend = await app.prisma.user.findUnique({where: { username: body.newFriend }})
+			const friend = await app.prisma.user.findUnique({where: { username: body.friend }})
 			
-			if (!newFriend) {
+			if (!friend) {
 				 return res.status(404).send({ error: "User not found in database" })
 			}
 
-			const [id1, id2] = currentUser.id < newFriend.id 
-			? [currentUser.id, newFriend.id] 
-			: [newFriend.id, currentUser.id]
+			const [id1, id2] = currentUser.id < friend.id 
+			? [currentUser.id, friend.id] 
+			: [friend.id, currentUser.id]
 			
 			const existingFriendship = await app.prisma.friendship.findUnique({ 
 				where: {
@@ -44,9 +44,18 @@ export async function acceptInvite(app: FastifyInstance) {
 				},
 				data: {
 					status: "accepted"
+				},
+				include: {
+					friendA: true,
+					friendB: true
 				}
 			})
-			return res.status(201).send({ friendship })
+			return res.status(201).send({ newFriendship: {
+				friendshipId : friendship.id,
+				friendA: friendship.friendA.username,
+				friendB: friendship.friendB.username,
+				status: friendship.status
+			} })
 		} catch(err) {
 			console.error(err)
 			return res.status(400).send({error: err})

@@ -1,25 +1,25 @@
 import { FastifyInstance } from "fastify"
 import { z } from 'zod'
-//import { inviteFriendSwaggerSchema } from "../../schemaSwagger/inviteFriendSchema"
+import { unfriendSwaggerSchema } from "../../schemaSwagger/unfriendSchema"
 
 export async function unfriend(app: FastifyInstance) {
-	app.delete('/unfriend', { preHandler: [app.authenticate]/* , schema: inviteFriendSwaggerSchema  */}, async(req, res) => {
+	app.delete('/unfriend', { preHandler: [app.authenticate], schema: unfriendSwaggerSchema }, async(req, res) => {
 		const friendSchema = z.object({
-			oldFriend: z.string(),
+			friend: z.string(),
 		})
     	try {
 			const body = friendSchema.parse(req.body) // faz o parse do request body, deixando o corpo da requisicao tipado e seguro para ser utilizado
 			
 			const currentUser = req.user
-			const oldFriend = await app.prisma.user.findUnique({where: { username: body.oldFriend }})
+			const friend = await app.prisma.user.findUnique({where: { username: body.friend }})
 			
-			if (!oldFriend) {
+			if (!friend) {
 				 return res.status(404).send({ error: "User not found in database" })
 			}
 
-			const [id1, id2] = currentUser.id < oldFriend.id 
-			? [currentUser.id, oldFriend.id] 
-			: [oldFriend.id, currentUser.id]
+			const [id1, id2] = currentUser.id < friend.id 
+			? [currentUser.id, friend.id] 
+			: [friend.id, currentUser.id]
 			
 			const existingFriendship = await app.prisma.friendship.findUnique({ 
 				where: {
@@ -43,7 +43,7 @@ export async function unfriend(app: FastifyInstance) {
 					}
 				}
 			})
-			return res.status(201).send( `Friendship between ${currentUser.username} and ${oldFriend.username} has come to the end` )
+			return res.status(201).send( `Friendship between ${currentUser.username} and ${friend.username} has come to the end` )
 		} catch(err) {
 			console.error(err)
 			return res.status(400).send({error: err})
