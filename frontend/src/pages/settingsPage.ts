@@ -1,5 +1,6 @@
 import { setupAvatarControls, setupSettingsLogic  } from "../logic/settingsLogic";
-import { renderPage } from "../utils";
+import { renderPage, getCookieValue } from "../utils";
+
 
 export function buildSettingsPage(): void {
 	const container = document.createElement("div");
@@ -141,7 +142,7 @@ export function createSettingsUI(): {
 	toggleInput2FA.type = "checkbox";
 	toggleInput2FA.className = "sr-only peer";
 
-	const has2FA = sessionStorage.getItem('has2fa') === 'true'
+	const has2FA = getCookieValue('has2fa') === 'true'
 	toggleInput2FA.checked = has2FA;
 
 	const toggleSpan = document.createElement("span");

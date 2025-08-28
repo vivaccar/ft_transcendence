@@ -36,8 +36,6 @@ export async function setupSettingsLogic(elements: ReturnType<typeof createSetti
       emailInput.value = data.email || '';
       usernameInput.value = data.username || '';
       img.src =  data.avatar ? `${data.avatar}?t=${Date.now()}` :  "/images/randomAvatar/0.jpeg";
-      console.log(img.src);
-      console.log(data.avatar);
       toggleInput2FA.checked = data.has2fa || false;
       oldPasswordInput.value = '';
 

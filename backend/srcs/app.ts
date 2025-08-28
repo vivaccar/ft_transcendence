@@ -20,6 +20,7 @@ import { logout } from "./routes/authentication/logout";
 import { inviteFriend } from "./routes/friendships/inviteFriend";
 import { getInvites } from "./routes/friendships/getInvites";
 import { ping } from "./routes/user/ping";
+import { acceptInvite } from "./routes/friendships/acceptInvite";
 import jwt from "./plugins/jwtPlugin";
 import jwtPlugin from "./plugins/jwtPlugin";
 import googleOAuthPlugin from './plugins/google-oauth'
@@ -72,6 +73,7 @@ app.register(me);
 app.register(ping);
 app.register(inviteFriend);
 app.register(getInvites);
+//app.register(acceptInvite)
 app.register(websocket);
 app.register(gameWs);
 
