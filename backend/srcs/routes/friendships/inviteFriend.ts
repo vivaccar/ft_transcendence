@@ -19,16 +19,13 @@ export async function inviteFriend(app: FastifyInstance) {
 			if (friend.id == currentUser.id) {
 				 return res.status(404).send({ error: "User cannot request friendship with yourself" })
 			}
-			const [id1, id2] = currentUser.id < friend.id 
-			? [currentUser.id, friend.id] 
-			: [friend.id, currentUser.id]
 			
-			const existingFriendship = await app.prisma.friendship.findUnique({ 
+			const existingFriendship = await app.prisma.friendship.findFirst({ 
 				where: {
-					friendAId_friendBId: {
-						friendAId: id1,
-						friendBId: id2 
-					}
+					OR :[
+						{ friendAId: currentUser.id, friendBId: friend.id },
+						{ friendAId: friend.id, friendBId: currentUser.id }
+					]
 				}});
 			if (existingFriendship) {
 				return res.status(409).send({ error: "Friendship already exists between these users"})
@@ -36,8 +33,8 @@ export async function inviteFriend(app: FastifyInstance) {
 
 			const friendship = await app.prisma.friendship.create ({
 				data: {
-					friendA: {connect: { id: id1 }},
-					friendB: {connect: { id: id2 }},
+					friendA: {connect: { id: currentUser.id }}, 
+					friendB: {connect: { id: friend.id }},
 					status: "pending"
 				}
 			})

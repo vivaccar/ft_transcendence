@@ -17,16 +17,12 @@ export async function unfriend(app: FastifyInstance) {
 				 return res.status(404).send({ error: "User not found in database" })
 			}
 
-			const [id1, id2] = currentUser.id < friend.id 
-			? [currentUser.id, friend.id] 
-			: [friend.id, currentUser.id]
-			
-			const existingFriendship = await app.prisma.friendship.findUnique({ 
+			const existingFriendship = await app.prisma.friendship.findFirst({ 
 				where: {
-					friendAId_friendBId: {
-						friendAId: id1,
-						friendBId: id2 
-					}
+					OR :[
+						{ friendAId: currentUser.id, friendBId: friend.id },
+						{ friendAId: friend.id, friendBId: currentUser.id }
+					]
 				}});
 			if (!existingFriendship) {
 				return res.status(409).send({ error: "Friendship not found in database"})
@@ -35,12 +31,9 @@ export async function unfriend(app: FastifyInstance) {
 				return res.status(409).send({ error: "Friendship invite was not accepted yet"})
 			}
 
-			const deleteFriendship = await app.prisma.friendship.delete ({
+			const deleteFriendship = await app.prisma.friendship.delete ({ 
 				where: {
-					friendAId_friendBId: {
-						friendAId: id1,
-						friendBId: id2 
-					}
+					id: existingFriendship.id
 				}
 			})
 			return res.status(201).send( `Friendship between ${currentUser.username} and ${friend.username} has come to the end` )
