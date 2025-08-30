@@ -1,16 +1,17 @@
 import { renderPage } from "../utils";
+import { fetchFriendInvites, fetchUserAvatar, sendFriendInvite, acceptInvite, declineInvite, fetchFriends, unfriendUser } from "../logic/friendsLogic";
 
-export function buildFriendsPage(): void {
+export async function buildFriendsPage(): Promise<void> {
 	const container = document.createElement("div");
 	container.className = "flex flex-col items-center justify-center h-screen gap-6";
 
 	renderPage(container);
 
-	const friendsUI = createFriendsUI();
+	const friendsUI = await createFriendsUI();
 	container.appendChild(friendsUI);
 }
 
-function createFriendsUI(): HTMLDivElement {
+async function createFriendsUI(): Promise<HTMLDivElement> {
 	const container = document.createElement("div");
 	container.className = "flex items-center justify-center w-screen h-[calc(100vh-64px)] gap-6";
 
@@ -36,6 +37,16 @@ function createFriendsUI(): HTMLDivElement {
 	addButton.className =
 		"bg-[#193D5E] text-white px-4 py-2 rounded-md font-orbitron font-semibold cursor-pointer transition-colors hover:bg-sky-950";
 
+
+	addButton.addEventListener("click", () => {
+		const friendName = searchInput.value.trim();
+		if (!friendName) {
+			alert("Digite o nome do amigo para enviar o convite");
+			return;
+		}
+		sendFriendInvite(friendName);
+	});
+
 	pnheaderBar.appendChild(searchInput);
 	pnheaderBar.appendChild(addButton);
 
@@ -44,14 +55,9 @@ function createFriendsUI(): HTMLDivElement {
 	friendsList.className =
 		"flex-1 overflow-y-auto p-4 flex flex-col gap-4";
 
-	// exemplo, depois vai mudar para a logica do backend
-	const friends = [
-		{ name: "Vivaccar", online: true, img: "/images/randomAvatar/3.jpeg" },
-		{ name: "Marcelo_Gaucho", online: false, img: "/images/randomAvatar/2.jpeg" },
-		{ name: "Nicole", online: true, img: "/images/randomAvatar/4.jpeg" },
-	];
+	const friends = await fetchFriends();
 
-	friends.forEach(friend => {
+	for (const friend of friends) {
 		const friendRow = document.createElement("div");
 		friendRow.className =
 			"flex items-center justify-between bg-gray-100 rounded-lg shadow px-4 py-2";
@@ -61,23 +67,25 @@ function createFriendsUI(): HTMLDivElement {
 		info.className = "flex items-center gap-3";
 
 		const avatar = document.createElement("img");
-		avatar.src = friend.img;
+		avatar.src = await fetchUserAvatar(friend.friend);
 		avatar.className = "w-10 h-10 object-cover rounded-full border border-gray-300";
 
 		const nameStatus = document.createElement("div");
 		nameStatus.className = "flex flex-col";
 
 		const name = document.createElement("span");
-		name.textContent = friend.name;
+		name.textContent = friend.friend;
 		name.className = "font-orbitron";
+
+		const online = Boolean(friend.isOnline);
 
 		const status = document.createElement("span");
 		status.className = `flex items-center text-sm ${
-			friend.online ? "text-green-600" : "text-red-600"
+			online ? "text-green-600" : "text-red-600"
 		}`;
 		status.innerHTML = `<span class="w-2 h-2 rounded-full mr-1 ${
-			friend.online ? "bg-green-500" : "bg-red-500"
-		}"></span>${friend.online ? "Online" : "Offline"}`;
+			online ? "bg-green-500" : "bg-red-500"
+		}"></span>${online ? "Online" : "Offline"}`;
 
 		nameStatus.appendChild(name);
 		nameStatus.appendChild(status);
@@ -90,12 +98,19 @@ function createFriendsUI(): HTMLDivElement {
 		unfriendBtn.textContent = "Unfriend";
 		unfriendBtn.className =
 			"bg-[#193D5E] text-white px-3 py-1 rounded-md text-sm font-orbitron font-semibold cursor-pointer hover:bg-red-700 transition-colors";
+
+		unfriendBtn.addEventListener("click", async () => {
+			const success = await unfriendUser(friend.friend);
+			if (success) {
+				friendRow.remove();
+			}
+		});
 	
 		friendRow.appendChild(info);
 		friendRow.appendChild(unfriendBtn);
 
 		friendsList.appendChild(friendRow);
-	});
+	};
 
 	friendsBox.appendChild(pnheaderBar);
 	friendsBox.appendChild(friendsList);
@@ -120,12 +135,9 @@ function createFriendsUI(): HTMLDivElement {
 	const requestsList = document.createElement("div");
 	requestsList.className = "flex-1 overflow-y-auto p-4 flex flex-col gap-4";
 
-	// Dummy requests
-	const requests = [
-		{ name: "Victor", img: "/images/randomAvatar/1.jpeg" },
-	];
+	const requests = await fetchFriendInvites();
 
-	requests.forEach(req => {
+	for (const req of requests) {
 		const reqRow = document.createElement("div");
 		reqRow.className =
 			"flex items-center justify-between bg-gray-100 rounded-lg shadow px-4 py-2";
@@ -134,11 +146,11 @@ function createFriendsUI(): HTMLDivElement {
 		info.className = "flex items-center gap-3";
 
 		const avatar = document.createElement("img");
-		avatar.src = req.img;
+		avatar.src = await fetchUserAvatar(req.requester);
 		avatar.className = "w-10 h-10 object-cover rounded-full border border-gray-300";
 
 		const name = document.createElement("span");
-		name.textContent = req.name;
+		name.textContent = req.requester;
 		name.className = "font-orbitron";
 
 		info.appendChild(avatar);
@@ -158,6 +170,20 @@ function createFriendsUI(): HTMLDivElement {
 		declineBtn.className =
 			"bg-red-600 text-white px-3 py-1 rounded-md text-sm font-orbitron font-semibold cursor-pointer hover:bg-red-700 transition-colors";
 
+		acceptBtn.addEventListener("click", async () => {
+			const ok = await acceptInvite(req.requester);
+			if (ok) {
+				reqRow.remove();
+			}
+		});
+		
+		declineBtn.addEventListener("click", async () => {
+			const ok = await declineInvite(req.requester);
+			if (ok) {
+				reqRow.remove();
+			}
+		});
+		
 		btnGroup.appendChild(acceptBtn);
 		btnGroup.appendChild(declineBtn);
 
@@ -165,7 +191,7 @@ function createFriendsUI(): HTMLDivElement {
 		reqRow.appendChild(btnGroup);
 
 		requestsList.appendChild(reqRow);
-	});
+	}
 
 	requestsBox.appendChild(reqHeader);
 	requestsBox.appendChild(requestsList);

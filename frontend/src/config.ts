@@ -22,4 +22,12 @@ export const API_ROUTES = {
 	getMatches: (username: string) => `${BACKEND_URL}/users/${username}/getMatches`,
 	getWinsAndLosses: (username: string) => `${BACKEND_URL}/users/${username}/getWinsAndLosses`,
 	getGoals: (username: string) => `${BACKEND_URL}/users/${username}/getGoals`,
+
+	inviteFriend: `${BACKEND_URL}/inviteFriend`,
+	getInvites: (username: string) => `${BACKEND_URL}/users/${username}/getInvites`,
+	getAvatar: (username: string) => `${BACKEND_URL}/users/${username}/avatar`,
+	acceptInvite: `${BACKEND_URL}/acceptInvite`,
+	declineInvite: `${BACKEND_URL}/declineInvite`,
+	unfriend: `${BACKEND_URL}/unfriend`,
+	getFriends: (username: string) => `${BACKEND_URL}/users/${username}/getFriends`,
 };

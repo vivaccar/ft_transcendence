@@ -28,3 +28,14 @@ export interface Game {
 	touchesUser: number;
 	dateTime: Date;
 }
+
+export interface Invites {
+	requester: string;
+	status: string;
+}
+
+export interface Friend {
+	friend: string;
+	status: string;
+	isOnline: boolean;
+}
