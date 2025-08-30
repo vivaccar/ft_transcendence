@@ -50,13 +50,12 @@ model	Friendship {
 	id					Int @id @default(autoincrement()) //primary key
 
 	friendA				User @relation("FriendA", fields: [friendAId], references: [id])
-	friendAId			Int 
+	friendAId			Int // sempre é o requester
 
 	friendB				User @relation("FriendB", fields: [friendBId], references: [id])
-	friendBId			Int
+	friendBId			Int // sempre é o requested
 
 	status				String //pending, accepted or declined
 
-	@@unique([friendAId, friendBId])
 }
 

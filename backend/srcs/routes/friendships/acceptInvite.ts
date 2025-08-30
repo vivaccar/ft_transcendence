@@ -16,17 +16,11 @@ export async function acceptInvite(app: FastifyInstance) {
 			if (!friend) {
 				 return res.status(404).send({ error: "User not found in database" })
 			}
-
-			const [id1, id2] = currentUser.id < friend.id 
-			? [currentUser.id, friend.id] 
-			: [friend.id, currentUser.id]
 			
-			const existingFriendship = await app.prisma.friendship.findUnique({ 
-				where: {
-					friendAId_friendBId: {
-						friendAId: id1,
-						friendBId: id2 
-					}
+			const existingFriendship = await app.prisma.friendship.findFirst({ 
+				where: { 
+					friendAId: friend.id,
+					friendBId: currentUser.id
 				}});
 			if (!existingFriendship) {
 				return res.status(409).send({ error: "Friendship not found in database"})
@@ -37,10 +31,7 @@ export async function acceptInvite(app: FastifyInstance) {
 
 			const friendship = await app.prisma.friendship.update ({
 				where: {
-					friendAId_friendBId: {
-						friendAId: id1,
-						friendBId: id2 
-					}
+					id : existingFriendship.id
 				},
 				data: {
 					status: "accepted"
