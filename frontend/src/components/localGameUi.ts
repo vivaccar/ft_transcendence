@@ -7,7 +7,7 @@ export function createGameUI(): HTMLElement {
 
     // 2. Criar o placar (scoreboard)
     const scoreboard = document.createElement('div');
-    scoreboard.className = 'text-6xl mb-4 font-mono text-center text-white';
+    scoreboard.className = 'text-6xl mb-4 font-mono text-center text-white bg-transparent shadow-none';
 
     const p1Score = document.createElement('span');
     p1Score.id = 'game-player1-score';
@@ -35,7 +35,15 @@ export function createGameUI(): HTMLElement {
 
     const winnerText = document.createElement('h2');
     winnerText.id = 'winner-text';
-    winnerText.className = 'text-5xl font-orbitron font-bold text-white font-mono';
+    winnerText.className = `
+    text-5xl md:text-6xl lg:text-7xl
+    font-orbitron font-bold
+    text-transparent bg-clip-text
+    bg-gradient-to-r from-[#A66DD4] via-[#00F0FF] to-[#FFFFFF]
+    drop-shadow-[0_0_10px_#00F0FF]
+    text-center
+    animate-pulse
+  `;
 
     // 5. Criar um contêiner para os botões ficarem lado a lado
     const buttonContainer = document.createElement('div');

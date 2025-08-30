@@ -19,12 +19,11 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 
     // ---------------- Personal Numbers ----------------
     const personalNbrBox = document.createElement("div");
-	personalNbrBox.className = "bg-white text-gray-900 rounded-xl shadow-lg w-full h-2/3 max-w-lg";
+	personalNbrBox.className = "bg-white text-gray-900 rounded-xl shadow-lg w-full h-2/3 max-w-lg overflow-y-auto";
 	personalNbrBox.style.background = "#D9D9D9";
 
 	const pnheaderBar = document.createElement("div");
-	pnheaderBar.className =
-	  "bg-[#174B7A] px-8 py-6 rounded-t-lg flex justify-center items-center";
+	pnheaderBar.className = "bg-[#174B7A] px-8 py-6 rounded-t-lg flex justify-center items-center sticky top-0 z-10 w-full";
 
 	const personalNbrTitle = document.createElement("h1");
 	personalNbrTitle.textContent = "Personal Numbers";
@@ -207,10 +206,6 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	// Container para os games
 	const gamesContainer = document.createElement("div");
 	gamesContainer.className = "flex flex-col gap-4 p-4";
-
-	// const games = [{ result: "Win", you: 3, friend: 0, friendName: "Amauri", dateTime: new Date().toISOString() },
-		// { result: "Loss", you: 0, friend: 3, friendName: "Amauri", dateTime: new Date().toISOString() }
-	// ]; //fake data
 
 	const games: Game[] = await getMatches();
 

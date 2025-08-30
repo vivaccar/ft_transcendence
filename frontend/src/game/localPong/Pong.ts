@@ -36,7 +36,7 @@ export async function buildHumanGameLocal(gameType: string): Promise<void> {
     
     const player1Title = document.createElement("h2");
     player1Title.textContent = player1Name;
-    player1Title.className = "text-white font-orbitron font-bold text-2xl w-48 text-center";
+    player1Title.className = `text-white font-orbitron font-bold text-2xl w-48 text-center truncate`;
     container.appendChild(player1Title);
 
     const gameContainer = document.createElement('div');
@@ -52,7 +52,7 @@ export async function buildHumanGameLocal(gameType: string): Promise<void> {
         player2Name = 'Player 2';
     const player2Title = document.createElement("h2");
     player2Title.textContent = player2Name;
-    player2Title.className = "text-white font-orbitron font-bold text-2xl w-48 text-center";
+    player2Title.className = `text-white font-orbitron font-bold text-2xl max-w-full text-center truncate`;
     container.appendChild(player2Title);
 
     if (gameType === "tournament") {
