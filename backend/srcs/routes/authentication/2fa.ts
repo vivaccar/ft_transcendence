@@ -70,6 +70,12 @@ export async function enable2fa(app:FastifyInstance) {
             has2fa: true,
             },
         })
+        reply.setCookie("has2fa", "true", {
+            path: "/",
+            httpOnly: false,
+            secure: true,
+            sameSite: "lax", 
+        });
         return reply.send({ message: '2FA enabled successfully' });
     })
 }
@@ -135,6 +141,12 @@ export async function disable2fa(app:FastifyInstance){
             },
         })
 
-        reply.status(200).send({message: "2FA disabled"})
+        reply.setCookie("has2fa", "false", {
+            path: "/",
+            httpOnly: false,
+            secure: true,
+            sameSite: "lax", 
+        });    
+        return reply.status(200).send({message: "2FA disabled"})
     })
 }

@@ -45,7 +45,7 @@ export function buildTournamentsPage(gameType: string) {
     };
 
     const container = document.createElement("div");
-    container.className = "flex flex-col items-center justify-center min-h-screen py-10";
+    container.className = "flex flex-col items-center justify-center h-[calc(100vh-64px)] py-10";
     renderPage(container);
 
     const title = document.createElement("h1");

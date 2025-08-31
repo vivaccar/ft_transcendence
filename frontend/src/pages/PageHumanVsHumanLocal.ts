@@ -10,7 +10,7 @@ export function buildGamePageManVsManLocal(gameType: string) {
   		let selectedbackgroundImg = "/images/backgroundGame/back10.jpg";
 
   	const container = document.createElement("div");
-  	container.className = "flex flex-col items-center justify-center h-screen";
+  	container.className = "flex flex-col items-center justify-center h-screen overflow-y-auto";
   	renderPage(container);
 
   	const title = document.createElement("h1");

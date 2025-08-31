@@ -11,9 +11,23 @@ export const API_ROUTES = {
 	uploadAvatar: `${BACKEND_URL}/uploadAvatar`,
 	username: `${BACKEND_URL}/user/username`,
 	password: `${BACKEND_URL}/user/password`,
+	registerMatch: `${BACKEND_URL}/registerMatch`,
+	ping: `${BACKEND_URL}/ping`,
 	
 	setup2FA: `${BACKEND_URL}/2fa/setup`,
 	enable2FA: `${BACKEND_URL}/2fa/enable`,
 	disable2FA: `${BACKEND_URL}/2fa/disable`,
 	verify2FA: `${BACKEND_URL}/2fa/verify`,
+
+	getMatches: (username: string) => `${BACKEND_URL}/users/${username}/getMatches`,
+	getWinsAndLosses: (username: string) => `${BACKEND_URL}/users/${username}/getWinsAndLosses`,
+	getGoals: (username: string) => `${BACKEND_URL}/users/${username}/getGoals`,
+
+	inviteFriend: `${BACKEND_URL}/inviteFriend`,
+	getInvites: (username: string) => `${BACKEND_URL}/users/${username}/getInvites`,
+	getAvatar: (username: string) => `${BACKEND_URL}/users/${username}/avatar`,
+	acceptInvite: `${BACKEND_URL}/acceptInvite`,
+	declineInvite: `${BACKEND_URL}/declineInvite`,
+	unfriend: `${BACKEND_URL}/unfriend`,
+	getFriends: (username: string) => `${BACKEND_URL}/users/${username}/getFriends`,
 };

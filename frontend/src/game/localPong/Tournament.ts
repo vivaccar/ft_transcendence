@@ -235,8 +235,8 @@ export function initializeTournamentMatch(containerId: string, width: number, he
     }
     const paddleWidth = 10, paddleHeight = 100, paddleSpeed = 300;
     const ballSize = 10, ballSpeed = 300;
-    player1 = new Paddle(paddleWidth, tournamentGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP1') || 'white');
-    player2 = new Paddle(tournamentGameArea.canvas.width - paddleWidth * 2, tournamentGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP2') || 'white');
+    player1 = new Paddle(paddleWidth, tournamentGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP1') || 'white', "");
+    player2 = new Paddle(tournamentGameArea.canvas.width - paddleWidth * 2, tournamentGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP2') || 'white', "");
     ball = new Ball(tournamentGameArea.canvas.width / 2, tournamentGameArea.canvas.height / 2, ballSize, ballSpeed, tournamentGameArea.canvas);
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);

@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify"
 import { fileTypeFromBuffer } from 'file-type'
-import { uploadAvatarSwaggerSchema } from "../../schemaSwagger/uploadAvatarSchema"
+//import { uploadAvatarSwaggerSchema } from "../../schemaSwagger/uploadAvatarSchema"
 
 export async function uploadAvatar(app: FastifyInstance) {
 	app.post('/uploadAvatar', { preHandler: [app.authenticate] }, async(req, res) => {

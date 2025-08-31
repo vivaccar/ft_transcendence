@@ -1,6 +1,7 @@
 import { Ball } from './Ball';
 import { Paddle } from './Paddle';
 import { createGameUI } from '../../components/localGameUi';
+import { API_ROUTES } from '../../config';
 
 // --- TIPOS E ESTADO GLOBAL DO MÓDULO ---
 type GameArea = {
@@ -176,6 +177,7 @@ function checkCollisions() {
         ball.y - ball.size < player1.y + player1.height) 
     {
         ball.x = player1.x + player1.width + ball.size; //reposiciona para evitar que a bola entre na raquete
+        player1.touches++;
         ball.speedX *= -1;
     }
 
@@ -187,6 +189,7 @@ function checkCollisions() {
     {
         
         ball.x = player2.x - ball.size;
+        player2.touches++;
         ball.speedX *= -1;
     }
 }
@@ -199,7 +202,7 @@ function checkScore() {
         player2.score++;
         updateScoreboard();
         if (player2.score >= winningScore) {
-            winnerName = 'Player 2';
+            winnerName = player2.name;
         } else {
             ball.reset();
         }
@@ -208,7 +211,7 @@ function checkScore() {
         player1.score++;
         updateScoreboard();
         if (player1.score >= winningScore) {
-            winnerName = 'Player 1';
+            winnerName = player1.name;
         } else {
             ball.reset();
         }
@@ -220,7 +223,7 @@ function checkScore() {
     }
 }
 
-function endGame(winnerName: string) {
+async function endGame(winnerName: string) {
     myGameArea.stop();
 
     // 2. Encontra os elementos HTML que vamos manipular
@@ -233,6 +236,34 @@ function endGame(winnerName: string) {
         
         // Remove a classe "hidden" para mostrar o overlay
         gameOverScreen.classList.remove('hidden');
+    }
+    
+    try {
+        await fetch(`${API_ROUTES.registerMatch}`, {
+        method: "POST",
+        headers: {
+        "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      date: new Date().toISOString(), // precisa ser ISO 8601
+      participants: [
+        {
+          username: player1.name,
+          goals: player1.score,
+          isLocal: false,
+          touches: player1.touches
+        },
+        {
+          username: player2.name,
+          goals: player2.score,
+          isLocal: true,
+          touches: player2.touches
+        }
+      ]
+    })})
+        console.log("Partida salva com sucesso!");
+    } catch (err) {
+        console.error("Erro ao salvar partida:", err);
     }
 }
 
@@ -263,6 +294,8 @@ function restartGame(): void {
             lastGameSettings.width,
             lastGameSettings.height,
             lastGameSettings.mode,
+            player1.name,
+            player2.name
         );
     } else {
         console.error('Não foi possível reiniciar o jogo: as configurações iniciais não foram encontradas.');
@@ -283,7 +316,7 @@ function cleanupGame(): void {
     window.removeEventListener('keyup', handleKeyUp);
 }
 
-export function initializeLocalGame(containerId: string, width: number, height: number, mode: string) {
+export function initializeLocalGame(containerId: string, width: number, height: number, mode: string, player1Name: string, player2Name: string) {
     cleanupGame();
 
     currentGameMode = mode;
@@ -320,9 +353,10 @@ export function initializeLocalGame(containerId: string, width: number, height: 
     }
 
     const paddleWidth = 10, paddleHeight = 100, paddleSpeed = 300;
-    const ballSize = 10, ballSpeed = 300;
-    player1 = new Paddle(paddleWidth, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP1') || 'white');
-    player2 = new Paddle(myGameArea.canvas.width - paddleWidth * 2, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP2') || 'white');
+    const ballSize = 10, ballSpeed = 350;
+    //ARRUMAR UM JEITO DE COLOCAR UM NICK NO USUARIO PARA INTEGRACAO COM BACKEND
+    player1 = new Paddle(paddleWidth, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP1') || 'white', player1Name);
+    player2 = new Paddle(myGameArea.canvas.width - paddleWidth * 2, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP2') || 'white', player2Name);
     ball = new Ball(myGameArea.canvas.width / 2, myGameArea.canvas.height / 2, ballSize, ballSpeed, myGameArea.canvas);
 
     window.addEventListener('keydown', handleKeyDown);
@@ -331,5 +365,43 @@ export function initializeLocalGame(containerId: string, width: number, height: 
     //ESSE BOTAO TEM DE DAR A OPÇÃO DE VOLTAR PARA TELAS ESPECIFICATA TAMBEM DE ACORDO COM O DESENHO
     setupRestartButton();
 
-    myGameArea.start();
+    startCountdown(3, () => {
+        myGameArea.start(); 
+    });
+}
+
+function startCountdown(duration: number, callback: () => void) {
+    if (!myGameArea.canvas) return;
+    const ctx = myGameArea.context!;
+    let timeLeft = duration;
+
+    drawCountdownOverlay(ctx, timeLeft);
+
+    const countdownInterval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft < 0) {
+            clearInterval(countdownInterval);
+            callback();
+            return;
+        }
+        drawCountdownOverlay(ctx, timeLeft);
+    }, 1000);
+}
+
+
+function drawCountdownOverlay(ctx: CanvasRenderingContext2D, number: number) {
+    myGameArea.clear();
+
+    player1.draw(ctx);
+    player2.draw(ctx);
+    ball.draw(ctx);
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+    ctx.fillRect(0, 0, myGameArea.canvas!.width, myGameArea.canvas!.height);
+
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 80px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(number.toString(), myGameArea.canvas!.width / 2, myGameArea.canvas!.height / 2);
 }

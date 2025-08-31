@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "darwin-arm64"]
 }
 
 datasource db {
@@ -18,9 +19,10 @@ model User {
 	has2fa				Boolean @default(false)
 	secret2fa			String?
 	matches				MatchParticipant[]
-	friends				User[] @relation("UserFriends") // amigos este user adicionou - self relationship
-	friendsOf			User[] @relation("UserFriends") // users que adicionaram este user como amigo - self-relationship
+	friendshipsA		Friendship[] @relation("FriendA")
+	friendshipsB		Friendship[] @relation("FriendB")
 	avatar				Bytes?
+	lastPing			BigInt @default(0)
 }
 
 model Match {
@@ -32,19 +34,28 @@ model Match {
 model MatchParticipant { //intermediary table to relate users to matches (many-to-many relationship)
 	id					Int	@id @default(autoincrement()) // primary key
 
-	user				User @relation(fields: [userId], references: [id]) //relation user
-	userId				Int //foreign key
+	user				User? @relation(fields: [userId], references: [id]) //relation user
+	userId				Int? //foreign key
+
+	localUser			String? //local player name
 
 	match				Match @relation(fields: [matchId], references: [id])
 	matchId				Int //foreign key
 
 	goals				Int
+	touches				Int @default(0)
 }
 
-/* 
-model Tournament {
-	id 				Int @id @default(autoincrement()) // primary key
-	name			String @unique
+model	Friendship {
+	id					Int @id @default(autoincrement()) //primary key
 
-	//players[]		User 
-} */
+	friendA				User @relation("FriendA", fields: [friendAId], references: [id])
+	friendAId			Int // sempre é o requester
+
+	friendB				User @relation("FriendB", fields: [friendBId], references: [id])
+	friendBId			Int // sempre é o requested
+
+	status				String //pending, accepted or declined
+
+}
+

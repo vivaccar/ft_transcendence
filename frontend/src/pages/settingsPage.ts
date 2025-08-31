@@ -1,5 +1,6 @@
 import { setupAvatarControls, setupSettingsLogic  } from "../logic/settingsLogic";
-import { renderPage } from "../utils";
+import { renderPage, getCookieValue } from "../utils";
+
 
 export function buildSettingsPage(): void {
 	const container = document.createElement("div");
@@ -26,10 +27,10 @@ export function createSettingsUI(): {
 	oldPasswordInput: HTMLInputElement
   } {
 	const container = document.createElement("div");
-	container.className = "flex flex-col items-center justify-center h-screen gap-4";
+	container.className = "flex flex-col items-center justify-center  h-[calc(100vh-64px)] gap-4";
   
 	const box = document.createElement("div");
-	box.className = "bg-white text-gray-900 rounded-xl shadow-lg w-full max-w-2xl";
+	box.className = "bg-white text-gray-900 rounded-xl shadow-lg w-full max-w-2xl overflow-y-auto";
 	box.style.background = "#D9D9D9";
   
 	// headerBar e título
@@ -49,7 +50,7 @@ export function createSettingsUI(): {
 	profileSection.className = "flex items-center mb-2 gap-6 p-8 pb-4";
   
 	const img = document.createElement("img");
-	img.src = "/images/randomAvatar/0.jpeg";
+	// img.src = "/images/randomAvatar/0.jpeg";
 	img.className = "w-32 h-32 object-cover rounded-full border-4 border-gray-300";
 	profileSection.appendChild(img);
   
@@ -82,7 +83,6 @@ export function createSettingsUI(): {
 
 	setupAvatarControls(img, btnUpload, btnRandom);
   
-	// form
 	// form
 	const form = document.createElement("form");
 	form.className = "flex flex-col gap-2 p-4 pt-0 font-orbitron";
@@ -142,7 +142,7 @@ export function createSettingsUI(): {
 	toggleInput2FA.type = "checkbox";
 	toggleInput2FA.className = "sr-only peer";
 
-	const has2FA = sessionStorage.getItem('has2fa') === 'true'
+	const has2FA = getCookieValue('has2fa') === 'true'
 	toggleInput2FA.checked = has2FA;
 
 	const toggleSpan = document.createElement("span");
@@ -174,9 +174,12 @@ export function createSettingsUI(): {
 
 		usernameInput.className = 'inputUnblocked';
 		usernameInput.disabled = false;
-		oldPasswordInput.classList.remove('hidden');
-		passwordInput.classList.remove('hidden');
-		confirmPasswordInput.classList.remove('hidden');
+		if (sessionStorage.getItem('googleUser') === 'false'){
+
+			oldPasswordInput.classList.remove('hidden');
+			passwordInput.classList.remove('hidden');
+			confirmPasswordInput.classList.remove('hidden');
+		} 
 		submitBtn.classList.remove('hidden');
 		editBtn.classList.add('hidden');
 	});

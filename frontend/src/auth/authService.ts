@@ -1,5 +1,5 @@
 import { API_ROUTES } from "../config";
-import type { loginCredentials, registerCredentials } from "./types";
+import type { loginCredentials, registerCredentials } from "../types";
 
 export async function google(): Promise<void> {
 	window.location.href = `${API_ROUTES.auth.loginGoogle}`;
