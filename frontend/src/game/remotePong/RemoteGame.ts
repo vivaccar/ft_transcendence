@@ -24,8 +24,6 @@ const gameState: GameState = {
 let canvas: HTMLCanvasElement;
 let context: CanvasRenderingContext2D;
 let animationFrameId: number | null = null;
-//let paddleColor1 = 'white';
-//let paddleColor2 = 'white';
 
 // As funções draw, gameLoop, handleKeyDown e handleKeyUp estão PERFEITAS, não precisam de alterações.
 function draw() {

@@ -9,6 +9,7 @@ const BALL_SIZE = 10;
 //Pixels per second
 const PADDLE_SPEED = 300;
 const BALL_SPEED = 300;
+const WINNING_SCORE = 2;
 
 // Represents a player connected to a session
 export class Player {
@@ -81,24 +82,24 @@ export class GameSession {
 		if (this.players.length !== 2) return; // Só começa com 2 jogadores
 
 		const player1 = this.players[0]; // Host
-        const player2 = this.players[1]; // Guest
+		const player2 = this.players[1]; // Guest
 
 		console.log(`[GameSession ${this.sessionId}] Iniciando jogo. Notificando ambos os jogadores.`);
 
 		player1.ws.send(JSON.stringify({
-            type: 'gameStart',
-            opponentId: player2.id
-        }));
+			type: 'gameStart',
+			opponentId: player2.id
+		}));
 
-        // Envia a mensagem para o Player 2 com o ID do oponente correto
-        player2.ws.send(JSON.stringify({
-            type: 'gameStart',
-            opponentId: player1.id
-        }));
+		// Envia a mensagem para o Player 2 com o ID do oponente correto
+		player2.ws.send(JSON.stringify({
+			type: 'gameStart',
+			opponentId: player1.id
+		}));
 
 		//this.broadcast({ type: 'gameStart', opponentId: this.players[1].id });
 		this.lastTime = Date.now();
-		this.gameInterval = setInterval(() => this.update(), 1000 / 60); // 60 updates por segundo
+		this.gameInterval = setInterval(() => this.update(), 1000 / 30); // 60 updates por segundo
 	}
 
 	// Para o loop do jogo
@@ -131,6 +132,8 @@ export class GameSession {
 
 		// 3. Verificar colisões
 		this.checkCollisions();
+
+		this.checkWinCondition();
 
 		// 4. Enviar o novo estado para os jogadores
 		this.broadcastState();
@@ -165,32 +168,57 @@ export class GameSession {
 		}
 	}
 
+	private checkWinCondition() {
+		const p1 = this.players[0];
+		const p2 = this.players[1];
+		let winner: Player | null = null;
+
+		if (p1.score >= WINNING_SCORE) {
+			winner = p1;
+		} else if (p2.score >= WINNING_SCORE) {
+			winner = p2;
+		}
+
+		if (winner) {
+			console.log(`[GameSession ${this.sessionId}] Fim de jogo! Vencedor: Jogador com ID ${winner.id}`);
+			this.stop(); // Para o loop do jogo
+
+			// Envia a mensagem de 'gameOver' para ambos os jogadores
+			this.broadcast({
+				type: 'gameOver',
+				payload: {
+					winnerName: winner.id === p1.id ? 'Player 1' : 'Player 2' // Pode melhorar isto para usar aliases
+				}
+			});
+		}
+	}
+
 	// Envia o estado atual para todos os jogadores na sessão
 	private broadcastState() {
-        // Garante que só envia o estado se tivermos ambos os jogadores
-        if (this.players.length < 2) return;
+		// Garante que só envia o estado se tivermos ambos os jogadores
+		if (this.players.length < 2) return;
 
-        const state = {
-            type: 'gameStateUpdate',
-            payload: { // <<< Envolvemos o estado num 'payload' para consistência
-                ball: { x: this.ball.x, y: this.ball.y },
-                paddles: this.players.map(p => ({ id: p.id, x: p.x, y: p.y, color: p.color})),
-                scores: { p1: this.players[0].score, p2: this.players[1].score }
-            }
-        };
-        this.broadcast(state);
-    }
+		const state = {
+			type: 'gameStateUpdate',
+			payload: { // <<< Envolvemos o estado num 'payload' para consistência
+				ball: { x: this.ball.x, y: this.ball.y },
+				paddles: this.players.map(p => ({ id: p.id, x: p.x, y: p.y, color: p.color })),
+				scores: { p1: this.players[0].score, p2: this.players[1].score }
+			}
+		};
+		this.broadcast(state);
+	}
 
-	 // Função utilitária para enviar uma mensagem para ambos os jogadores
-    private broadcast(message: object) {
-        const msgString = JSON.stringify(message);
-        this.players.forEach(player => {
-            // Verificação de segurança para só enviar se a conexão estiver aberta
-            if (player.ws.readyState === WebSocket.OPEN) {
-                player.ws.send(msgString)
-            }
-        });
-    }
+	// Função utilitária para enviar uma mensagem para ambos os jogadores
+	private broadcast(message: object) {
+		const msgString = JSON.stringify(message);
+		this.players.forEach(player => {
+			// Verificação de segurança para só enviar se a conexão estiver aberta
+			if (player.ws.readyState === WebSocket.OPEN) {
+				player.ws.send(msgString)
+			}
+		});
+	}
 
 	handlePlayerMove(playerId: string, data: { key: 'w' | 's' | 'ArrowUp' | 'ArrowDown'; keyState: 'keydown' | 'keyup' }) {
 		const player = this.players.find(p => p.id === playerId);
