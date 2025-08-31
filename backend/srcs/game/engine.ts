@@ -14,6 +14,7 @@ const BALL_SPEED = 300;
 export class Player {
 	id: string;
 	ws: WebSocket;
+	color: string;
 	x: number;
 	y: number;
 	width: number = PADDLE_WIDTH;
@@ -22,9 +23,10 @@ export class Player {
 	moveUp: boolean = false;
 	moveDown: boolean = false;
 
-	constructor(id: string, ws: WebSocket, side: 'left' | 'right') {
+	constructor(id: string, ws: WebSocket, side: 'left' | 'right', color: string) {
 		this.id = id;
 		this.ws = ws;
+		this.color = color;
 		this.x = (side === 'left') ? PADDLE_WIDTH : CANVAS_WIDTH - (PADDLE_WIDTH * 2);
 		this.y = CANVAS_HEIGHT / 2 - PADDLE_HEIGHT / 2;
 	}
@@ -94,7 +96,7 @@ export class GameSession {
             opponentId: player1.id
         }));
 
-		this.broadcast({ type: 'gameStart', opponentId: this.players[1].id });
+		//this.broadcast({ type: 'gameStart', opponentId: this.players[1].id });
 		this.lastTime = Date.now();
 		this.gameInterval = setInterval(() => this.update(), 1000 / 60); // 60 updates por segundo
 	}
@@ -172,7 +174,7 @@ export class GameSession {
             type: 'gameStateUpdate',
             payload: { // <<< Envolvemos o estado num 'payload' para consistência
                 ball: { x: this.ball.x, y: this.ball.y },
-                paddles: this.players.map(p => ({ id: p.id, x: p.x, y: p.y })),
+                paddles: this.players.map(p => ({ id: p.id, x: p.x, y: p.y, color: p.color})),
                 scores: { p1: this.players[0].score, p2: this.players[1].score }
             }
         };

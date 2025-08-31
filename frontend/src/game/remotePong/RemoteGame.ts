@@ -5,19 +5,27 @@ import { createGameUI } from "../../components/localGameUi";
 import { sendMessage } from "../../socketService";
 
 // As interfaces e constantes estão PERFEITAS, não precisam de alterações.
-interface PaddleState { id: string; x: number; y: number; }
-interface GameState { ball: { x: number; y: number; }; p1: PaddleState; p2: PaddleState; scores: { p1: number; p2: number; }; }
+interface PaddleState { id: string; x: number; y: number; color: string;}
+interface GameState { ball: { x: number; y: number; }; p1: PaddleState; p2: PaddleState; scores: { p1: number; p2: number; };}
 const PADDLE_WIDTH = 10;
 const PADDLE_HEIGHT = 100;
 const BALL_SIZE = 10;
-const gameState: GameState = { ball: { x: 0, y: 0 }, p1: { id: '', x: 0, y: 0 }, p2: { id: '', x: 0, y: 0 }, scores: { p1: 0, p2: 0 } };
+//const gameState: GameState = { ball: { x: 0, y: 0 }, p1: { id: '', x: 0, y: 0 }, p2: { id: '', x: 0, y: 0 }, scores: { p1: 0, p2: 0 } };
+
+const gameState: GameState = {
+    ball: { x: 0, y: 0 },
+    // Adicione uma cor padrão ao estado inicial
+    p1: { id: '', x: 0, y: 0, color: 'white' },
+    p2: { id: '', x: 0, y: 0, color: 'white' },
+    scores: { p1: 0, p2: 0 }
+};
 
 // Variáveis de renderização
 let canvas: HTMLCanvasElement;
 let context: CanvasRenderingContext2D;
 let animationFrameId: number | null = null;
-let paddleColor1 = 'white';
-let paddleColor2 = 'white';
+//let paddleColor1 = 'white';
+//let paddleColor2 = 'white';
 
 // As funções draw, gameLoop, handleKeyDown e handleKeyUp estão PERFEITAS, não precisam de alterações.
 function draw() {
@@ -31,9 +39,9 @@ function draw() {
     context.lineTo(canvas.width / 2, canvas.height);
     context.stroke();
     context.setLineDash([]);
-    context.fillStyle = paddleColor1;
+    context.fillStyle = gameState.p1.color;
     context.fillRect(gameState.p1.x, gameState.p1.y, PADDLE_WIDTH, PADDLE_HEIGHT);
-    context.fillStyle = paddleColor2;
+    context.fillStyle = gameState.p2.color;
     context.fillRect(gameState.p2.x, gameState.p2.y, PADDLE_WIDTH, PADDLE_HEIGHT);
     context.fillStyle = 'white';
     context.beginPath();
@@ -75,14 +83,14 @@ export function initGame(container: HTMLElement) {
     if (!settingsStr) {
         // Esta verificação agora é mais uma segurança, não deve falhar.
         console.error("CRITICAL: Definições do jogo não encontradas mesmo após a correção! A redirecionar...");
-        navigate('./games'); 
+        navigate('./games');
         return;
     }
     const settings = JSON.parse(settingsStr);
 
     const gameUI = createGameUI();
     container.appendChild(gameUI);
-    
+
     const scoreboard = gameUI.querySelector('.text-6xl');
     canvas = gameUI.querySelector('#game-canvas') as HTMLCanvasElement;
     const restartButton = gameUI.querySelector('#restart-button') as HTMLButtonElement;
@@ -91,7 +99,7 @@ export function initGame(container: HTMLElement) {
         console.error("Erro crítico: Um ou mais elementos da UI do jogo não foram encontrados.");
         return;
     }
-    
+
     // Configura o placar com os aliases do nosso objeto de settings
     const p1AliasSpan = document.createElement('span');
     p1AliasSpan.className = 'text-4xl text-white font-orbitron px-4';
@@ -100,7 +108,7 @@ export function initGame(container: HTMLElement) {
     const p2AliasSpan = document.createElement('span');
     p2AliasSpan.className = 'text-4xl text-white font-orbitron px-4';
     p2AliasSpan.textContent = settings.p2_alias || 'Player 2';
-    
+
     scoreboard.prepend(p1AliasSpan);
     scoreboard.append(p2AliasSpan);
 
@@ -115,12 +123,8 @@ export function initGame(container: HTMLElement) {
         canvas.style.backgroundSize = 'cover';
         canvas.style.backgroundPosition = 'center';
     }
-    
-    // Guarda as cores dos paddles dos settings
-    paddleColor1 = settings.p1_color;
-    paddleColor2 = settings.p2_color;
 
-    restartButton.onclick = () => navigate('./games'); 
+    restartButton.onclick = () => navigate('./games');
 }
 // 🔥 FIM DA MUDANÇA
 

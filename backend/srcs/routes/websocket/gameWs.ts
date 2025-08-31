@@ -31,11 +31,12 @@ export default async function gameWs(app: FastifyInstance) {
 
 			switch (data.type) {
 				case 'createMatch': {
-					console.log("createMatch!");
+					console.log("createMatch!", data.payload);
 					const sessionId = generateSessionId();
 					const session = new GameSession(sessionId);
 					// 3. A CORREÇÃO: Passamos 'connection' diretamente
-					const player1 = new Player(userId, connection, 'left');
+					const playerColor = data.payload?.color || 'white';
+					const player1 = new Player(userId, connection, 'left', playerColor);
 					session.addPlayer(player1);
 
 					sessions.set(sessionId, session);
@@ -43,17 +44,25 @@ export default async function gameWs(app: FastifyInstance) {
 
 					const response = { type: 'matchCreated', sessionId };
 					connection.send(JSON.stringify(response));
+					console.log(`Partida ${sessionId} criada pelo jogador ${userId} com a cor ${playerColor}.`);
 					break;
 				}
 
 				case 'joinMatch': {
-					console.log("joinMatch!");
-					const sessionId = data.sessionId;
-					const session = sessions.get(sessionId);
+					console.log("joinMatch!", data.payload);
+					const sessionId = data.payload?.sessionId;
+					const playerColor = data.payload?.color || 'white';
 
+					if (!sessionId) {
+                        console.error("Erro: 'joinMatch' sem sessionId no payload.");
+                        connection.send(JSON.stringify({ type: 'error', message: 'Match ID is missing.' }));
+                        return;
+                    }
+
+					const session = sessions.get(sessionId);
 					if (session && session.players.length === 1) {
 						// 3. A CORREÇÃO: Passamos 'connection' diretamente
-						const player2 = new Player(userId, connection, 'right');
+						const player2 = new Player(userId, connection, 'right', playerColor);
 						session.addPlayer(player2);
 						connectionToSessionMap.set(connection, sessionId);
 						session.start();

@@ -106,14 +106,17 @@ function buildHostPage(): void {
         waitingMsg.textContent = "A conectar e a criar partida...";
         waitingMsg.className = "text-white text-center font-orbitron font-bold text-xl animate-pulse";
         container.appendChild(waitingMsg);
-        
+
         console.log("🔌 [WS] Tentando conectar ao WebSocket...");
         connectWebSocket(handleServerMessage);
 
         setTimeout(() => {
             console.log("📤 [WS ENVIADO] Enviando mensagem 'createMatch'...");
-            sendMessage({ type: 'createMatch' });
-        }, 500); 
+            sendMessage({
+                type: 'createMatch',
+                payload: { color: selectedColor ?? 'white' }
+            });
+        }, 500);
     });
 }
 
@@ -180,13 +183,19 @@ function buildGuestPage(): void {
         sessionStorage.setItem('gameSettings', JSON.stringify(gameSettings));
         console.log("💾 [DADOS] Objeto 'gameSettings' salvo na sessionStorage.", gameSettings);
         // 🔥 FIM DA MUDANÇA
-        
+
         console.log("🔌 [WS] Tentando conectar ao WebSocket...");
         connectWebSocket(handleServerMessage);
-        
+
         setTimeout(() => {
             console.log(`📤 [WS ENVIADO] Enviando mensagem 'joinMatch' com ID: ${matchId.trim()}`);
-            sendMessage({ type: 'joinMatch', sessionId: matchId.trim() });
+            sendMessage({
+                type: 'joinMatch',
+                payload: {
+                    sessionId: matchId.trim(),
+                    color: selectedColor ?? 'white'
+                }
+            });
         }, 500);
     });
 }
