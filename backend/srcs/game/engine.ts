@@ -1,4 +1,3 @@
-// backend/srcs/game/engine.ts
 import { WebSocket } from 'ws';
 
 const CANVAS_WIDTH = 600;
@@ -81,33 +80,35 @@ export class GameSession {
 
 	// Inicia o loop do jogo
 	start() {
-		if (this.players.length !== 2) return; // Só começa com 2 jogadores
+		if (this.players.length !== 2) 
+			return;
 
-		const player1 = this.players[0]; // Host
-		const player2 = this.players[1]; // Guest
+		const player1 = this.players[0];
+		const player2 = this.players[1];
 
+		//DEBUG - NAO EXCLUIR AINDA
 		console.log(`[GameSession ${this.sessionId}] Iniciando jogo. Notificando ambos os jogadores.`);
-
 		console.log(`---> PREPARANDO PARA ENVIAR 'gameStart' PARA O GUEST (${player2.id}) COM BACKGROUND: ${this.background}`);
+
+		//ISSO PODE SER REFATORADO PARA UM PAYLOAD. MAS VAI TER DE MUDAR MUITA COISA QUE CHATO PORRA
 		player1.ws.send(JSON.stringify({
 			type: 'gameStart',
 			opponentId: player2.id,
 			background: this.background
 		}));
-
-		// Envia a mensagem para o Player 2 com o ID do oponente correto
+		//ISSO PODE SER REFATORADO PARA UM PAYLOAD. MAS VAI TER DE MUDAR MUITA COISA QUE CHATO PORRA
 		player2.ws.send(JSON.stringify({
 			type: 'gameStart',
 			opponentId: player1.id,
 			background: this.background
 		}));
 
-		//this.broadcast({ type: 'gameStart', opponentId: this.players[1].id });
 		this.lastTime = Date.now();
-		this.gameInterval = setInterval(() => this.update(), 1000 / 30); // 60 updates por segundo
+		//SUSPEITO QUE O TRAVAMENTO POSSA ESTAR RELACIONADO A ISSO AQUI
+		//MAS O ROBO NAO ME AJUDA A RESOLVER ESSA PORRA
+		this.gameInterval = setInterval(() => this.update(), 1000 / 60); //AQUI MUDA A QUANTIDADE DE FRAMES POR SEGUNDO
 	}
 
-	// Para o loop do jogo
 	stop() {
 		if (this.gameInterval) {
 			clearInterval(this.gameInterval);
@@ -118,10 +119,9 @@ export class GameSession {
 	// O coração do jogo! Chamado 60x por segundo
 	private update() {
 		const now = Date.now();
-		const deltaTime = (now - this.lastTime) / 1000; // Delta time em segundos
+		const deltaTime = (now - this.lastTime) / 1000;
 		this.lastTime = now;
 
-		// 1. Mover os paddles
 		this.players.forEach(player => {
 			if (player.moveUp && player.y > 0) {
 				player.y -= PADDLE_SPEED * deltaTime;
@@ -131,16 +131,11 @@ export class GameSession {
 			}
 		});
 
-		// 2. Mover a bola
 		this.ball.x += this.ball.speedX * deltaTime;
 		this.ball.y += this.ball.speedY * deltaTime;
 
-		// 3. Verificar colisões
 		this.checkCollisions();
-
 		this.checkWinCondition();
-
-		// 4. Enviar o novo estado para os jogadores
 		this.broadcastState();
 	}
 
@@ -148,22 +143,19 @@ export class GameSession {
 		const p1 = this.players[0];
 		const p2 = this.players[1];
 
-		// Colisão com paredes (cima/baixo)
 		if (this.ball.y - this.ball.size < 0 || this.ball.y + this.ball.size > CANVAS_HEIGHT) {
 			this.ball.speedY *= -1;
 		}
 
-		// Colisão com paddles
 		if (this.ball.x - this.ball.size < p1.x + p1.width && this.ball.y > p1.y && this.ball.y < p1.y + p1.height) {
 			this.ball.speedX *= -1;
-			this.ball.x = p1.x + p1.width + this.ball.size; // Evitar que a bola entre no paddle
+			this.ball.x = p1.x + p1.width + this.ball.size;
 		}
 		if (this.ball.x + this.ball.size > p2.x && this.ball.y > p2.y && this.ball.y < p2.y + p2.height) {
 			this.ball.speedX *= -1;
 			this.ball.x = p2.x - this.ball.size;
 		}
 
-		// Pontuação
 		if (this.ball.x < 0) {
 			p2.score++;
 			this.ball.reset();
@@ -185,30 +177,41 @@ export class GameSession {
 		}
 
 		if (winner) {
+			//ISSO TEM DE SER MUDADO PARA INGLES
 			console.log(`[GameSession ${this.sessionId}] Fim de jogo! Vencedor: Jogador com ID ${winner.id}`);
-			this.stop(); // Para o loop do jogo
-
-			// Envia a mensagem de 'gameOver' para ambos os jogadores
+			this.stop();
 			this.broadcast({
 				type: 'gameOver',
 				payload: {
-					winnerName: winner.id === p1.id ? 'Player 1' : 'Player 2' // Pode melhorar isto para usar aliases
+					winnerName: winner.id === p1.id ? 'Player 1' : 'Player 2' //AQUI NESSE TERNARIO TEM DE PUXAR O DADO DA DB
 				}
 			});
 		}
 	}
 
 	// Envia o estado atual para todos os jogadores na sessão
+	//suspeito que o fato de nao enviar o placar correto seja por que o jogo acaba antes de chegar aqui
+	//reitero, isso é só uma suspeita
 	private broadcastState() {
-		// Garante que só envia o estado se tivermos ambos os jogadores
-		if (this.players.length < 2) return;
+		if (this.players.length < 2) 
+			return;
 
 		const state = {
 			type: 'gameStateUpdate',
-			payload: { // <<< Envolvemos o estado num 'payload' para consistência
-				ball: { x: this.ball.x, y: this.ball.y },
-				paddles: this.players.map(p => ({ id: p.id, x: p.x, y: p.y, color: p.color })),
-				scores: { p1: this.players[0].score, p2: this.players[1].score }
+			payload: {
+				ball: { 
+					x: this.ball.x, 
+					y: this.ball.y 
+				},
+				paddles: this.players.map(p => ({ 	id: p.id, 
+													x: p.x, 
+													y: p.y, 
+													color: p.color 
+												})),
+				scores: { 
+					p1: this.players[0].score, 
+					p2: this.players[1].score 
+				}
 			}
 		};
 		this.broadcast(state);
@@ -234,14 +237,14 @@ export class GameSession {
 
 		const playerIndex = this.players.indexOf(player);
 
-		if (playerIndex === 0) { // Player 1
+		if (playerIndex === 0) {
 			if (data.key === 'w') {
 				player.moveUp = isKeyDown;
 			}
 			else if (data.key === 's') {
 				player.moveDown = isKeyDown;
 			}
-		} else { // Player 2
+		} else {
 			if (data.key === 'ArrowUp')
 				player.moveUp = isKeyDown;
 			else if (data.key === 'ArrowDown')
@@ -253,7 +256,7 @@ export class GameSession {
 		const leavingPlayer = this.players.find(p => p.id === playerId);
 		if (!leavingPlayer) return;
 
-		this.stop(); // Para o loop do jogo
+		this.stop();
 
 		// Avisa o jogador que ficou que o oponente saiu
 		const remainingPlayer = leavingPlayer.getPlayerOpponent(this.players);
@@ -262,7 +265,6 @@ export class GameSession {
 			remainingPlayer.ws.send(JSON.stringify(message));
 		}
 
-		// Remove o jogador que saiu da lista
 		this.players = this.players.filter(p => p.id !== playerId);
 		console.log(`[GameSession ${this.sessionId}] Jogador ${playerId} removido. Jogadores restantes: ${this.players.length}`);
 	}

@@ -1,33 +1,28 @@
-// /frontend/src/game/remotePong/RemoteGame.ts (VERSÃO CORRIGIDA)
-
 import { navigate } from "../../router";
 import { sendMessage } from "../../socketService";
 import { createRemoteGameUI } from "../../components/remoteGameUi";
+import type { GameState } from "../../types";
 
-// As interfaces e constantes estão PERFEITAS, não precisam de alterações.
-interface PaddleState { id: string; x: number; y: number; color: string; }
-interface GameState { ball: { x: number; y: number; }; p1: PaddleState; p2: PaddleState; scores: { p1: number; p2: number; }; }
 const PADDLE_WIDTH = 10;
 const PADDLE_HEIGHT = 100;
 const BALL_SIZE = 10;
-//const gameState: GameState = { ball: { x: 0, y: 0 }, p1: { id: '', x: 0, y: 0 }, p2: { id: '', x: 0, y: 0 }, scores: { p1: 0, p2: 0 } };
+
+//Rendering
+let canvas: HTMLCanvasElement;
+let context: CanvasRenderingContext2D;
+let animationFrameId: number | null = null;
 
 const gameState: GameState = {
     ball: { x: 0, y: 0 },
-    // Adicione uma cor padrão ao estado inicial
     p1: { id: '', x: 0, y: 0, color: 'white' },
     p2: { id: '', x: 0, y: 0, color: 'white' },
     scores: { p1: 0, p2: 0 }
 };
 
-// Variáveis de renderização
-let canvas: HTMLCanvasElement;
-let context: CanvasRenderingContext2D;
-let animationFrameId: number | null = null;
-
-// As funções draw, gameLoop, handleKeyDown e handleKeyUp estão PERFEITAS, não precisam de alterações.
 function draw() {
-    if (!context) return;
+    if (!context) 
+        return;
+
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.strokeStyle = 'rgba(255, 255, 255, 0.5)';
     context.lineWidth = 4;
@@ -50,10 +45,12 @@ function draw() {
     if (p1ScoreEl) p1ScoreEl.textContent = gameState.scores.p1.toString();
     if (p2ScoreEl) p2ScoreEl.textContent = gameState.scores.p2.toString();
 }
+
 function gameLoop() {
     draw();
     animationFrameId = requestAnimationFrame(gameLoop);
 }
+
 const handleKeyDown = (e: KeyboardEvent) => {
     const validKeys = ['w', 's', 'ArrowUp', 'ArrowDown'];
     if (validKeys.includes(e.key)) {
@@ -61,6 +58,7 @@ const handleKeyDown = (e: KeyboardEvent) => {
         sendMessage({ type: 'playerMove', payload: { key: e.key, keyState: 'keydown' } });
     }
 };
+
 const handleKeyUp = (e: KeyboardEvent) => {
     const validKeys = ['w', 's', 'ArrowUp', 'ArrowDown'];
     if (validKeys.includes(e.key)) {
@@ -69,45 +67,32 @@ const handleKeyUp = (e: KeyboardEvent) => {
     }
 };
 
-
-// 🔥 MUDANÇA AQUI: Simplificamos a função initGame
-/**
- * Inicializa a UI do jogo, aplicando estilos e configurações.
- * @param container O elemento HTML onde o jogo será renderizado.
- */
 export function initGame(container: HTMLElement) {
-    // Agora temos a certeza que 'gameSettings' existe!
+
+    //ISSO AQUI TEM DE SER UM TRY CATCH
     const settingsStr = sessionStorage.getItem('gameSettings');
 
-    if (settingsStr) {
-        console.log('VERIFICAÇÃO 3: O que initGame está a ler de "gameSettings" para o background?', JSON.parse(settingsStr).background);
-        //return; // O 'return' garante que o resto do código não é executado
-    }
-
     if (!settingsStr) {
-        // Esta verificação agora é mais uma segurança, não deve falhar.
-        console.error("CRITICAL: Definições do jogo não encontradas mesmo após a correção! A redirecionar...");
+        console.error("DEU ERRO InitGame SettingStr");
         navigate('./games');
         return;
     }
-    const settings = JSON.parse(settingsStr);
 
+    const settings = JSON.parse(settingsStr);
     const gameUI = createRemoteGameUI();
+    const scoreboard = gameUI.querySelector('.text-6xl');
 
     gameUI.className = 'flex flex-col items-center justify-center gap-4';
-
     container.appendChild(gameUI);
-
-    const scoreboard = gameUI.querySelector('.text-6xl');
     canvas = gameUI.querySelector('#game-canvas') as HTMLCanvasElement;
 
-
+    //ISSO TAMBEM TEM DE SER UM TRY CATCH
     if (!canvas || !scoreboard) {
-        console.error("Erro crítico: Um ou mais elementos da UI do jogo não foram encontrados.");
+        console.error("Error! initGame - No Canvas or Scoreboard");
         return;
     }
 
-    // Configura o placar com os aliases do nosso objeto de settings
+    //ISSO PODE SER UM COMPONENT??? TALVEZ SIM
     const p1AliasSpan = document.createElement('span');
     p1AliasSpan.className = 'text-4xl text-white font-orbitron px-4';
     p1AliasSpan.textContent = settings.p1_alias || 'Player 1';
@@ -119,27 +104,24 @@ export function initGame(container: HTMLElement) {
     scoreboard.prepend(p1AliasSpan);
     scoreboard.append(p2AliasSpan);
 
-    // Configura o canvas com as dimensões corretas do jogo remoto
     context = canvas.getContext('2d')!;
-    canvas.width = 600;  // <<< Usar as mesmas constantes do backend
-    canvas.height = 400; // <<< Usar as mesmas constantes do backend
+    canvas.width = 600;
+    canvas.height = 400;
 
-    // Usa o background dos settings
     if (settings.background) {
         canvas.style.backgroundImage = `url(${settings.background})`;
         canvas.style.backgroundSize = 'cover';
         canvas.style.backgroundPosition = 'center';
     }
 }
-// 🔥 FIM DA MUDANÇA
 
-// As funções startGame, stopGame, updateGameState e showGameOver estão PERFEITAS.
 export function startGame() {
     if (animationFrameId) return;
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
     gameLoop();
 }
+
 export function stopGame() {
     if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
@@ -149,8 +131,10 @@ export function stopGame() {
     window.removeEventListener('keyup', handleKeyUp);
     console.log('Loop de renderização e listeners parados.');
 }
+
 export function updateGameState(newState: any) {
     if (!newState || !newState.ball || !newState.paddles || !newState.scores) {
+        //DEBUG - NAO EXCLUIR AINDA
         console.error("Recebido estado de jogo inválido:", newState);
         return;
     }
@@ -161,23 +145,17 @@ export function updateGameState(newState: any) {
 }
 
 export function showGameOver(winnerName: string) {
-    stopGame(); // Garante que o jogo e os inputs param
+    stopGame();
 
     const gameOverScreen = document.getElementById('game-over-screen');
     const winnerText = document.getElementById('winner-text');
-
-    // Encontramos os nossos novos botões pelos seus IDs
     const playAgainButton = document.getElementById('play-again-button') as HTMLButtonElement | null;
     const homeButton = document.getElementById('home-button') as HTMLButtonElement | null;
 
     if (gameOverScreen && winnerText && playAgainButton && homeButton) {
         winnerText.textContent = `${winnerName} Venceu!`;
-
-        // Programamos o que cada botão faz
-        // (Ajuste os caminhos se forem diferentes no seu router)
-        playAgainButton.onclick = () => navigate('/human-game-remote'); // Leva para a página de setup do jogo em rede
-        homeButton.onclick = () => navigate('/dashboard');       // Leva para a página principal/dashboard
-
+        playAgainButton.onclick = () => navigate('/human-game-remote');
+        homeButton.onclick = () => navigate('/dashboard');
         gameOverScreen.classList.remove('hidden');
     }
 }

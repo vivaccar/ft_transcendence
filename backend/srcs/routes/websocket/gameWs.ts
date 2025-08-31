@@ -1,7 +1,5 @@
-// backend/srcs/routes/websocket/gameWs.ts (VERSÃO DEFINITIVA)
-
 import { FastifyInstance, FastifyRequest } from 'fastify';
-import { WebSocket } from 'ws'; // <--- 1. IMPORTAMOS O TIPO 'WebSocket'
+import { WebSocket } from 'ws';
 import { GameSession, Player } from '../../game/engine';
 
 const sessions = new Map<string, GameSession>();
@@ -23,6 +21,7 @@ export default async function gameWs(app: FastifyInstance) {
 		}
 
 		connection.on('message', (message: string) => {
+			//DEBUG - NAO APAGAR AINDA
 			console.log('--- MENSAGEM BRUTA RECEBIDA ---');
 			console.log(message.toString());
 			console.log('-------------------------------');
@@ -35,7 +34,6 @@ export default async function gameWs(app: FastifyInstance) {
 					const sessionId = generateSessionId();
 					const background = data.payload?.background;
 					const session = new GameSession(sessionId, background);
-					// 3. A CORREÇÃO: Passamos 'connection' diretamente
 					const playerColor = data.payload?.color || 'white';
 					const player1 = new Player(userId, connection, 'left', playerColor);
 					session.addPlayer(player1);
@@ -50,6 +48,7 @@ export default async function gameWs(app: FastifyInstance) {
 				}
 
 				case 'joinMatch': {
+					//DEBUG - NAO APAGAR AINDA
 					console.log("joinMatch!", data.payload);
 					const sessionId = data.payload?.sessionId;
 					const playerColor = data.payload?.color || 'white';
@@ -62,7 +61,6 @@ export default async function gameWs(app: FastifyInstance) {
 
 					const session = sessions.get(sessionId);
 					if (session && session.players.length === 1) {
-						// 3. A CORREÇÃO: Passamos 'connection' diretamente
 						const player2 = new Player(userId, connection, 'right', playerColor);
 						session.addPlayer(player2);
 						connectionToSessionMap.set(connection, sessionId);
@@ -74,11 +72,11 @@ export default async function gameWs(app: FastifyInstance) {
 				}
 
 				case 'playerMove': {
-					console.log("playerMove!"); // Este log agora vai funcionar!
+					//DEBUG - NAO APAGAR AINDA
+					console.log("playerMove!");
 					const sessionId = connectionToSessionMap.get(connection);
 					if (sessionId) {
 						const session = sessions.get(sessionId);
-						// Passamos apenas o 'payload' com os detalhes do movimento
 						session?.handlePlayerMove(userId, data.payload);
 					}
 					break;
