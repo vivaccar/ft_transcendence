@@ -63,11 +63,13 @@ export class GameSession {
 	sessionId: string;
 	players: Player[] = [];
 	ball: Ball;
+	background: string;
 	private gameInterval: NodeJS.Timeout | null = null;
 	private lastTime: number = 0;
 
-	constructor(sessionId: string) {
+	constructor(sessionId: string, background: string) {
 		this.sessionId = sessionId;
+		this.background = background;
 		this.ball = new Ball();
 	}
 
@@ -86,15 +88,18 @@ export class GameSession {
 
 		console.log(`[GameSession ${this.sessionId}] Iniciando jogo. Notificando ambos os jogadores.`);
 
+		console.log(`---> PREPARANDO PARA ENVIAR 'gameStart' PARA O GUEST (${player2.id}) COM BACKGROUND: ${this.background}`);
 		player1.ws.send(JSON.stringify({
 			type: 'gameStart',
-			opponentId: player2.id
+			opponentId: player2.id,
+			background: this.background
 		}));
 
 		// Envia a mensagem para o Player 2 com o ID do oponente correto
 		player2.ws.send(JSON.stringify({
 			type: 'gameStart',
-			opponentId: player1.id
+			opponentId: player1.id,
+			background: this.background
 		}));
 
 		//this.broadcast({ type: 'gameStart', opponentId: this.players[1].id });

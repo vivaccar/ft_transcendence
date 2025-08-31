@@ -33,7 +33,8 @@ export default async function gameWs(app: FastifyInstance) {
 				case 'createMatch': {
 					console.log("createMatch!", data.payload);
 					const sessionId = generateSessionId();
-					const session = new GameSession(sessionId);
+					const background = data.payload?.background;
+					const session = new GameSession(sessionId, background);
 					// 3. A CORREÇÃO: Passamos 'connection' diretamente
 					const playerColor = data.payload?.color || 'white';
 					const player1 = new Player(userId, connection, 'left', playerColor);

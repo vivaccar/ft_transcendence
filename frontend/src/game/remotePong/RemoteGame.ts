@@ -5,8 +5,8 @@ import { createGameUI } from "../../components/localGameUi";
 import { sendMessage } from "../../socketService";
 
 // As interfaces e constantes estão PERFEITAS, não precisam de alterações.
-interface PaddleState { id: string; x: number; y: number; color: string;}
-interface GameState { ball: { x: number; y: number; }; p1: PaddleState; p2: PaddleState; scores: { p1: number; p2: number; };}
+interface PaddleState { id: string; x: number; y: number; color: string; }
+interface GameState { ball: { x: number; y: number; }; p1: PaddleState; p2: PaddleState; scores: { p1: number; p2: number; }; }
 const PADDLE_WIDTH = 10;
 const PADDLE_HEIGHT = 100;
 const BALL_SIZE = 10;
@@ -78,6 +78,12 @@ const handleKeyUp = (e: KeyboardEvent) => {
 export function initGame(container: HTMLElement) {
     // Agora temos a certeza que 'gameSettings' existe!
     const settingsStr = sessionStorage.getItem('gameSettings');
+
+    if (settingsStr) {
+        console.log('VERIFICAÇÃO 3: O que initGame está a ler de "gameSettings" para o background?', JSON.parse(settingsStr).background);
+        return; // O 'return' garante que o resto do código não é executado
+    }
+
     if (!settingsStr) {
         // Esta verificação agora é mais uma segurança, não deve falhar.
         console.error("CRITICAL: Definições do jogo não encontradas mesmo após a correção! A redirecionar...");
@@ -153,11 +159,20 @@ export function updateGameState(newState: any) {
     gameState.scores = newState.scores;
 }
 export function showGameOver(winnerName: string) {
-    stopGame();
+    stopGame(); // Garante que o jogo e os inputs param
+
     const gameOverScreen = document.getElementById('game-over-screen');
     const winnerText = document.getElementById('winner-text');
-    if (gameOverScreen && winnerText) {
+    // MUDANÇA AQUI: Vamos procurar o botão também
+    const backButton = document.getElementById('restart-button') as HTMLButtonElement | null;
+
+
+    if (gameOverScreen && winnerText && backButton) {
         winnerText.textContent = `${winnerName} Venceu!`;
+
+        // E aqui alteramos o texto do botão para ser mais claro
+        backButton.textContent = 'Voltar ao Menu';
+
         gameOverScreen.classList.remove('hidden');
     }
 }

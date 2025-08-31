@@ -17,20 +17,52 @@ function handleServerMessage(data: any) {
                 waitingText.innerHTML = `Partida criada!<br>Partilhe este ID com o seu amigo:<br><strong class="text-2xl mt-2 block">${data.sessionId}</strong>`;
             }
             break;
-        case 'gameStart':
-            console.log("🚀 [LÓGICA] Recebido sinal de 'gameStart'. Iniciando a transição para a tela de jogo...");
+        case 'gameStart': {
+            console.log("🚀 [LÓGICA] Recebido sinal de 'gameStart'.", data);
+
+            // ======================= INÍCIO DO BLOCO DE DEPURAÇÃO =======================
+
+            // VERIFICAÇÃO 1: O servidor enviou a propriedade 'background'?
+            console.log('DEBUG 1: O objeto "data" recebido tem a propriedade "background"? Valor:', data.background);
+
+            if (data.background) {
+                console.log('DEBUG 2: Entrou no "if (data.background)". Tentando atualizar o sessionStorage...');
+
+                const settingsStr = sessionStorage.getItem('gameSettings');
+                if (settingsStr) {
+                    console.log('DEBUG 3: Encontrou "gameSettings" no sessionStorage. Conteúdo atual:', settingsStr);
+
+                    // Converte para um objeto, atualiza a propriedade 'background'
+                    const settings = JSON.parse(settingsStr);
+                    console.log('DEBUG 4: Objeto "settings" ANTES da modificação:', settings);
+
+                    settings.background = data.background;
+                    console.log('DEBUG 5: Objeto "settings" DEPOIS da modificação:', settings);
+
+                    // Guarda a "receita" atualizada de volta no sessionStorage
+                    sessionStorage.setItem('gameSettings', JSON.stringify(settings));
+                    console.log('DEBUG 6: "gameSettings" foi salvo de volta no sessionStorage.');
+                } else {
+                    // Este log é importante. Se ele aparecer, significa que 'gameSettings' não existia na hora.
+                    console.error('DEBUG FALHOU: Não encontrou "gameSettings" no sessionStorage no momento de atualizar o background.');
+                }
+            } else {
+                console.warn('DEBUG AVISO: A mensagem "gameStart" foi recebida, mas não continha a propriedade "background".');
+            }
+
+            // ======================== FIM DO BLOCO DE DEPURAÇÃO =========================
+
             const appContainer = document.querySelector('#app > div');
             if (!appContainer) {
                 console.error("🐛 [ERRO] Container principal da aplicação não encontrado! Não é possível iniciar o jogo.");
                 return;
-            };
-            console.log("🧹 [UI] Limpando a tela de setup/espera...");
+            }
+
             appContainer.innerHTML = '';
-            console.log("🎨 [UI] Inicializando a UI do jogo (canvas, placar)...");
             initGame(appContainer as HTMLElement);
-            console.log("▶️ [JOGO] Iniciando o loop de renderização (requestAnimationFrame)...");
             startGame();
             break;
+        }
         case 'gameStateUpdate':
             console.log("🔄 [JOGO] Atualização de estado recebida.");
             updateGameState(data.payload);
@@ -114,7 +146,7 @@ function buildHostPage(): void {
             console.log("📤 [WS ENVIADO] Enviando mensagem 'createMatch'...");
             sendMessage({
                 type: 'createMatch',
-                payload: { color: selectedColor ?? 'white' }
+                payload: { color: selectedColor ?? 'white', background: selectedBackgroundImg }
             });
         }, 500);
     });
