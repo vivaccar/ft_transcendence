@@ -52,10 +52,6 @@ export function createGameUI(): HTMLElement {
     homeButton.textContent = 'Games Page';
     homeButton.className = "bg-[#193D5E] text-white px-4 py-2 rounded-md font-orbitron font-semibold cursor-pointer transition-colors hover:bg-indigo-600";
 
-    // ISSO TEM DE SER MUDADO! 
-	// AÇÃO DE REDIRECIONAMENTO!
-	// PRECISA MUDAR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // JA MUDEI!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     homeButton.onclick = () => {
         navigate('./games');
     };

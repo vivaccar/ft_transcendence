@@ -1,8 +1,8 @@
 // backend/srcs/game/engine.ts
 import { WebSocket } from 'ws';
 
-const CANVAS_WIDTH = 800;
-const CANVAS_HEIGHT = 600;
+const CANVAS_WIDTH = 600;
+const CANVAS_HEIGHT = 400;
 const PADDLE_WIDTH = 10;
 const PADDLE_HEIGHT = 100;
 const BALL_SIZE = 10;

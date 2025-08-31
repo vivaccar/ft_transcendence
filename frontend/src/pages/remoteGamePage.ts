@@ -57,7 +57,7 @@ function handleServerMessage(data: any) {
                 console.error("🐛 [ERRO] Container principal da aplicação não encontrado! Não é possível iniciar o jogo.");
                 return;
             }
-
+            appContainer.className = 'w-full h-screen flex justify-center items-center';
             appContainer.innerHTML = '';
             initGame(appContainer as HTMLElement);
             startGame();

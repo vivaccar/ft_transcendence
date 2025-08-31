@@ -1,8 +1,8 @@
 // /frontend/src/game/remotePong/RemoteGame.ts (VERSÃO CORRIGIDA)
 
 import { navigate } from "../../router";
-import { createGameUI } from "../../components/localGameUi";
 import { sendMessage } from "../../socketService";
+import { createRemoteGameUI } from "../../components/remoteGameUi";
 
 // As interfaces e constantes estão PERFEITAS, não precisam de alterações.
 interface PaddleState { id: string; x: number; y: number; color: string; }
@@ -81,7 +81,7 @@ export function initGame(container: HTMLElement) {
 
     if (settingsStr) {
         console.log('VERIFICAÇÃO 3: O que initGame está a ler de "gameSettings" para o background?', JSON.parse(settingsStr).background);
-        return; // O 'return' garante que o resto do código não é executado
+        //return; // O 'return' garante que o resto do código não é executado
     }
 
     if (!settingsStr) {
@@ -92,14 +92,17 @@ export function initGame(container: HTMLElement) {
     }
     const settings = JSON.parse(settingsStr);
 
-    const gameUI = createGameUI();
+    const gameUI = createRemoteGameUI();
+
+    gameUI.className = 'flex flex-col items-center justify-center gap-4';
+
     container.appendChild(gameUI);
 
     const scoreboard = gameUI.querySelector('.text-6xl');
     canvas = gameUI.querySelector('#game-canvas') as HTMLCanvasElement;
-    const restartButton = gameUI.querySelector('#restart-button') as HTMLButtonElement;
 
-    if (!canvas || !scoreboard || !restartButton) {
+
+    if (!canvas || !scoreboard) {
         console.error("Erro crítico: Um ou mais elementos da UI do jogo não foram encontrados.");
         return;
     }
@@ -118,8 +121,8 @@ export function initGame(container: HTMLElement) {
 
     // Configura o canvas com as dimensões corretas do jogo remoto
     context = canvas.getContext('2d')!;
-    canvas.width = 800;  // <<< Usar as mesmas constantes do backend
-    canvas.height = 600; // <<< Usar as mesmas constantes do backend
+    canvas.width = 600;  // <<< Usar as mesmas constantes do backend
+    canvas.height = 400; // <<< Usar as mesmas constantes do backend
 
     // Usa o background dos settings
     if (settings.background) {
@@ -127,8 +130,6 @@ export function initGame(container: HTMLElement) {
         canvas.style.backgroundSize = 'cover';
         canvas.style.backgroundPosition = 'center';
     }
-
-    restartButton.onclick = () => navigate('./games');
 }
 // 🔥 FIM DA MUDANÇA
 
@@ -158,20 +159,24 @@ export function updateGameState(newState: any) {
     gameState.p2 = newState.paddles[1];
     gameState.scores = newState.scores;
 }
+
 export function showGameOver(winnerName: string) {
     stopGame(); // Garante que o jogo e os inputs param
 
     const gameOverScreen = document.getElementById('game-over-screen');
     const winnerText = document.getElementById('winner-text');
-    // MUDANÇA AQUI: Vamos procurar o botão também
-    const backButton = document.getElementById('restart-button') as HTMLButtonElement | null;
 
+    // Encontramos os nossos novos botões pelos seus IDs
+    const playAgainButton = document.getElementById('play-again-button') as HTMLButtonElement | null;
+    const homeButton = document.getElementById('home-button') as HTMLButtonElement | null;
 
-    if (gameOverScreen && winnerText && backButton) {
+    if (gameOverScreen && winnerText && playAgainButton && homeButton) {
         winnerText.textContent = `${winnerName} Venceu!`;
 
-        // E aqui alteramos o texto do botão para ser mais claro
-        backButton.textContent = 'Voltar ao Menu';
+        // Programamos o que cada botão faz
+        // (Ajuste os caminhos se forem diferentes no seu router)
+        playAgainButton.onclick = () => navigate('/human-game-remote'); // Leva para a página de setup do jogo em rede
+        homeButton.onclick = () => navigate('/dashboard');       // Leva para a página principal/dashboard
 
         gameOverScreen.classList.remove('hidden');
     }
