@@ -46,5 +46,15 @@ export class Ball {
         this.y = this.initialY;
         this.speedX *= -1;
         this.speedY = (Math.random() > 0.5 ? 1 : -1) * Math.abs(this.speedX);
+
+        const originalSpeedX = this.speedX;
+        const originalSpeedY = this.speedY;
+        this.speedX = 0;
+        this.speedY = 0;
+        
+        setTimeout(() => {
+            this.speedX = originalSpeedX;
+            this.speedY = originalSpeedY;
+        }, 1000);
     }
 }

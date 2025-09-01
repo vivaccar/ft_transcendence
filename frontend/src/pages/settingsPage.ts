@@ -27,10 +27,10 @@ export function createSettingsUI(): {
 	oldPasswordInput: HTMLInputElement
   } {
 	const container = document.createElement("div");
-	container.className = "flex flex-col items-center justify-center h-[calc(100vh-64px)] gap-4";
+	container.className = "flex flex-col items-center justify-center  h-[calc(100vh-64px)] gap-4";
   
 	const box = document.createElement("div");
-	box.className = "bg-white text-gray-900 rounded-xl shadow-lg w-full max-w-2xl";
+	box.className = "bg-white text-gray-900 rounded-xl shadow-lg w-full max-w-2xl overflow-y-auto";
 	box.style.background = "#D9D9D9";
   
 	// headerBar e título

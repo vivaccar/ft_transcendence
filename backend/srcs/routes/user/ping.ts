@@ -16,7 +16,7 @@ export async function ping(app: FastifyInstance) {
         where: { username: user.username },
         data: { lastPing: BigInt(Date.now()) },
       });
-
+      console.log("\n\n PING REGISTRADO: ", updatedUser.lastPing.toString())
       return { message: "Ping registered" };
     } catch (err) {
       console.error("Error updating ping", err);

@@ -365,5 +365,43 @@ export function initializeLocalGame(containerId: string, width: number, height: 
     //ESSE BOTAO TEM DE DAR A OPÇÃO DE VOLTAR PARA TELAS ESPECIFICATA TAMBEM DE ACORDO COM O DESENHO
     setupRestartButton();
 
-    myGameArea.start();
+    startCountdown(3, () => {
+        myGameArea.start(); 
+    });
+}
+
+function startCountdown(duration: number, callback: () => void) {
+    if (!myGameArea.canvas) return;
+    const ctx = myGameArea.context!;
+    let timeLeft = duration;
+
+    drawCountdownOverlay(ctx, timeLeft);
+
+    const countdownInterval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft < 0) {
+            clearInterval(countdownInterval);
+            callback();
+            return;
+        }
+        drawCountdownOverlay(ctx, timeLeft);
+    }, 1000);
+}
+
+
+function drawCountdownOverlay(ctx: CanvasRenderingContext2D, number: number) {
+    myGameArea.clear();
+
+    player1.draw(ctx);
+    player2.draw(ctx);
+    ball.draw(ctx);
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+    ctx.fillRect(0, 0, myGameArea.canvas!.width, myGameArea.canvas!.height);
+
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 80px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(number.toString(), myGameArea.canvas!.width / 2, myGameArea.canvas!.height / 2);
 }

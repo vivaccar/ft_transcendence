@@ -1,9 +1,9 @@
 import { FastifyInstance } from "fastify"
 import { z } from 'zod'
-import { acceptInviteSwaggerSchema } from "../../schemaSwagger/acceptInviteSchema"
+import { declineInviteSwaggerSchema } from "../../schemaSwagger/declineInviteSchema"
 
-export async function acceptInvite(app: FastifyInstance) {
-	app.patch('/acceptInvite', { preHandler: [app.authenticate], schema: acceptInviteSwaggerSchema }, async(req, res) => {
+export async function declineInvite(app: FastifyInstance) {
+	app.delete('/declineInvite', { preHandler: [app.authenticate], schema: declineInviteSwaggerSchema }, async(req, res) => {
 		const friendSchema = z.object({
 			friend: z.string(),
 		})
@@ -29,24 +29,12 @@ export async function acceptInvite(app: FastifyInstance) {
 				return res.status(409).send({ error: "Invite was already accepted"})
 			}
 
-			const friendship = await app.prisma.friendship.update ({
+			const deleteFriendship = await app.prisma.friendship.delete ({
 				where: {
-					id : existingFriendship.id
-				},
-				data: {
-					status: "accepted"
-				},
-				include: {
-					friendA: true,
-					friendB: true
+					id: existingFriendship.id
 				}
 			})
-			return res.status(201).send({ newFriendship: {
-				friendshipId : friendship.id,
-				friendA: friendship.friendA.username,
-				friendB: friendship.friendB.username,
-				status: friendship.status
-			} })
+			return res.status(201).send( `Friendship between ${currentUser.username} and ${friend.username} was declined and deleted from database`)
 		} catch(err) {
 			console.error(err)
 			return res.status(400).send({error: err})

@@ -1,9 +1,9 @@
 import { FastifyInstance } from "fastify"
 import { z } from 'zod'
-import { inviteFriendSwaggerSchema } from "../../schemaSwagger/inviteFriendSchema"
+import { unfriendSwaggerSchema } from "../../schemaSwagger/unfriendSchema"
 
-export async function inviteFriend(app: FastifyInstance) {
-	app.post('/inviteFriend', { preHandler: [app.authenticate], schema: inviteFriendSwaggerSchema }, async(req, res) => {
+export async function unfriend(app: FastifyInstance) {
+	app.delete('/unfriend', { preHandler: [app.authenticate], schema: unfriendSwaggerSchema }, async(req, res) => {
 		const friendSchema = z.object({
 			friend: z.string(),
 		})
@@ -16,10 +16,7 @@ export async function inviteFriend(app: FastifyInstance) {
 			if (!friend) {
 				 return res.status(404).send({ error: "User not found in database" })
 			}
-			if (friend.id == currentUser.id) {
-				 return res.status(404).send({ error: "User cannot request friendship with yourself" })
-			}
-			
+
 			const existingFriendship = await app.prisma.friendship.findFirst({ 
 				where: {
 					OR :[
@@ -27,22 +24,19 @@ export async function inviteFriend(app: FastifyInstance) {
 						{ friendAId: friend.id, friendBId: currentUser.id }
 					]
 				}});
-			if (existingFriendship) {
-				return res.status(409).send({ error: "Friendship already exists between these users"})
+			if (!existingFriendship) {
+				return res.status(409).send({ error: "Friendship not found in database"})
+			}
+			if (existingFriendship.status != "accepted") {
+				return res.status(409).send({ error: "Friendship invite was not accepted yet"})
 			}
 
-			const friendship = await app.prisma.friendship.create ({
-				data: {
-					friendA: {connect: { id: currentUser.id }}, 
-					friendB: {connect: { id: friend.id }},
-					status: "pending"
+			const deleteFriendship = await app.prisma.friendship.delete ({ 
+				where: {
+					id: existingFriendship.id
 				}
 			})
-			return res.status(201).send({
-				friendA: currentUser.username,
-				friendB: friend.username,
-				status: "pending"
-			})
+			return res.status(201).send( `Friendship between ${currentUser.username} and ${friend.username} has come to the end` )
 		} catch(err) {
 			console.error(err)
 			return res.status(400).send({error: err})
