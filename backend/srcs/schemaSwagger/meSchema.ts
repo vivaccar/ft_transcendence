@@ -9,6 +9,7 @@ export const meSwaggerSchema = {
         id: { type: "number"},
         username: { type: "string"},
         email: { type: "string"},
+        language: { type: "string" },
         avatar: { type: "string", format: "url"},
         googleUser: { type: "string"},
       },

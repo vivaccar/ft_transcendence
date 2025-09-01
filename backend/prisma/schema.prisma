@@ -15,6 +15,7 @@ model User {
 	id           		Int    @id @default(autoincrement())
 	username     		String @unique
 	email        		String @unique
+	language			String @default("PT")
 	passwordHash 		String?
 	has2fa				Boolean @default(false)
 	secret2fa			String?
