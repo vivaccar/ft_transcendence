@@ -1,6 +1,7 @@
 import { renderPage } from "../utils";
 import { getMatches, getUserStats, getUserGoals } from "../logic/statisticLogic";
 import type { Game } from "../types";
+import i18next from "i18next";
 
 export async function buildStatisticsPage(): Promise<void> {
 	const container = document.createElement("div");
@@ -26,7 +27,7 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	pnheaderBar.className = "bg-[#174B7A] px-8 py-6 rounded-t-lg flex justify-center items-center sticky top-0 z-10 w-full";
 
 	const personalNbrTitle = document.createElement("h1");
-	personalNbrTitle.textContent = "Personal Numbers";
+	personalNbrTitle.textContent = i18next.t('personal_numbers');
 	personalNbrTitle.className = "text-white text-xl font-orbitron font-bold mb-0 text-center";
 
 	pnheaderBar.appendChild(personalNbrTitle);
@@ -39,14 +40,14 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 
 	// Texto mostrando total de partidas
 	const totalText = document.createElement("p");
-	totalText.textContent = `GAMES`;
+	totalText.textContent = i18next.t('games').toUpperCase();
 	totalText.className = "text-center font-orbitron font-bold mt-2 text-2xl";
 
 	personalNbrBox.appendChild(totalText);
 	
 	// Percent label
 	const percentLabel = document.createElement("p");
-	percentLabel.textContent = `Winning percentage: ${winPercent.toFixed(0)}%`;
+	percentLabel.textContent = `${i18next.t('winning_percentage')}: ${winPercent.toFixed(0)}%`;
 	percentLabel.className = "text-center font-orbitron font-bold";
 	personalNbrBox.appendChild(percentLabel);
 
@@ -84,7 +85,7 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	winsBox.className = "flex justify-center items-center rounded-lg font-orbitron font-bold text-white bg-[#2ecc71]";
 
 	const winsLabel = document.createElement("p");
-	winsLabel.textContent = "Wins";
+	winsLabel.textContent = i18next.t("wins");
 	winsLabel.className = "mt-1 font-orbitron font-bold";
 
 	winsColumn.appendChild(winsBox);
@@ -101,7 +102,7 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	lossesBox.className = "flex justify-center items-center rounded-lg font-orbitron font-bold text-white bg-[#e74c3c]";
 
 	const lossesLabel = document.createElement("p");
-	lossesLabel.textContent = "Losses";
+	lossesLabel.textContent = i18next.t("losses");
 	lossesLabel.className = "mt-1 font-orbitron font-bold";
 
 	lossesColumn.appendChild(lossesBox);
@@ -119,7 +120,7 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	const goalsConPercent = 100 - goalsProPercent;
 
 	const totalGoalsText = document.createElement("p");
-	totalGoalsText.textContent = `POINTS`;
+	totalGoalsText.textContent = i18next.t('points').toUpperCase();
 	totalGoalsText.className = "text-center font-orbitron font-bold mt-6 text-2xl";
 
 	personalNbrBox.appendChild(totalGoalsText);
@@ -158,7 +159,7 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	goalsProBox.className = "flex justify-center items-center rounded-lg font-orbitron font-bold text-white bg-[#2ecc71]";
 
 	const goalsProLabel = document.createElement("p");
-	goalsProLabel.textContent = "Scored";
+	goalsProLabel.textContent = i18next.t("scored");
 	goalsProLabel.className = "mt-2 font-orbitron font-bold";
 
 	goalsProColumn.appendChild(goalsProBox);
@@ -175,7 +176,7 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	goalsConBox.className = "flex justify-center items-center rounded-lg font-orbitron font-bold text-white bg-[#e74c3c]";
 
 	const goalsConLabel = document.createElement("p");
-	goalsConLabel.textContent = "Conceded";
+	goalsConLabel.textContent = i18next.t("conceded");
 	goalsConLabel.className = "mt-2 font-orbitron font-bold";
 
 	goalsConColumn.appendChild(goalsConBox);
@@ -197,7 +198,7 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 
 	// Título Last Games
 	const lastGametitle = document.createElement("h1");
-	lastGametitle.textContent = "Last Games";
+	lastGametitle.textContent = i18next.t("last_games");
 	lastGametitle.className = "text-white text-xl font-orbitron font-bold mb-0 text-center";
 
 	lgheaderBar.appendChild(lastGametitle);
@@ -220,11 +221,11 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	    modal.className = "bg-white rounded-lg p-6 max-w-md w-full flex flex-col gap-4 shadow-lg";
 
 	    const title = document.createElement("h2");
-	    title.textContent = `${game.youName} vs ${game.friendName}`;
+	    title.textContent = `${game.youName} ${i18next.t('vs')} ${game.friendName}`;
 	    title.className = "flex justify-center text-xl font-orbitron font-bold";
 
 	    const result = document.createElement("p");
-	    result.textContent = game.result == 'Win' ? `WIN` : `LOSS`;
+	    result.textContent = game.result == 'Win' ? i18next.t('win').toUpperCase() : i18next.t('loss').toUpperCase();
 	    result.className = `flex justify-center font-orbitron font-bold ${game.result === "Win" ? "text-[#2ecc71]" : "text-[#e74c3c]"}`;
 		
 		/* MARCELO PAROU AQUI SUA INVESTIDA NO FRONTEND
@@ -234,11 +235,11 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 		
 
 	    const score = document.createElement("p");
-	    score.textContent = `Score: ${game.youName} ${game.you} x ${game.friend} ${game.friendName}`;
+	    score.textContent = `${i18next.t('score')}: ${game.youName} ${game.you} x ${game.friend} ${game.friendName}`;
 	    score.className = "text-gray-600 font-orbitron";
 
 	    const date = document.createElement("p");
-	    date.textContent = `Date: ${game.dateTime.toLocaleString("pt-PT", {
+	    date.textContent = `${i18next.t('date')}: ${game.dateTime.toLocaleString("pt-PT", {
 			day: "2-digit",
 			month: "2-digit",
 			year: "numeric",
@@ -248,11 +249,11 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	    date.className = "text-gray-600 font-orbitron";
 
 		const touches = document.createElement("p");
-	    touches.textContent = `Touches: You ${game.touchesUser} x ${game.touchesOpponent} ${game.friendName}`; //fake data
+	    touches.textContent = `${i18next.t('touches')}: You ${game.touchesUser} x ${game.touchesOpponent} ${game.friendName}`; //fake data
 	    touches.className = "text-gray-600 font-orbitron";
 
 	    const closeBtn = document.createElement("button");
-	    closeBtn.textContent = "Close";
+	    closeBtn.textContent = i18next.t('close');
 	    closeBtn.className = "mt-4 px-4 py-2 bg-[#174B7A] text-white font-orbitron rounded hover:bg-[#133A58] self-end";
 	    closeBtn.addEventListener("click", () => {
 	        modalBg.remove();
@@ -277,7 +278,7 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	    info.className = "flex gap-12 justify-between items-center";
 
 	    const result = document.createElement("span");
-	    result.textContent = game.result.toUpperCase();
+	    result.textContent = i18next.t(game.result.toLowerCase()).toUpperCase();
 	    result.className = `font-orbitron font-bold ${game.result === "Win" ? "text-[#2ecc71]" : "text-[#e74c3c]"}`;
 
 	    const match = document.createElement("span");

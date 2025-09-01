@@ -1,5 +1,6 @@
 import { renderPage } from "../utils";
 import { fetchFriendInvites, fetchUserAvatar, sendFriendInvite, acceptInvite, declineInvite, fetchFriends, unfriendUser } from "../logic/friendsLogic";
+import i18next from "i18next";
 
 export async function buildFriendsPage(): Promise<void> {
 	const container = document.createElement("div");
@@ -28,12 +29,12 @@ async function createFriendsUI(): Promise<HTMLDivElement> {
 	// Search Input
 	const searchInput = document.createElement("input");
 	searchInput.type = "text";
-	searchInput.placeholder = "Search friend...";
+	searchInput.placeholder = i18next.t("search_friend");
 	searchInput.className = "bg-gray-100 flex-1 px-3 py-2 rounded-md border-none outline-none";
 
 	// Add Friend Button
 	const addButton = document.createElement("button");
-	addButton.textContent = "+ Add Friend";
+	addButton.textContent = i18next.t("add_friend");
 	addButton.className =
 		"bg-[#193D5E] text-white px-4 py-2 rounded-md font-orbitron font-semibold cursor-pointer transition-colors hover:bg-sky-950";
 
@@ -41,7 +42,7 @@ async function createFriendsUI(): Promise<HTMLDivElement> {
 	addButton.addEventListener("click", () => {
 		const friendName = searchInput.value.trim();
 		if (!friendName) {
-			alert("Digite o nome do amigo para enviar o convite");
+			alert(i18next.t("enter_friend_name"));
 			return;
 		}
 		sendFriendInvite(friendName);
@@ -85,7 +86,7 @@ async function createFriendsUI(): Promise<HTMLDivElement> {
 		}`;
 		status.innerHTML = `<span class="w-2 h-2 rounded-full mr-1 ${
 			online ? "bg-green-500" : "bg-red-500"
-		}"></span>${online ? "Online" : "Offline"}`;
+		}"></span>${online ? i18next.t("online") : i18next.t("offline")}`;
 
 		nameStatus.appendChild(name);
 		nameStatus.appendChild(status);
@@ -95,7 +96,7 @@ async function createFriendsUI(): Promise<HTMLDivElement> {
 
 		// Botão Unfriend
 		const unfriendBtn = document.createElement("button");
-		unfriendBtn.textContent = "Unfriend";
+		unfriendBtn.textContent = i18next.t("unfriend");
 		unfriendBtn.className =
 			"bg-[#193D5E] text-white px-3 py-1 rounded-md text-sm font-orbitron font-semibold cursor-pointer hover:bg-red-700 transition-colors";
 
@@ -126,7 +127,7 @@ async function createFriendsUI(): Promise<HTMLDivElement> {
 	  "bg-[#174B7A] px-8 py-6 rounded-t-lg flex justify-center items-center";
 
 	const reqTitle = document.createElement("h1");
-	reqTitle.textContent = "Friend Requests";
+	reqTitle.textContent = i18next.t("friend_requests");
 	reqTitle.className = "text-white py-2 text-xl font-orbitron font-bold mb-0 text-center";
 
 	reqHeader.appendChild(reqTitle);
@@ -161,12 +162,12 @@ async function createFriendsUI(): Promise<HTMLDivElement> {
 		btnGroup.className = "flex gap-2";
 
 		const acceptBtn = document.createElement("button");
-		acceptBtn.textContent = "Accept";
+		acceptBtn.textContent = i18next.t("accept");
 		acceptBtn.className =
 			"bg-green-600 text-white px-3 py-1 rounded-md text-sm font-orbitron font-semibold cursor-pointer hover:bg-green-700 transition-colors";
 
 		const declineBtn = document.createElement("button");
-		declineBtn.textContent = "Decline";
+		declineBtn.textContent = i18next.t("Decline");
 		declineBtn.className =
 			"bg-red-600 text-white px-3 py-1 rounded-md text-sm font-orbitron font-semibold cursor-pointer hover:bg-red-700 transition-colors";
 

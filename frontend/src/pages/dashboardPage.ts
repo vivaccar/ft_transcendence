@@ -1,6 +1,7 @@
 import { Navbar } from '../components/Navbar';
 import { navigate } from '../router';
 import { setUserInfo } from '../utils';
+import i18next from "i18next";
 
 export function buildDashboard(): void {
 	setUserInfo();
@@ -24,13 +25,13 @@ function buildGameCards(): HTMLElement {
 	container.className = 'h-screen flex items-center justify-center gap-16';
 
 	const cards = [
-		{ title: 'Human vs AI', imgSrc: '/images/dashboardCards/card1.jpeg', url: 'ai-game' },
-		{ title: 'Human vs Human\nLocal', imgSrc: '/images/dashboardCards/card2.jpeg', url: 'human-game-local' },
-		{ title: 'Human vs Human\nRemote', imgSrc: '/images/dashboardCards/card5.jpeg', url: 'human-game-remote' },
-		{ title: 'Tournament', imgSrc: '/images/dashboardCards/card3.jpeg', url: 'tournament' },
-	];
+		{ key: 'human_ai', imgSrc: '/images/dashboardCards/card1.jpeg', url: 'ai-game' },
+  		{ key: 'human_local', imgSrc: '/images/dashboardCards/card2.jpeg', url: 'human-game-local' },
+    	{ key: 'human_remote', imgSrc: '/images/dashboardCards/card5.jpeg', url: 'human-game-remote' },
+    	{ key: 'tournament', imgSrc: '/images/dashboardCards/card3.jpeg', url: 'tournament' },
+  	];
 
-	cards.forEach(({ title, imgSrc, url }) => {
+	cards.forEach(({ key, imgSrc, url }) => {
 		const card = document.createElement('a');
 		card.className = 'relative w-80 h-3/4 overflow-hidden rounded border border-[#00F0FF]\
 						cursor-pointer transform transition-transform duration-300 hover:scale-105'; 
@@ -49,7 +50,7 @@ function buildGameCards(): HTMLElement {
 							 py-3 font-orbitron font-bold text-lg';
 		titleDiv.style.backgroundColor = 'transparent';
 		titleDiv.style.textShadow = 'none'; 
-		titleDiv.textContent = title;
+		titleDiv.textContent = i18next.t(key);
 	
 		container.appendChild(card);
 		card.appendChild(titleDiv);
