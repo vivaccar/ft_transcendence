@@ -5,7 +5,7 @@ export const updateLanguageSchema = {
     type: "object",
     required: ["newLanguage"],
     properties: {
-      newUsername: {
+      newLanguage: {
         type: "string",
       },
     },
