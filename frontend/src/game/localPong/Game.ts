@@ -18,6 +18,7 @@ interface GameSettings {
   width: number;
   height: number;
   mode: string;
+  gameMode: string;
 }
 
 
@@ -58,7 +59,7 @@ function makeAIDecision() {
     }
 
     // Margem de erro, pra IA ficar imperfeita.
-    const errorMargin = (Math.random() - 0.5) * player2.height * 2;
+    const errorMargin = (Math.random() - 0.5) * player2.height * 1.3;
     aiTargetY = predictedY + errorMargin;
 }
 
@@ -169,28 +170,42 @@ function handleInput(deltaTime: number) {
 }
 
 function checkCollisions() {
-    
-    if (ball.speedX < 0 && 
-        ball.x - ball.size < player1.x + player1.width && 
-        ball.x + ball.size > player1.x && 
-        ball.y + ball.size > player1.y && 
-        ball.y - ball.size < player1.y + player1.height) 
-    {
-        ball.x = player1.x + player1.width + ball.size; //reposiciona para evitar que a bola entre na raquete
+    // colisão com player1
+    if (
+        ball.speedX < 0 &&
+        ball.x - ball.size < player1.x + player1.width &&
+        ball.x + ball.size > player1.x &&
+        ball.y + ball.size > player1.y &&
+        ball.y - ball.size < player1.y + player1.height
+    ) {
+        ball.x = player1.x + player1.width + ball.size;
         player1.touches++;
-        ball.speedX *= -1;
+
+        const hitPos = (ball.y - (player1.y + player1.height / 2)) / (player1.height / 2);
+
+        ball.speed += ball.increase;
+        const angle = hitPos * (Math.PI / 4); // máx 45°
+        ball.speedX = Math.cos(angle) * ball.speed; // positive -> right
+        ball.speedY = Math.sin(angle) * ball.speed;
     }
 
-    if (ball.speedX > 0 && 
-        ball.x + ball.size > player2.x && 
-        ball.x - ball.size < player2.x + player2.width && 
-        ball.y + ball.size > player2.y && 
-        ball.y - ball.size < player2.y + player2.height) 
-    {
-        
+    // colisão com player2
+    if (
+        ball.speedX > 0 &&
+        ball.x + ball.size > player2.x &&
+        ball.x - ball.size < player2.x + player2.width &&
+        ball.y + ball.size > player2.y &&
+        ball.y - ball.size < player2.y + player2.height
+    ) {
         ball.x = player2.x - ball.size;
         player2.touches++;
-        ball.speedX *= -1;
+
+        const hitPos = (ball.y - (player2.y + player2.height / 2)) / (player2.height / 2);
+
+        ball.speed += ball.increase;
+        const angle = hitPos * (Math.PI / 4); // max 45°
+        ball.speedX = -Math.cos(angle) * ball.speed; // negative -> left
+        ball.speedY = Math.sin(angle) * ball.speed;
     }
 }
 
@@ -295,7 +310,8 @@ function restartGame(): void {
             lastGameSettings.height,
             lastGameSettings.mode,
             player1.name,
-            player2.name
+            player2.name,
+            lastGameSettings.gameMode
         );
     } else {
         console.error('Não foi possível reiniciar o jogo: as configurações iniciais não foram encontradas.');
@@ -316,12 +332,12 @@ function cleanupGame(): void {
     window.removeEventListener('keyup', handleKeyUp);
 }
 
-export function initializeLocalGame(containerId: string, width: number, height: number, mode: string, player1Name: string, player2Name: string) {
+export function initializeLocalGame(containerId: string, width: number, height: number, mode: string, player1Name: string, player2Name: string, gameMode: string) {
     cleanupGame();
 
     currentGameMode = mode;
     const container = document.getElementById(containerId);
-    lastGameSettings = { containerId, width, height, mode };
+    lastGameSettings = { containerId, width, height, mode, gameMode };
 
     if (!container) {
         console.error(`ERRO: Contentor com id "${containerId}" não encontrado.`);
@@ -353,11 +369,15 @@ export function initializeLocalGame(containerId: string, width: number, height: 
     }
 
     const paddleWidth = 10, paddleHeight = 100, paddleSpeed = 300;
-    const ballSize = 10, ballSpeed = 350;
+    const ballSize = 10, ballSpeed = 450;
+    var ballIncrease = 0;
+    if (gameMode === "special") {
+        ballIncrease = 5;
+    }
     //ARRUMAR UM JEITO DE COLOCAR UM NICK NO USUARIO PARA INTEGRACAO COM BACKEND
     player1 = new Paddle(paddleWidth, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP1') || 'white', player1Name);
     player2 = new Paddle(myGameArea.canvas.width - paddleWidth * 2, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP2') || 'white', player2Name);
-    ball = new Ball(myGameArea.canvas.width / 2, myGameArea.canvas.height / 2, ballSize, ballSpeed, myGameArea.canvas);
+    ball = new Ball(myGameArea.canvas.width / 2, myGameArea.canvas.height / 2, ballSize, ballSpeed, myGameArea.canvas, ballIncrease);
 
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp); 

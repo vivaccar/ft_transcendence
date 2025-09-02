@@ -22,7 +22,7 @@ async function loadUserProfile() {
     }
 }
 
-export async function buildHumanGameLocal(gameType: string): Promise<void> {
+export async function buildHumanGameLocal(gameType: string, gameMode: string): Promise<void> {
     const container = document.createElement('div');
     container.className = 'flex items-center justify-center h-screen gap-[5rem]';
     renderPage(container);
@@ -58,7 +58,7 @@ export async function buildHumanGameLocal(gameType: string): Promise<void> {
     if (gameType === "tournament") {
         initializeTournamentMatch('game-container', 600, 400, gameType);
     } else {
-        initializeLocalGame('game-container', 600, 400, gameType, player1Name, player2Name);
+        initializeLocalGame('game-container', 600, 400, gameType, player1Name, player2Name, gameMode);
     }
 }
 

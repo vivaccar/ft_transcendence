@@ -3,19 +3,23 @@ export class Ball {
     initialY: number;
     x: number;
     y: number;
+    increase: number
     size: number;
+    speed: number;
     speedX: number;
     speedY: number;
     canvas: HTMLCanvasElement;
 
-    constructor(x: number, y: number, size: number, speed: number, canvas: HTMLCanvasElement) {
+    constructor(x: number, y: number, size: number, speed: number, canvas: HTMLCanvasElement, increase: number) {
         this.initialX = x;
         this.initialY = y;
         this.x = x;
         this.y = y;
+        this.increase = increase;
         this.size = size;
-        this.speedX = speed;
-        this.speedY = speed;
+        this.speed = speed;
+        this.speedX = -speed;
+        this.speedY = 0;
         this.canvas = canvas;
     }
 
@@ -45,7 +49,7 @@ export class Ball {
         this.x = this.initialX;
         this.y = this.initialY;
         this.speedX *= -1;
-        this.speedY = (Math.random() > 0.5 ? 1 : -1) * Math.abs(this.speedX);
+        this.speedY = 0;
 
         const originalSpeedX = this.speedX;
         const originalSpeedY = this.speedY;
