@@ -1,6 +1,6 @@
 import { setupAvatarControls, setupSettingsLogic  } from "../logic/settingsLogic";
 import { renderPage, getCookieValue } from "../utils";
-
+import i18next from "i18next";
 
 export function buildSettingsPage(): void {
 	const container = document.createElement("div");
@@ -38,7 +38,7 @@ export function createSettingsUI(): {
 	headerBar.className = "bg-[#174B7A] px-8 py-6 rounded-t-lg flex justify-center items-center";
   
 	const title = document.createElement("h1");
-	title.textContent = "Player Settings";
+	title.textContent = i18next.t('player_settings');
 	title.className = "text-xl font-orbitron font-bold mb-0 text-center";
 	title.style.color = "white";
   
@@ -50,7 +50,6 @@ export function createSettingsUI(): {
 	profileSection.className = "flex items-center mb-2 gap-6 p-8 pb-4";
   
 	const img = document.createElement("img");
-	// img.src = "/images/randomAvatar/0.jpeg";
 	img.className = "w-32 h-32 object-cover rounded-full border-4 border-gray-300";
 	profileSection.appendChild(img);
   
@@ -59,7 +58,7 @@ export function createSettingsUI(): {
 	chooseAvatar.className = "flex flex-col items-center gap-4";
   
 	const text = document.createElement("p");
-	text.textContent = "Upload a new avatar or choose a random one";
+	text.textContent = i18next.t("upload_avatar");
 	text.className = "text-lg font-orbitron text-center text-gray-700";
 	chooseAvatar.appendChild(text);
   
@@ -67,12 +66,12 @@ export function createSettingsUI(): {
 	buttons.className = "flex items-center gap-4";
   
 	const btnUpload = document.createElement("button");
-	btnUpload.textContent = "Upload Photo";
+	btnUpload.textContent = i18next.t("upload_photo");
 	btnUpload.className = "px-5 py-2 bg-[#174B7A] font-orbitron text-white rounded hover:bg-[#133A58] transition";
 	buttons.appendChild(btnUpload);
   
 	const btnRandom = document.createElement("button");
-	btnRandom.textContent = "Random Avatar";
+	btnRandom.textContent = i18next.t("random_avatar");
 	btnRandom.className = "px-5 py-2 bg-[#174B7A] font-orbitron text-white rounded hover:bg-[#133A58] transition";
 	buttons.appendChild(btnRandom);
   
@@ -90,7 +89,7 @@ export function createSettingsUI(): {
 	// Email
 	const emailInput = document.createElement("input");
 	emailInput.type = "email";
-	emailInput.placeholder = "Email";
+	emailInput.placeholder = i18next.t("email");
 	emailInput.className = "inputBlocked";
 	emailInput.disabled = true;
 	form.appendChild(emailInput);
@@ -98,7 +97,7 @@ export function createSettingsUI(): {
 	// Username
 	const usernameInput = document.createElement("input");
 	usernameInput.type = "text";
-	usernameInput.placeholder = "Username";
+	usernameInput.placeholder = i18next.t("username"); 
 	usernameInput.className = "inputBlocked";
 	usernameInput.disabled = true;
 
@@ -107,21 +106,21 @@ export function createSettingsUI(): {
 	// Current Password
 	const oldPasswordInput = document.createElement("input");
 	oldPasswordInput.type = "password";
-	oldPasswordInput.placeholder = "Current Password";
+	oldPasswordInput.placeholder = i18next.t("current_password");
 	oldPasswordInput.className = "p-2 rounded bg-gray-100 border border-gray-300 hidden";
 	form.appendChild(oldPasswordInput);
 
 	// New Password
 	const passwordInput = document.createElement("input");
 	passwordInput.type = "password";
-	passwordInput.placeholder = "New Password";
+	passwordInput.placeholder = i18next.t("new_password");
 	passwordInput.className = "p-2 rounded bg-gray-100 border border-gray-300 hidden";
 	form.appendChild(passwordInput);
 
 	// Confirm Password
 	const confirmPasswordInput = document.createElement("input");
 	confirmPasswordInput.type = "password";
-	confirmPasswordInput.placeholder = "Confirm Password";
+	confirmPasswordInput.placeholder = i18next.t("confirm_password");
 	confirmPasswordInput.className = "p-2 rounded bg-gray-100 border border-gray-300 hidden";
 	form.appendChild(confirmPasswordInput);
 
@@ -131,7 +130,7 @@ export function createSettingsUI(): {
 	twoFAContainer.className = "flex items-center mt-4 gap-6 p-4 pb-0 pt-0";
   
 	const twoFAText = document.createElement("span");
-	twoFAText.textContent = "Enable 2FA";
+	twoFAText.textContent = i18next.t("enable_2fa");
 	twoFAText.className = "text-lg font-orbitron font-medium";
 	twoFAContainer.appendChild(twoFAText);
   
@@ -163,11 +162,11 @@ export function createSettingsUI(): {
   
 	// submit button
 	const submitBtn = document.createElement("button");
-	submitBtn.textContent = "Submit";
+	submitBtn.textContent = i18next.t("submit");
 	submitBtn.className = 'px-6 py-3 bg-[#174B7A] font-orbitron font-bold text-white rounded-lg shadow-md hover:bg-[#133A58] active:bg-[#0F2A3D] transition-colors duration-200 mt-6 self-center hidden';
 
 	const editBtn = document.createElement("button");
- 	editBtn.textContent = "Edit";
+	editBtn.textContent = i18next.t("edit");
  	editBtn.className = 'px-6 py-3 bg-[#174B7A] font-orbitron font-bold text-white rounded-lg shadow-md hover:bg-[#133A58] active:bg-[#0F2A3D] transition-colors duration-200 mt-6 self-center';
  	editBtn.addEventListener("click", async (e) => {
 		e.preventDefault();

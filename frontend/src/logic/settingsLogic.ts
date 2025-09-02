@@ -3,6 +3,8 @@ import { API_ROUTES } from "../config";
 import { getToken } from "../auth/authService";
 import { setup2FA } from "../auth/2fa";
 import { setUserInfo } from "../utils";
+import i18next from "i18next";
+
 
 export async function setupSettingsLogic(elements: ReturnType<typeof createSettingsUI>) {
   const { 
@@ -72,7 +74,7 @@ export async function setupSettingsLogic(elements: ReturnType<typeof createSetti
       // 2. Atualizar senha (se usuário preencheu os campos)
       if (oldPasswordInput.value && passwordInput.value && confirmPasswordInput.value) {
         if (passwordInput.value !== confirmPasswordInput.value) {
-          alert("New passwords do not match!");
+          alert(i18next.t("password_mismatch"));
           return;
         }
   
@@ -192,7 +194,6 @@ async function uploadAvatar(file: File): Promise<void> {
       headers: {
         'Authorization': `Bearer ${token}`
       }
-      // credentials: "include",
     });
 
     if (!res.ok) {
@@ -201,7 +202,7 @@ async function uploadAvatar(file: File): Promise<void> {
     }
 
   } catch (error) {
-    console.error("Erro na requisição de upload:", error);
+    console.error(error);
     alert("An error occurred while trying to upload the avatar.");
   }
 }
