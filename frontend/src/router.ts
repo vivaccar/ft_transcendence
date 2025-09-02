@@ -42,7 +42,7 @@ const routes: Record<string, () => void | Promise<void>> = {
     buildRemoteGamePage();
   }),
   "/game-local": protectedRoute(() => {
-    buildHumanGameLocal("human");
+    buildHumanGameLocal("human", "default");
   }),
   "/settings": protectedRoute(() => {
     buildSettingsPage();
