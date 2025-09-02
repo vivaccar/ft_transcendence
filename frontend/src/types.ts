@@ -39,3 +39,25 @@ export interface Friend {
 	status: string;
 	isOnline: boolean;
 }
+
+//src/game/remotePong/RemoteGame.ts
+export interface GameState { 
+	ball: { 
+		x: number; 
+		y: number; 
+	}; 
+	p1: PaddleState; 
+	p2: PaddleState; 
+	scores: { 
+		p1: number; 
+		p2: number; 
+	}; 
+}
+
+//src/game/remotePong/RemoteGame.ts
+export interface PaddleState { 
+	id: string; 
+	x: number; 
+	y: number; 
+	color: string; 
+}

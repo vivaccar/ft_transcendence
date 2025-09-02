@@ -1,78 +1,102 @@
-// backend/srcs/routes/websocket/gameWs.ts
+import { FastifyInstance, FastifyRequest } from 'fastify';
+import { WebSocket } from 'ws';
+import { GameSession, Player } from '../../game/engine';
 
-import { FastifyInstance } from 'fastify';
-import { GameSession, Player } from '../../game/engine'; // <--- IMPORTAMOS O NOSSO MOTOR DE JOGO
-
-// Vamos guardar as sessões ativas em memória (isto será reiniciado se o servidor cair)
 const sessions = new Map<string, GameSession>();
-const pendingSessions = new Map<string, GameSession>();
+const connectionToSessionMap = new Map<WebSocket, string>(); // Usamos o tipo correto para o mapa
 
 function generateSessionId(): string {
-    return Math.random().toString(36).substring(2, 9);
+	return Math.random().toString(36).substring(2, 9);
 }
 
 export default async function gameWs(app: FastifyInstance) {
-  app.get('/ws', { websocket: true }, (connection, req) => {
+	// 2. ADICIONAMOS A TIPAGEM EXPLÍCITA PARA 'connection'
+	app.get('/ws', { websocket: true }, (connection: WebSocket, req: FastifyRequest) => {
 
-	console.log('Cliente conectado ao WebSocket!');
-	connection.send('Bem-vindo ao servidor de jogo!');
-	// AQUIIIIIIIIIIIIIIIIIIIIIIII
-	// PRECISO DESCOBRIR COMO BUSCAR O ID DO UTILIZADOS NO TOKEN!!!!
-	// AQUIIIIIIIIIIIIIIIIIII, PARA ASSIM CONECTARMOS UM USER ESPECIFICO
-    // Por agora, vamos usar um ID aleatório para teste.
+		console.log("Conectado!");
+		const userId = req.headers['sec-websocket-key'];
+		if (!userId) {
+			connection.close(1011, 'Missing connection key');
+			return;
+		}
 
-    const userId = req.headers['sec-websocket-key']; //Aqui precisa buscar o ID do user no token JWT
-	if (!userId) {
-        connection.close(1011, 'Missing connection key: userId');
-        return;
-    }
+		connection.on('message', (message: string) => {
+			//DEBUG - NAO APAGAR AINDA
+			console.log('--- MENSAGEM BRUTA RECEBIDA ---');
+			console.log(message.toString());
+			console.log('-------------------------------');
 
-    connection.on('message', (message: string) => {
-      const data = JSON.parse(message.toString());
+			const data = JSON.parse(message.toString());
 
-      switch (data.type) {
-        case 'createMatch': {
-          const sessionId = generateSessionId();
-          const session = new GameSession(sessionId);
-          const player1 = new Player(userId, connection, 'left');
-          session.addPlayer(player1);
+			switch (data.type) {
+				case 'createMatch': {
+					console.log("createMatch!", data.payload);
+					const sessionId = generateSessionId();
+					const background = data.payload?.background;
+					const session = new GameSession(sessionId, background);
+					const playerColor = data.payload?.color || 'white';
+					const player1 = new Player(userId, connection, 'left', playerColor);
+					session.addPlayer(player1);
 
-          pendingSessions.set(sessionId, session);
-          
-          const response = { type: 'matchCreated', sessionId };
-          connection.send(JSON.stringify(response));
-          break;
-        }
+					sessions.set(sessionId, session);
+					connectionToSessionMap.set(connection, sessionId);
 
-        case 'joinMatch': {
-          const sessionId = data.sessionId;
-          const session = pendingSessions.get(sessionId);
+					const response = { type: 'matchCreated', sessionId };
+					connection.send(JSON.stringify(response));
+					console.log(`Partida ${sessionId} criada pelo jogador ${userId} com a cor ${playerColor}.`);
+					break;
+				}
 
-          if (session && session.players.length === 1) {
-            const player2 = new Player(userId, connection, 'right');
-            session.addPlayer(player2);
-            
-            sessions.set(sessionId, session);
-            pendingSessions.delete(sessionId);
+				case 'joinMatch': {
+					//DEBUG - NAO APAGAR AINDA
+					console.log("joinMatch!", data.payload);
+					const sessionId = data.payload?.sessionId;
+					const playerColor = data.payload?.color || 'white';
 
-            session.start();
-          } else {
-            // Sessão não encontrada ou já está cheia
-            connection.send(JSON.stringify({ type: 'error', message: 'Session not found or full' }));
-          }
-          break;
-        }
+					if (!sessionId) {
+                        console.error("Erro: 'joinMatch' sem sessionId no payload.");
+                        connection.send(JSON.stringify({ type: 'error', message: 'Match ID is missing.' }));
+                        return;
+                    }
 
-        case 'playerMove': {
-          //AQUI É O PRÓXIMO PASSO
-          break;
-        }
-      }
-    });
+					const session = sessions.get(sessionId);
+					if (session && session.players.length === 1) {
+						const player2 = new Player(userId, connection, 'right', playerColor);
+						session.addPlayer(player2);
+						connectionToSessionMap.set(connection, sessionId);
+						session.start();
+					} else {
+						connection.send(JSON.stringify({ type: 'error', message: 'Session not found or full' }));
+					}
+					break;
+				}
 
-    connection.on('close', () => {
-      console.log('Cliente desconectado.');
-      // Aqui teríamos de encontrar a sessão do jogador e lidar com a sua saída
-    });
-  });
+				case 'playerMove': {
+					//DEBUG - NAO APAGAR AINDA
+					console.log("playerMove!");
+					const sessionId = connectionToSessionMap.get(connection);
+					if (sessionId) {
+						const session = sessions.get(sessionId);
+						session?.handlePlayerMove(userId, data.payload);
+					}
+					break;
+				}
+			}
+		});
+
+		connection.on('close', () => {
+			const sessionId = connectionToSessionMap.get(connection);
+			if (sessionId) {
+				const session = sessions.get(sessionId);
+				if (session) {
+					session.removePlayer(userId);
+					if (session.players.length === 0) {
+						sessions.delete(sessionId);
+						console.log(`Sessão ${sessionId} removida.`);
+					}
+				}
+				connectionToSessionMap.delete(connection);
+			}
+		});
+	});
 }

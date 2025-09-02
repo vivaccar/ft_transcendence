@@ -9,6 +9,11 @@ export async function updateUsername(app: FastifyInstance) {
             return reply.status(400).send({ message: "Username must have at least 3 characters" })
         }
 
+        const usernameRegex = /^[a-zA-Z0-9_]+$/;
+        if (!usernameRegex.test(newUsername)) {
+            return reply.status(400).send({ message: "Username contains invalid characters" });
+        }
+        
         const user = await app.prisma.user.findUnique({
             where: { id: request.user.id },
         })
