@@ -4,8 +4,8 @@ services:
     container_name: backend
     expose:
       - "3002"
-    ports:
-      - "3002:3002" 
+#    ports:
+#      - "3002:3002" 
     networks:
       - transcendence
     volumes:
