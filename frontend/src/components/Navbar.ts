@@ -1,3 +1,4 @@
+import { API_ROUTES } from "../config";
 import { navigate } from "../router";
 import i18next from "i18next";
 
@@ -57,13 +58,36 @@ export function Navbar(): HTMLElement {
 		langSelect.appendChild(option);
 	});
 
-	langSelect.addEventListener("change", (e) => {
+	langSelect.addEventListener("change", async (e) => {
 		const lang = (e.target as HTMLSelectElement).value;
-		i18next.changeLanguage(lang, () => {
-			localStorage.setItem("lang", lang);
-			console.log(window.location.pathname);
-			navigate(window.location.pathname);
-		});
+
+		try {
+			const res = await fetch(API_ROUTES.uploadLang, {
+				method: "PATCH",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ newLanguage: lang.toUpperCase() }),
+			});
+
+			if (!res.ok) {
+				const err = await res.json();
+				alert(`⚠️ ${err.message}`);
+				return;
+			}
+
+			const data = await res.json();
+			console.log(data.message); // Language successfully updated
+
+			i18next.changeLanguage(lang, () => {
+				localStorage.setItem("lang", lang);
+				navigate(window.location.pathname);
+			});
+
+		} catch (error) {
+			console.error("Erro ao atualizar idioma:", error);
+			alert("Erro ao atualizar idioma");
+		}
 	});
 
 	// 🔹 Agrupar Logout + Seletor
