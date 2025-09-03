@@ -3,19 +3,17 @@ export class Ball {
     initialY: number;
     x: number;
     y: number;
-    increase: number
     size: number;
     speed: number;
     speedX: number;
     speedY: number;
     canvas: HTMLCanvasElement;
 
-    constructor(x: number, y: number, size: number, speed: number, canvas: HTMLCanvasElement, increase: number) {
+    constructor(x: number, y: number, size: number, speed: number, canvas: HTMLCanvasElement) {
         this.initialX = x;
         this.initialY = y;
         this.x = x;
         this.y = y;
-        this.increase = increase;
         this.size = size;
         this.speed = speed;
         this.speedX = -speed;

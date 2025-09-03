@@ -36,7 +36,7 @@ export function GameModeSelector(
   container.appendChild(modeDesc);
 
   specialBtn.addEventListener("mouseenter", () => {
-    modeDesc.textContent = "Ball increases speed";
+    modeDesc.textContent = "Power-ups activated";
   });
   specialBtn.addEventListener("mouseleave", () => {
     modeDesc.textContent = "";

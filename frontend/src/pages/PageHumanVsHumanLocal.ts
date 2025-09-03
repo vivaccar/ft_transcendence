@@ -86,8 +86,9 @@ export function buildGamePageManVsManLocal(gameType: string) {
   	sessionStorage.setItem("selectedColorP1", selectedColorP1 ?? "white");
     sessionStorage.setItem("selectedColorP2", selectedColorP2 ?? "white");
     sessionStorage.setItem("selectedBackground", selectedbackgroundImg);
+	sessionStorage.setItem("selectedGameMode", selectedGameMode);
 
-    buildHumanGameLocal(`${gameType}`, selectedGameMode);
+    buildHumanGameLocal(`${gameType}`);
 	
   });
   container.appendChild(startBtn);

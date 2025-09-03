@@ -23,6 +23,11 @@ export function createGameUI(): HTMLElement {
     scoreboard.appendChild(separator);
     scoreboard.appendChild(p2Score);
 
+    // power up alert
+    const powerUpAlert = document.createElement('div');
+    powerUpAlert.id = 'power-up-alert';
+    powerUpAlert.className = 'hidden absolute top-full mt-4 left-1/2 transform -translate-x-1/2 bg-purple-800 text-white py-2 px-4 rounded-lg text-xl z-50 opacity-0 transition-opacity duration-300';
+
     // 3. Criar contêiner do canvas (para overlay relativo)
     const canvasContainer = document.createElement('div');
     canvasContainer.className = "relative inline-block";
@@ -69,12 +74,14 @@ export function createGameUI(): HTMLElement {
     gameOverScreen.appendChild(winnerText);
     gameOverScreen.appendChild(buttonContainer);
 
+    
     // Montar canvas + overlay no container
     canvasContainer.appendChild(canvas);
     canvasContainer.appendChild(gameOverScreen);
-
+    
     // 5. Montar a estrutura final
     root.appendChild(scoreboard);
+    root.appendChild(powerUpAlert);
     root.appendChild(canvasContainer);
 
     // 6. Retornar o elemento raiz completo

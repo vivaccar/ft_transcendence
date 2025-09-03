@@ -8,6 +8,7 @@ export class Paddle {
     touches: number;
     color: string;
     name: string;
+    power: number;
 
     constructor(x: number, y: number, width: number, height: number, speed: number, color: string, name: string) {
         this.x = x;
@@ -19,6 +20,7 @@ export class Paddle {
         this.touches = 0;
         this.color = color;
         this.name = name
+        this.power = 1;
     }
 
 

@@ -118,7 +118,7 @@ export function buildTournamentsPage(gameType: string) {
         sessionStorage.setItem("gameMode", "tournament_semi_1");
 
         // Inicia o primeiro jogo do torneio
-        buildHumanGameLocal(`${gameType}`, "default");
+        buildHumanGameLocal(`${gameType}`);
     });
     container.appendChild(startBtn);
 }

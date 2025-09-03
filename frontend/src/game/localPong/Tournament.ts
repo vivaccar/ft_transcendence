@@ -85,7 +85,7 @@ function handleTournamentMatchEnd(winnerName: string) {
                 sessionStorage.setItem('playerName2', sessionStorage.getItem('tournament_p4_name')!);
                 sessionStorage.setItem('selectedColorP2', sessionStorage.getItem('tournament_p4_color')!);
                 sessionStorage.setItem('gameMode', 'tournament_semi_2');
-                buildHumanGameLocal('tournament', "default");
+                buildHumanGameLocal('tournament');
             };
             break;
         case 'tournament_semi_2':
@@ -102,7 +102,7 @@ function handleTournamentMatchEnd(winnerName: string) {
                 sessionStorage.setItem('playerName2', sessionStorage.getItem('tournament_finalist2_name')!);
                 sessionStorage.setItem('selectedColorP2', sessionStorage.getItem('tournament_finalist2_color')!);
                 sessionStorage.setItem('gameMode', 'tournament_final');
-                buildHumanGameLocal('tournament', "default");
+                buildHumanGameLocal('tournament');
             };
             break;
         case 'tournament_final':
@@ -263,7 +263,7 @@ export function initializeTournamentMatch(containerId: string, width: number, he
     const ballSize = 10, ballSpeed = 450;
     player1 = new Paddle(paddleWidth, tournamentGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP1') || 'white', "");
     player2 = new Paddle(tournamentGameArea.canvas.width - paddleWidth * 2, tournamentGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP2') || 'white', "");
-    ball = new Ball(tournamentGameArea.canvas.width / 2, tournamentGameArea.canvas.height / 2, ballSize, ballSpeed, tournamentGameArea.canvas, 0);
+    ball = new Ball(tournamentGameArea.canvas.width / 2, tournamentGameArea.canvas.height / 2, ballSize, ballSpeed, tournamentGameArea.canvas);
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
     setupTournamentRestartButton();
