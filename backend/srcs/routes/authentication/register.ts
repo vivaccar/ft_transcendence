@@ -14,6 +14,7 @@ export async function registerRoutes(app: FastifyInstance) {
         .regex(/[A-Za-z]/, { message: 'Password must contain at least one letter' })
         .regex(/\d/, { message: 'Password must contain at least one number' }),
       username: z.string().min(3, { message: 'Username must be at least 3 characters long' })
+      .regex(/^[a-zA-Z0-9_]+$/, { message: 'Username can only contain letters, numbers and underscore' })
     })
 
     try {

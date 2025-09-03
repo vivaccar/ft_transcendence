@@ -24,6 +24,7 @@ import { declineInvite } from "./routes/friendships/declineInvite";
 import { unfriend } from "./routes/friendships/unfriend";
 import { getFriends } from "./routes/friendships/getFriends";
 import { ping } from "./routes/user/ping";
+import { updateLanguage } from "./routes/user/changeLanguague";
 import jwt from "./plugins/jwtPlugin";
 import jwtPlugin from "./plugins/jwtPlugin";
 import googleOAuthPlugin from './plugins/google-oauth'
@@ -82,5 +83,6 @@ app.register(getFriends)
 app.register(ping);
 app.register(websocket);
 app.register(gameWs);
+app.register(updateLanguage);
 
 export default app
