@@ -48,13 +48,16 @@ export class Ball {
         this.y = this.initialY;
         this.speedX *= -1;
         this.speedY = 0;
-
+        
+        const originalSpeed = this.speed;
         const originalSpeedX = this.speedX;
         const originalSpeedY = this.speedY;
+        this.speed = originalSpeed;
         this.speedX = 0;
         this.speedY = 0;
         
         setTimeout(() => {
+            this.speed = originalSpeed;
             this.speedX = originalSpeedX;
             this.speedY = originalSpeedY;
         }, 1000);

@@ -1,4 +1,5 @@
 import { WebSocket } from 'ws';
+import { PrismaClient } from '@prisma/client';
 
 const CANVAS_WIDTH = 600;
 const CANVAS_HEIGHT = 400;
@@ -8,11 +9,12 @@ const BALL_SIZE = 10;
 //Pixels per second
 const PADDLE_SPEED = 300;
 const BALL_SPEED = 300;
-const WINNING_SCORE = 2;
+const WINNING_SCORE = 10;
 
 // Represents a player connected to a session
 export class Player {
 	id: string;
+	name: string;
 	ws: WebSocket;
 	color: string;
 	x: number;
@@ -20,11 +22,13 @@ export class Player {
 	width: number = PADDLE_WIDTH;
 	height: number = PADDLE_HEIGHT;
 	score: number = 0;
+	touches: number = 0;
 	moveUp: boolean = false;
 	moveDown: boolean = false;
 
-	constructor(id: string, ws: WebSocket, side: 'left' | 'right', color: string) {
+	constructor(id: string, name: string, ws: WebSocket, side: 'left' | 'right', color: string) {
 		this.id = id;
+		this.name = name;
 		this.ws = ws;
 		this.color = color;
 		this.x = (side === 'left') ? PADDLE_WIDTH : CANVAS_WIDTH - (PADDLE_WIDTH * 2);
@@ -63,12 +67,15 @@ export class GameSession {
 	players: Player[] = [];
 	ball: Ball;
 	background: string;
+	prisma: PrismaClient;
 	private gameInterval: NodeJS.Timeout | null = null;
 	private lastTime: number = 0;
 
-	constructor(sessionId: string, background: string) {
+
+	constructor(sessionId: string, background: string, prisma: PrismaClient) {
 		this.sessionId = sessionId;
 		this.background = background;
+		this.prisma = prisma;
 		this.ball = new Ball();
 	}
 
@@ -94,12 +101,16 @@ export class GameSession {
 		player1.ws.send(JSON.stringify({
 			type: 'gameStart',
 			opponentId: player2.id,
+			p1Name: player1.name,
+			p2Name: player2.name,
 			background: this.background
 		}));
 		//ISSO PODE SER REFATORADO PARA UM PAYLOAD. MAS VAI TER DE MUDAR MUITA COISA QUE CHATO PORRA
 		player2.ws.send(JSON.stringify({
 			type: 'gameStart',
 			opponentId: player1.id,
+			p1Name: player1.name,
+			p2Name: player2.name,
 			background: this.background
 		}));
 
@@ -143,25 +154,84 @@ export class GameSession {
 		const p1 = this.players[0];
 		const p2 = this.players[1];
 
+		// colisão com as bordas de cima e baixo
 		if (this.ball.y - this.ball.size < 0 || this.ball.y + this.ball.size > CANVAS_HEIGHT) {
 			this.ball.speedY *= -1;
 		}
 
-		if (this.ball.x - this.ball.size < p1.x + p1.width && this.ball.y > p1.y && this.ball.y < p1.y + p1.height) {
-			this.ball.speedX *= -1;
+		// colisão com player1
+		if (
+			this.ball.speedX < 0 &&
+			this.ball.x - this.ball.size < p1.x + p1.width &&
+			this.ball.x + this.ball.size > p1.x &&
+			this.ball.y + this.ball.size > p1.y &&
+			this.ball.y - this.ball.size < p1.y + p1.height
+		) {
 			this.ball.x = p1.x + p1.width + this.ball.size;
-		}
-		if (this.ball.x + this.ball.size > p2.x && this.ball.y > p2.y && this.ball.y < p2.y + p2.height) {
-			this.ball.speedX *= -1;
-			this.ball.x = p2.x - this.ball.size;
+			p1.touches++;
+
+			const hitPos = (this.ball.y - (p1.y + p1.height / 2)) / (p1.height / 2);
+			const angle = hitPos * (Math.PI / 4); // máx 45°
+
+			this.ball.speedX = Math.cos(angle) * BALL_SPEED; // positivo = direita
+			this.ball.speedY = Math.sin(angle) * BALL_SPEED;
 		}
 
+		// colisão com player2
+		if (
+			this.ball.speedX > 0 &&
+			this.ball.x + this.ball.size > p2.x &&
+			this.ball.x - this.ball.size < p2.x + p2.width &&
+			this.ball.y + this.ball.size > p2.y &&
+			this.ball.y - this.ball.size < p2.y + p2.height
+		) {
+			this.ball.x = p2.x - this.ball.size;
+			p2.touches++;
+
+			const hitPos = (this.ball.y - (p2.y + p2.height / 2)) / (p2.height / 2);
+			const angle = hitPos * (Math.PI / 4);
+
+			this.ball.speedX = -Math.cos(angle) * BALL_SPEED; // negativo = esquerda
+			this.ball.speedY = Math.sin(angle) * BALL_SPEED;
+		}
+
+		// pontos
 		if (this.ball.x < 0) {
 			p2.score++;
 			this.ball.reset();
 		} else if (this.ball.x > CANVAS_WIDTH) {
 			p1.score++;
 			this.ball.reset();
+		}
+		}
+		
+	private async saveGameData() {
+		const players = this.players;
+
+		try {
+			const match = await this.prisma.match.create({
+			data: {
+				date: new Date(),
+				matchParticipant: {
+				create: players.map(p => {
+					return {
+						user: { connect: { username: p.name } },
+						goals: p.score,
+						touches: p.touches,
+					};
+				}),
+				},
+			},
+			include: {
+				matchParticipant: {
+				include: { user: true },
+				},
+			},
+			});
+
+			console.log(`[GameSession ${this.sessionId}] Partida registrada com sucesso`);
+		} catch (error) {
+			console.error(`Erro ao registrar a partida:`, error);
 		}
 	}
 
@@ -179,15 +249,17 @@ export class GameSession {
 		if (winner) {
 			//ISSO TEM DE SER MUDADO PARA INGLES
 			console.log(`[GameSession ${this.sessionId}] Fim de jogo! Vencedor: Jogador com ID ${winner.id}`);
+			this.saveGameData();
 			this.stop();
 			this.broadcast({
 				type: 'gameOver',
 				payload: {
-					winnerName: winner.id === p1.id ? 'Player 1' : 'Player 2' //AQUI NESSE TERNARIO TEM DE PUXAR O DADO DA DB
+					winnerName: winner.name,
 				}
 			});
 		}
 	}
+
 
 	// Envia o estado atual para todos os jogadores na sessão
 	//suspeito que o fato de nao enviar o placar correto seja por que o jogo acaba antes de chegar aqui

@@ -4,7 +4,7 @@ import { initializeLocalGame } from './Game';
 import { initializeTournamentMatch } from './Tournament';
 import { API_ROUTES } from '../../config';
 
-async function loadUserProfile() {
+export async function loadUserProfile() {
 
     try {
       const res = await fetch(`${API_ROUTES.me}`, {
