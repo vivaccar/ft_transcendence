@@ -242,7 +242,7 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 		modal.appendChild(titleWrapper);
 		
 	    const score = document.createElement("p");
-	    score.textContent = `SCORE`;
+	    score.textContent = `${i18next.t('score')}`;
 	    score.className = "flex justify-center font-bold text-gray-600 font-orbitron";
 		
 	    const date = document.createElement("p");
@@ -288,7 +288,7 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 		goalsWrapper.appendChild(goalsFriendBox);
 		
 		const touches = document.createElement("p");
-	    touches.textContent = `TOUCHES`;
+	    touches.textContent = `${i18next.t('touches')}`;
 	    touches.className = "flex justify-center font-bold text-gray-600 font-orbitron";
 
 		const touchesWrapper = document.createElement("div");
