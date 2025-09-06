@@ -58,12 +58,12 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	// Win bar
 	const winBar = document.createElement("div");
 	winBar.style.width = `${winPercent}%`;
-	winBar.className = "flex justify-center items-center text-white bg-[#2ecc71]";
+	winBar.className = "flex justify-center items-center text-white bg-[#A66DD4]";
 
 	// Loss bar
 	const lossBar = document.createElement("div");
 	lossBar.style.width = `${lossPercent}%`;
-	lossBar.className = "flex justify-center items-center text-white bg-[#e74c3c]";
+	lossBar.className = "flex justify-center items-center text-white bg-[#362A63]";
 
 	progressBar.appendChild(winBar);
 	progressBar.appendChild(lossBar);
@@ -82,7 +82,7 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	winsBox.style.width = "60px";
 	winsBox.style.height = "40px";
 	winsBox.textContent = `${stats.wins}`;
-	winsBox.className = "flex justify-center items-center rounded-lg font-orbitron font-bold text-white bg-[#2ecc71]";
+	winsBox.className = "flex justify-center items-center rounded-lg font-orbitron font-bold text-white bg-[#A66DD4]";
 
 	const winsLabel = document.createElement("p");
 	winsLabel.textContent = i18next.t("wins");
@@ -99,7 +99,7 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	lossesBox.style.width = "60px";
 	lossesBox.style.height = "40px";
 	lossesBox.textContent = `${stats.losses}`;
-	lossesBox.className = "flex justify-center items-center rounded-lg font-orbitron font-bold text-white bg-[#e74c3c]";
+	lossesBox.className = "flex justify-center items-center rounded-lg font-orbitron font-bold text-white bg-[#362A63]";
 
 	const lossesLabel = document.createElement("p");
 	lossesLabel.textContent = i18next.t("losses");
@@ -132,12 +132,12 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	// goals pro bar
 	const goalsProBar = document.createElement("div");
 	goalsProBar.style.width = `${goalsProPercent}%`;
-	goalsProBar.className = "flex justify-center items-center text-white bg-[#2ecc71]";
+	goalsProBar.className = "flex justify-center items-center text-white bg-[#A66DD4]";
 
 	// goals con bar
 	const goalsConBar = document.createElement("div");
 	goalsConBar.style.width = `${goalsConPercent}%`;
-	goalsConBar.className = "flex justify-center items-center text-white bg-[#e74c3c]";
+	goalsConBar.className = "flex justify-center items-center text-white bg-[#362A63]";
 
 	progressGoalsBar.appendChild(goalsProBar);
 	progressGoalsBar.appendChild(goalsConBar);
@@ -156,7 +156,7 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	goalsProBox.style.width = "60px";
 	goalsProBox.style.height = "40px";
 	goalsProBox.textContent = `${goals.goalsPro}`;
-	goalsProBox.className = "flex justify-center items-center rounded-lg font-orbitron font-bold text-white bg-[#2ecc71]";
+	goalsProBox.className = "flex justify-center items-center rounded-lg font-orbitron font-bold text-white bg-[#A66DD4]";
 
 	const goalsProLabel = document.createElement("p");
 	goalsProLabel.textContent = i18next.t("scored");
@@ -173,7 +173,7 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	goalsConBox.style.width = "60px";
 	goalsConBox.style.height = "40px";
 	goalsConBox.textContent = `${goals.goalsCon}`;
-	goalsConBox.className = "flex justify-center items-center rounded-lg font-orbitron font-bold text-white bg-[#e74c3c]";
+	goalsConBox.className = "flex justify-center items-center rounded-lg font-orbitron font-bold text-white bg-[#362A63]";
 
 	const goalsConLabel = document.createElement("p");
 	goalsConLabel.textContent = i18next.t("conceded");
@@ -220,50 +220,121 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	    const modal = document.createElement("div");
 	    modal.className = "bg-white rounded-lg p-6 max-w-md w-full flex flex-col gap-4 shadow-lg";
 
-	    const title = document.createElement("h2");
-	    title.textContent = `${game.youName} ${i18next.t('vs')} ${game.friendName}`;
-	    title.className = "flex justify-center text-xl font-orbitron font-bold";
+	    const titleWrapper = document.createElement("div");
+		titleWrapper.className = "flex justify-center items-center gap-4 text-xl font-orbitron font-bold";
 
-	    const result = document.createElement("p");
-	    result.textContent = game.result == 'Win' ? i18next.t('win').toUpperCase() : i18next.t('loss').toUpperCase();
-	    result.className = `flex justify-center font-orbitron font-bold ${game.result === "Win" ? "text-[#2ecc71]" : "text-[#e74c3c]"}`;
-		
-		/* MARCELO PAROU AQUI SUA INVESTIDA NO FRONTEND
-		const goalsProBar2 = document.createElement("div");
-		goalsProBar2.style.width = `${game.you}%`;
-		goalsProBar2.className = "flex justify-center items-center text-white bg-[#2ecc71]"; */
-		
+		const youBox = document.createElement("div");
+		youBox.textContent = game.youName;
+		youBox.className = "bg-[#A66DD4] text-white px-4 py-2 rounded-lg shadow";
 
+		const vsText = document.createElement("span");
+		vsText.textContent = "vs";
+		vsText.className = "text-black";
+
+		const friendBox = document.createElement("div");
+		friendBox.textContent = game.friendName;
+		friendBox.className = "bg-[#362A63] text-white px-4 py-2 rounded-lg shadow";
+
+		titleWrapper.appendChild(youBox);
+		titleWrapper.appendChild(vsText);
+		titleWrapper.appendChild(friendBox);
+
+		modal.appendChild(titleWrapper);
+		
 	    const score = document.createElement("p");
-	    score.textContent = `${i18next.t('score')}: ${game.youName} ${game.you} x ${game.friend} ${game.friendName}`;
-	    score.className = "text-gray-600 font-orbitron";
-
+	    score.textContent = `SCORE`;
+	    score.className = "flex justify-center font-bold text-gray-600 font-orbitron";
+		
 	    const date = document.createElement("p");
-	    date.textContent = `${i18next.t('date')}: ${game.dateTime.toLocaleString("pt-PT", {
+	    date.textContent = `${game.dateTime.toLocaleString("pt-PT", {
 			day: "2-digit",
 			month: "2-digit",
 			year: "numeric",
 			hour: "2-digit",
 			minute: "2-digit"
-		  })}`;
-	    date.className = "text-gray-600 font-orbitron";
+		})}`;
+	    date.className = "flex justify-center font-bold text-gray-600 font-orbitron";
 
+		const goalsWrapper = document.createElement("div");
+		goalsWrapper.className = "w-full flex items-center justify-between gap-2";
+
+		const goalsUserBox = document.createElement("div");
+		goalsUserBox.textContent = game.you.toString();
+		goalsUserBox.className = "bg-[#A66DD4] text-white font-bold rounded-full px-2 py-1 text-sm";
+
+		const goalsBarContainer = document.createElement("div");
+		goalsBarContainer.className = "flex-1 bg-gray-300 rounded h-6 overflow-hidden flex";
+
+		const goalsUserPercent = total > 0 ? (game.you / (game.you + game.friend)) * 100 : 0;
+		const goalsOpponentPercent = 100 - goalsUserPercent;
+
+		const goalsUserBar = document.createElement("div");
+		goalsUserBar.style.width = `${goalsUserPercent}%`;
+		goalsUserBar.className = "bg-[#A66DD4] h-6";
+
+		const goalsOpponentBar = document.createElement("div");
+		goalsOpponentBar.style.width = `${goalsOpponentPercent}%`;
+		goalsOpponentBar.className = "bg-[#362A63] h-6";
+
+		goalsBarContainer.appendChild(goalsUserBar);
+		goalsBarContainer.appendChild(goalsOpponentBar);
+
+		const goalsFriendBox = document.createElement("div");
+		goalsFriendBox.textContent = game.friend.toString();
+		goalsFriendBox.className = "bg-[#362A63] text-white font-bold rounded-full px-2 py-1 text-sm";
+
+		goalsWrapper.appendChild(goalsUserBox);
+		goalsWrapper.appendChild(goalsBarContainer);
+		goalsWrapper.appendChild(goalsFriendBox);
+		
 		const touches = document.createElement("p");
-	    touches.textContent = `${i18next.t('touches')}: You ${game.touchesUser} x ${game.touchesOpponent} ${game.friendName}`; //fake data
-	    touches.className = "text-gray-600 font-orbitron";
+	    touches.textContent = `TOUCHES`;
+	    touches.className = "flex justify-center font-bold text-gray-600 font-orbitron";
 
+		const touchesWrapper = document.createElement("div");
+		touchesWrapper.className = "w-full flex items-center justify-between gap-2";
+
+		const touchesUserBox = document.createElement("div");
+		touchesUserBox.textContent = game.touchesUser.toString();
+		touchesUserBox.className = "bg-[#A66DD4] text-white font-bold rounded-full px-2 py-1 text-sm";
+
+		const touchesBarContainer = document.createElement("div");
+		touchesBarContainer.className = "flex-1 bg-gray-300 rounded h-6 overflow-hidden flex";
+
+		const touchesUserPercent = total > 0 ? (game.touchesUser / (game.touchesUser + game.touchesOpponent)) * 100 : 0;
+		const touchesOpponentPercent = 100 - touchesUserPercent;
+
+		const touchesUserBar = document.createElement("div");
+		touchesUserBar.style.width = `${touchesUserPercent}%`;
+		touchesUserBar.className = "bg-[#A66DD4] h-6";
+
+		const touchesOpponentBar = document.createElement("div");
+		touchesOpponentBar.style.width = `${touchesOpponentPercent}%`;
+		touchesOpponentBar.className = "bg-[#362A63] h-6";
+
+		touchesBarContainer.appendChild(touchesUserBar);
+		touchesBarContainer.appendChild(touchesOpponentBar);
+
+		const touchesFriendBox = document.createElement("div");
+		touchesFriendBox.textContent = game.touchesOpponent.toString();
+		touchesFriendBox.className = "bg-[#362A63] text-white font-bold rounded-full px-2 py-1 text-sm";
+
+		touchesWrapper.appendChild(touchesUserBox);
+		touchesWrapper.appendChild(touchesBarContainer);
+		touchesWrapper.appendChild(touchesFriendBox);
+		
 	    const closeBtn = document.createElement("button");
 	    closeBtn.textContent = i18next.t('close');
 	    closeBtn.className = "mt-4 px-4 py-2 bg-[#174B7A] text-white font-orbitron rounded hover:bg-[#133A58] self-end";
 	    closeBtn.addEventListener("click", () => {
-	        modalBg.remove();
+			modalBg.remove();
 	    });
-
-	    modal.appendChild(title);
-	    modal.appendChild(result);
-	    modal.appendChild(score);
-	    modal.appendChild(touches);
+		
 	    modal.appendChild(date);
+	    modal.appendChild(score);
+		modal.appendChild(goalsWrapper);
+	    modal.appendChild(touches);
+		modal.appendChild(touchesWrapper);
 	    modal.appendChild(closeBtn);
 	    modalBg.appendChild(modal);
 
