@@ -30,8 +30,19 @@ const tournamentGameArea: GameArea = {
         lastTime = performance.now();
         animationFrameId = requestAnimationFrame(updateTournamentGameArea);
     },
-    clear() { if (this.context && this.canvas) this.context.clearRect(0, 0, this.canvas.width, this.canvas.height); },
-    stop() { if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; } this.state = 'ended'; },
+    clear() { 
+        if (this.context && this.canvas) 
+            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height); 
+        },
+    stop() {
+        console.log("Entoru no STOP");
+        if (animationFrameId) { 
+            cancelAnimationFrame(animationFrameId); 
+            animationFrameId = null; 
+        } 
+        console.log("ENDED");
+        this.state = 'ended'; 
+    },
 };
 
 // ✅ FUNÇÃO DE TRANSIÇÃO (Lógica do Cérebro do Torneio - Parte 1)
@@ -116,17 +127,29 @@ function tournamentCheckScore() {
     let winnerName: string | null = null;
     const p1Name = sessionStorage.getItem('playerName1')!;
     const p2Name = sessionStorage.getItem('playerName2')!;
+
+    // Encontra os elementos do placar uma vez
+    const p1ScoreElement = document.getElementById('game-player1-score');
+    const p2ScoreElement = document.getElementById('game-player2-score');
+
     if (ball.x - ball.size < 0) {
         player2.score++;
-        (document.getElementById('game-player2-score')!).textContent = player2.score.toString();
+        // VERIFICA SE O ELEMENTO EXISTE ANTES DE O USAR
+        if (p2ScoreElement) {
+            p2ScoreElement.textContent = player2.score.toString();
+        }
         if (player2.score >= winningScore) winnerName = p2Name;
         else ball.reset();
     } else if (ball.x + ball.size > tournamentGameArea.canvas!.width) {
         player1.score++;
-        (document.getElementById('game-player1-score')!).textContent = player1.score.toString();
+        // VERIFICA SE O ELEMENTO EXISTE ANTES DE O USAR
+        if (p1ScoreElement) {
+            p1ScoreElement.textContent = player1.score.toString();
+        }
         if (player1.score >= winningScore) winnerName = p1Name;
         else ball.reset();
     }
+    
     if (winnerName) tournamentEndGame(winnerName);
 }
 
@@ -167,16 +190,43 @@ function handleInput(deltaTime: number) {
 }
 
 function checkCollisions() {
-    if (ball.speedX < 0 && ball.x - ball.size < player1.x + player1.width && ball.x + ball.size > player1.x && ball.y + ball.size > player1.y && ball.y - ball.size < player1.y + player1.height) {
-        ball.x = player1.x + player1.width + ball.size; ball.speedX *= -1;
+    // colisão com player1
+    if (
+        ball.speedX < 0 &&
+        ball.x - ball.size < player1.x + player1.width &&
+        ball.x + ball.size > player1.x &&
+        ball.y + ball.size > player1.y &&
+        ball.y - ball.size < player1.y + player1.height
+    ) {
+        ball.x = player1.x + player1.width + ball.size;
+        const hitPos = (ball.y - (player1.y + player1.height / 2)) / (player1.height / 2);
+
+        const angle = hitPos * (Math.PI / 4); // máx 45°
+        ball.speedX = Math.cos(angle) * ball.speed; // positive -> right
+        ball.speedY = Math.sin(angle) * ball.speed;
     }
-    if (ball.speedX > 0 && ball.x + ball.size > player2.x && ball.x - ball.size < player2.x + player2.width && ball.y + ball.size > player2.y && ball.y - ball.size < player2.y + player2.height) {
-        ball.x = player2.x - ball.size; ball.speedX *= -1;
+
+    // colisão com player2
+    if (
+        ball.speedX > 0 &&
+        ball.x + ball.size > player2.x &&
+        ball.x - ball.size < player2.x + player2.width &&
+        ball.y + ball.size > player2.y &&
+        ball.y - ball.size < player2.y + player2.height
+    ) {
+        ball.x = player2.x - ball.size;
+        const hitPos = (ball.y - (player2.y + player2.height / 2)) / (player2.height / 2);
+
+        const angle = hitPos * (Math.PI / 4); // max 45°
+        ball.speedX = -Math.cos(angle) * ball.speed; // negative -> left
+        ball.speedY = Math.sin(angle) * ball.speed;
     }
 }
 
+
 function updateTournamentGameArea(currentTime: number) {
-    if (tournamentGameArea.state !== 'playing') return;
+    if (tournamentGameArea.state !== 'playing') 
+        return;
     const deltaTime = (currentTime - lastTime) / 1000;
     lastTime = currentTime;
     handleInput(deltaTime);
@@ -210,9 +260,9 @@ export function initializeTournamentMatch(containerId: string, width: number, he
         tournamentGameArea.canvas.style.backgroundColor = 'black';
     }
     const paddleWidth = 10, paddleHeight = 100, paddleSpeed = 300;
-    const ballSize = 10, ballSpeed = 300;
-    player1 = new Paddle(paddleWidth, tournamentGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP1') || 'white');
-    player2 = new Paddle(tournamentGameArea.canvas.width - paddleWidth * 2, tournamentGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP2') || 'white');
+    const ballSize = 10, ballSpeed = 450;
+    player1 = new Paddle(paddleWidth, tournamentGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP1') || 'white', "");
+    player2 = new Paddle(tournamentGameArea.canvas.width - paddleWidth * 2, tournamentGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP2') || 'white', "");
     ball = new Ball(tournamentGameArea.canvas.width / 2, tournamentGameArea.canvas.height / 2, ballSize, ballSpeed, tournamentGameArea.canvas);
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);

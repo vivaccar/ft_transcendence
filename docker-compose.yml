@@ -4,23 +4,24 @@ services:
     container_name: backend
     expose:
       - "3002"
-    ports:
-      - "3002:3002" 
+#    ports:
+#      - "3002:3002" 
     networks:
-        - meu-network
+      - transcendence
+    volumes:
+      - ./backend/prisma:/app/prisma
   frontend:
-      build:
-        context: frontend/.
-        dockerfile: Dockerfile
-      container_name: frontend
-      ports:
-        - "8080:80"
-        - "443:443"
-      restart: unless-stopped
-      networks:
-        - meu-network
+    build:
+      context: frontend/.
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "443:443"
+    restart: unless-stopped
+    networks:
+      - transcendence
 
 
 networks:
-  meu-network:
+  transcendence:
     driver: bridge

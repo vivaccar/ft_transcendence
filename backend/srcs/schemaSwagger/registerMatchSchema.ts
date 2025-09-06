@@ -17,10 +17,11 @@ export const registerMatchSwaggerSchema = {
         maxItems: 2,
         items: {
           type: 'object',
-          required: ['username', 'goals'],
+          required: ['username', 'goals', 'touches'],
           properties: {
             username: { type: 'string', description: 'Username or name of the player' },
             goals: { type: 'integer', minimum: 0, description: 'Goals scored by the player' },
+            touches: { type: 'integer', minimum: 0, description: 'Number of times the player touched the ball' },
             isLocal: { type: 'boolean', description: 'True if the player is local (not registered)', default: false }
           }
         }

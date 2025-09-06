@@ -1,5 +1,7 @@
 import "./style.css";
 import { handleRoute } from "./router";
+import { startPing } from "./logic/ping";
+
 
 function startApp(): void {
 
@@ -8,6 +10,8 @@ function startApp(): void {
   window.addEventListener("popstate", () => {
     handleRoute();
   });
+
+  startPing(20);
 }
 
 startApp();

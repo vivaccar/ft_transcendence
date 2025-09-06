@@ -7,11 +7,11 @@ import { setup2fa } from "./routes/authentication/2fa";
 import { enable2fa } from "./routes/authentication/2fa";
 import { verify2fa } from "./routes/authentication/2fa";
 import { disable2fa } from "./routes/authentication/2fa";
-import { registerMatch } from "./routes/user/registerMatch";
+import { registerMatch } from "./routes/stats/registerMatch";
 import { uploadAvatar } from "./routes/user/uploadAvatar";
-import { getMatches } from "./routes/user/getMatches";
-import { getWinsAndLosses } from "./routes/user/getWinsAndLosses";
-import { getGoals } from "./routes/user/getGoals";
+import { getMatches } from "./routes/stats/getMatches";
+import { getWinsAndLosses } from "./routes/stats/getWinsAndLosses";
+import { getGoals } from "./routes/stats/getGoals";
 import { me } from "./routes/user/me";
 import { userAvatar } from "./routes/user/getUserAvatar";
 import { updateUsername } from "./routes/user/updateUsername";
@@ -19,6 +19,12 @@ import { updatePassword } from "./routes/user/changePassword";
 import { logout } from "./routes/authentication/logout";
 import { inviteFriend } from "./routes/friendships/inviteFriend";
 import { getInvites } from "./routes/friendships/getInvites";
+import { acceptInvite } from "./routes/friendships/acceptInvite";
+import { declineInvite } from "./routes/friendships/declineInvite";
+import { unfriend } from "./routes/friendships/unfriend";
+import { getFriends } from "./routes/friendships/getFriends";
+import { ping } from "./routes/user/ping";
+import { updateLanguage } from "./routes/user/changeLanguague";
 import jwt from "./plugins/jwtPlugin";
 import jwtPlugin from "./plugins/jwtPlugin";
 import googleOAuthPlugin from './plugins/google-oauth'
@@ -27,6 +33,8 @@ import fastifyCookie from '@fastify/cookie'
 import swaggerPlugin from "./plugins/swaggerPlugin";
 import cors from "@fastify/cors";
 import multipart from "@fastify/multipart";
+import websocket from '@fastify/websocket';
+import gameWs from './routes/websocket/gameWs';
 
 const app = Fastify({ logger: true,  trustProxy: true })
 
@@ -52,10 +60,10 @@ app.register(multipart), {
 
 	}
 };
-app.register(setup2fa)
-app.register(enable2fa)
-app.register(verify2fa)
-app.register(disable2fa)
+app.register(setup2fa);
+app.register(enable2fa);
+app.register(verify2fa);
+app.register(disable2fa);
 app.register(registerMatch);
 app.register(getMatches);
 app.register(getWinsAndLosses);
@@ -68,5 +76,13 @@ app.register(logout);
 app.register(me);
 app.register(inviteFriend)
 app.register(getInvites)
+app.register(acceptInvite)
+app.register(declineInvite)
+app.register(unfriend)
+app.register(getFriends)
+app.register(ping);
+app.register(websocket);
+app.register(gameWs);
+app.register(updateLanguage);
 
 export default app

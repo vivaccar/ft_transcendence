@@ -1,6 +1,7 @@
 import { Ball } from './Ball';
 import { Paddle } from './Paddle';
 import { createGameUI } from '../../components/localGameUi';
+import { API_ROUTES } from '../../config';
 
 // --- TIPOS E ESTADO GLOBAL DO MÓDULO ---
 type GameArea = {
@@ -17,6 +18,7 @@ interface GameSettings {
   width: number;
   height: number;
   mode: string;
+  gameMode: string;
 }
 
 
@@ -27,13 +29,17 @@ let ball: Ball;
 let keysPressed: { [key: string]: boolean } = {};
 let animationFrameId: number | null = null;
 let currentGameMode: string;
+let selectedGame: string | null = null;
 let lastTime = 0;
 let aiDecisionTimer = 1;
 let aiTargetY = 0;
-let winningScore = 2;
+let winningScore = 3;
 const handleKeyDown = (e: KeyboardEvent) => { keysPressed[e.key.toLowerCase()] = true; };
 const handleKeyUp = (e: KeyboardEvent) => { keysPressed[e.key.toLowerCase()] = false; };
 
+// game settings
+const paddleWidth = 10, paddleHeight = 80, paddleSpeed = 280;
+const ballSpeed = 480, ballSize = 10;
 
 function makeAIDecision() {
     const distanceX = player2.x - ball.x;
@@ -57,7 +63,7 @@ function makeAIDecision() {
     }
 
     // Margem de erro, pra IA ficar imperfeita.
-    const errorMargin = (Math.random() - 0.5) * player2.height * 1.5;
+    const errorMargin = (Math.random() - 0.5) * paddleHeight * 1.3;
     aiTargetY = predictedY + errorMargin;
 }
 
@@ -110,6 +116,39 @@ const myGameArea: GameArea = {
     },
 };
 
+function showPowerUpMessage(message: string) {
+    const alert = document.getElementById('power-up-alert');
+    if (!alert) return;
+
+    alert.textContent = message;
+
+    alert.classList.remove('hidden');
+    alert.classList.remove('opacity-0');
+    alert.classList.add('opacity-100');
+
+    setTimeout(() => {
+        alert.classList.remove('opacity-100');
+        alert.classList.add('opacity-0');
+    }, 2000);
+}
+
+function setUpAiPowerUp() {
+    const number = Math.floor(Math.random() * 3); // Generate number bettwen 0-2 to select random power up;
+    if (number == 1) {
+        player2.height = paddleHeight + 50;
+        showPowerUpMessage("AI PADDLE SIZE UP");
+    }
+    else if (number == 2){
+        player2.height = paddleHeight;
+        player2.speed = paddleSpeed * 1.5;
+        showPowerUpMessage("AI PADDLE SPEED UP");
+    }
+    else {
+        player2.power = 1.5;
+        showPowerUpMessage("AI PADDLE POWER UP");
+    }
+}
+
 function updateGameArea(currentTime: number) {
     if (myGameArea.state !== 'playing') 
         return;
@@ -118,7 +157,6 @@ function updateGameArea(currentTime: number) {
 
     if (currentGameMode === 'ai') {
         aiDecisionTimer -= deltaTime;
-
         if (aiDecisionTimer <= 0) {
             makeAIDecision();
             aiDecisionTimer = 1.0;
@@ -151,43 +189,105 @@ function draw() {
 
 function handleInput(deltaTime: number) {
 
-    const effectivePaddleSpeed = player1.speed;
+    const effectivePaddle1Speed = player1.speed;
+    const effectivePaddle2Speed = player2.speed;
 
     if (keysPressed['w'] && player1.y > 0) { 
-        player1.y -= effectivePaddleSpeed * deltaTime; 
+        player1.y -= effectivePaddle1Speed * deltaTime; 
     }
     if (keysPressed['s'] && player1.y < myGameArea.canvas!.height - player1.height) { 
-        player1.y += effectivePaddleSpeed * deltaTime; 
+        player1.y += effectivePaddle1Speed * deltaTime; 
     }
     if (keysPressed['arrowup'] && player2.y > 0) { 
-        player2.y -= effectivePaddleSpeed * deltaTime; 
+        player2.y -= effectivePaddle2Speed * deltaTime; 
     }
     if (keysPressed['arrowdown'] && player2.y < myGameArea.canvas!.height - player2.height) { 
-        player2.y += effectivePaddleSpeed * deltaTime; 
+        player2.y += effectivePaddle2Speed * deltaTime; 
     }
 }
 
 function checkCollisions() {
-    
-    if (ball.speedX < 0 && 
-        ball.x - ball.size < player1.x + player1.width && 
-        ball.x + ball.size > player1.x && 
-        ball.y + ball.size > player1.y && 
-        ball.y - ball.size < player1.y + player1.height) 
-    {
-        ball.x = player1.x + player1.width + ball.size; //reposiciona para evitar que a bola entre na raquete
-        ball.speedX *= -1;
+    // colisão com player1
+    if (
+        ball.speedX < 0 &&
+        ball.x - ball.size < player1.x + player1.width &&
+        ball.x + ball.size > player1.x &&
+        ball.y + ball.size > player1.y &&
+        ball.y - ball.size < player1.y + player1.height
+    ) {
+        ball.x = player1.x + player1.width + ball.size;
+        player1.touches++;
+
+        const hitPos = (ball.y - (player1.y + player1.height / 2)) / (player1.height / 2);
+
+        ball.speed = ballSpeed;
+        ball.speed = ball.speed * player1.power;
+        const angle = hitPos * (Math.PI / 4); // máx 45°
+        ball.speedX = Math.cos(angle) * ball.speed; // positive -> right
+        ball.speedY = Math.sin(angle) * ball.speed;
     }
 
-    if (ball.speedX > 0 && 
-        ball.x + ball.size > player2.x && 
-        ball.x - ball.size < player2.x + player2.width && 
-        ball.y + ball.size > player2.y && 
-        ball.y - ball.size < player2.y + player2.height) 
-    {
-        
+    // colisão com player2
+    if (
+        ball.speedX > 0 &&
+        ball.x + ball.size > player2.x &&
+        ball.x - ball.size < player2.x + player2.width &&
+        ball.y + ball.size > player2.y &&
+        ball.y - ball.size < player2.y + player2.height
+    ) {
         ball.x = player2.x - ball.size;
-        ball.speedX *= -1;
+        player2.touches++;
+
+        const hitPos = (ball.y - (player2.y + player2.height / 2)) / (player2.height / 2);
+
+        ball.speed = ballSpeed;
+        ball.speed = ball.speed * player2.power;
+        const angle = hitPos * (Math.PI / 4); // max 45°
+        ball.speedX = -Math.cos(angle) * ball.speed; // negative -> left
+        ball.speedY = Math.sin(angle) * ball.speed;
+    }
+}
+
+function setUpPlayerPowerUp(player: Paddle) {
+    const number = Math.floor(Math.random() * 3);
+    
+    if (number === 1) {
+        player.height = paddleHeight + 50;
+        player.speed = paddleSpeed;
+        player.power = 1;
+        showPowerUpMessage(`${player.name} PADDLE SIZE UP`); 
+    }
+    else if (number === 2){
+        player.speed = paddleSpeed * 2;
+        player.height = paddleHeight;
+        player.power = 1;
+        showPowerUpMessage(`${player.name} PADDLE SPEED UP`);
+    }
+    else {
+        player.power = 1.5;
+        player.speed = paddleSpeed;
+        player.height = paddleHeight;
+        showPowerUpMessage(`${player.name} PADDLE POWER UP`);
+    }
+}
+
+function checkPlayerPowerUp() {
+    if (selectedGame === "default") return;
+    if (player1.score >= winningScore || player2.score >= winningScore) return;
+    
+    if (player1.score > player2.score) {
+        setUpPlayerPowerUp(player2);
+    }
+    else if (player2.score > player1.score) {
+        setUpPlayerPowerUp(player1);
+    }
+    else {
+        player1.power = 1;
+        player1.height = paddleHeight;
+        player1.speed = paddleSpeed;
+        player2.power = 1;
+        player2.height = paddleHeight;
+        player2.speed = paddleSpeed;
     }
 }
 
@@ -197,18 +297,20 @@ function checkScore() {
     //AQUI, TEM DE VIR A VARIAVEL COM O NOME DO PLAYER
     if (ball.x - ball.size < 0) {
         player2.score++;
+        checkPlayerPowerUp();
         updateScoreboard();
         if (player2.score >= winningScore) {
-            winnerName = 'Player 2';
+            winnerName = player2.name;
         } else {
             ball.reset();
         }
     //AQUI, TEM DE VIR A VARIAVEL COM O NOME DO PLAYER
     } else if (ball.x + ball.size > myGameArea.canvas!.width) {
         player1.score++;
+        checkPlayerPowerUp();
         updateScoreboard();
         if (player1.score >= winningScore) {
-            winnerName = 'Player 1';
+            winnerName = player1.name;
         } else {
             ball.reset();
         }
@@ -220,7 +322,7 @@ function checkScore() {
     }
 }
 
-function endGame(winnerName: string) {
+async function endGame(winnerName: string) {
     myGameArea.stop();
 
     // 2. Encontra os elementos HTML que vamos manipular
@@ -233,6 +335,34 @@ function endGame(winnerName: string) {
         
         // Remove a classe "hidden" para mostrar o overlay
         gameOverScreen.classList.remove('hidden');
+    }
+    
+    try {
+        await fetch(`${API_ROUTES.registerMatch}`, {
+        method: "POST",
+        headers: {
+        "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      date: new Date().toISOString(), // precisa ser ISO 8601
+      participants: [
+        {
+          username: player1.name,
+          goals: player1.score,
+          isLocal: false,
+          touches: player1.touches
+        },
+        {
+          username: player2.name,
+          goals: player2.score,
+          isLocal: true,
+          touches: player2.touches
+        }
+      ]
+    })})
+        console.log("Partida salva com sucesso!");
+    } catch (err) {
+        console.error("Erro ao salvar partida:", err);
     }
 }
 
@@ -263,6 +393,9 @@ function restartGame(): void {
             lastGameSettings.width,
             lastGameSettings.height,
             lastGameSettings.mode,
+            player1.name,
+            player2.name,
+            lastGameSettings.gameMode
         );
     } else {
         console.error('Não foi possível reiniciar o jogo: as configurações iniciais não foram encontradas.');
@@ -283,12 +416,13 @@ function cleanupGame(): void {
     window.removeEventListener('keyup', handleKeyUp);
 }
 
-export function initializeLocalGame(containerId: string, width: number, height: number, mode: string) {
+export function initializeLocalGame(containerId: string, width: number, height: number, mode: string, player1Name: string, player2Name: string, gameMode: string) {
     cleanupGame();
 
+    selectedGame = sessionStorage.getItem('selectedGameMode');
     currentGameMode = mode;
     const container = document.getElementById(containerId);
-    lastGameSettings = { containerId, width, height, mode };
+    lastGameSettings = { containerId, width, height, mode, gameMode };
 
     if (!container) {
         console.error(`ERRO: Contentor com id "${containerId}" não encontrado.`);
@@ -319,17 +453,57 @@ export function initializeLocalGame(containerId: string, width: number, height: 
         myGameArea.canvas.style.backgroundColor = 'black'; // fallback
     }
 
-    const paddleWidth = 10, paddleHeight = 100, paddleSpeed = 300;
-    const ballSize = 10, ballSpeed = 300;
-    player1 = new Paddle(paddleWidth, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP1') || 'white');
-    player2 = new Paddle(myGameArea.canvas.width - paddleWidth * 2, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP2') || 'white');
+
+    player1 = new Paddle(paddleWidth, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP1') || 'white', player1Name);
+    player2 = new Paddle(myGameArea.canvas.width - paddleWidth * 2, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP2') || 'white', player2Name);
     ball = new Ball(myGameArea.canvas.width / 2, myGameArea.canvas.height / 2, ballSize, ballSpeed, myGameArea.canvas);
 
+    if (mode === "ai")
+        setUpAiPowerUp();
+
     window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp); 
+    window.addEventListener('keyup', handleKeyUp);  
 
     //ESSE BOTAO TEM DE DAR A OPÇÃO DE VOLTAR PARA TELAS ESPECIFICATA TAMBEM DE ACORDO COM O DESENHO
     setupRestartButton();
 
-    myGameArea.start();
+    startCountdown(3, () => {
+        myGameArea.start(); 
+    });
+}
+
+function startCountdown(duration: number, callback: () => void) {
+    if (!myGameArea.canvas) return;
+    const ctx = myGameArea.context!;
+    let timeLeft = duration;
+
+    drawCountdownOverlay(ctx, timeLeft);
+
+    const countdownInterval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft < 0) {
+            clearInterval(countdownInterval);
+            callback();
+            return;
+        }
+        drawCountdownOverlay(ctx, timeLeft);
+    }, 1000);
+}
+
+
+function drawCountdownOverlay(ctx: CanvasRenderingContext2D, number: number) {
+    myGameArea.clear();
+
+    player1.draw(ctx);
+    player2.draw(ctx);
+    ball.draw(ctx);
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+    ctx.fillRect(0, 0, myGameArea.canvas!.width, myGameArea.canvas!.height);
+
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 80px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(number.toString(), myGameArea.canvas!.width / 2, myGameArea.canvas!.height / 2);
 }

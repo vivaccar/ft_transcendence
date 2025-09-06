@@ -14,10 +14,50 @@ export interface UserStats {
 	losses: number;
 }
 
+export interface UserGoals {
+	goalsPro: number;
+	goalsCon: number;
+}
 export interface Game {
 	result: "Win" | "Loss";
+	youName: string;
 	you: number;
 	friend: number;
 	friendName: string;
+	touchesOpponent: number;
+	touchesUser: number;
 	dateTime: Date;
+}
+
+export interface Invites {
+	requester: string;
+	status: string;
+}
+
+export interface Friend {
+	friend: string;
+	status: string;
+	isOnline: boolean;
+}
+
+//src/game/remotePong/RemoteGame.ts
+export interface GameState { 
+	ball: { 
+		x: number; 
+		y: number; 
+	}; 
+	p1: PaddleState; 
+	p2: PaddleState; 
+	scores: { 
+		p1: number; 
+		p2: number; 
+	}; 
+}
+
+//src/game/remotePong/RemoteGame.ts
+export interface PaddleState { 
+	id: string; 
+	x: number; 
+	y: number; 
+	color: string; 
 }

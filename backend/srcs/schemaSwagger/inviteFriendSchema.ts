@@ -4,9 +4,9 @@ export const inviteFriendSwaggerSchema = {
   description: "Authenticated user can invite another user (by username) to become a friend. The friendship will be created with status 'pending'.",
   body: {
     type: "object",
-    required: ["newFriend"],
+    required: ["friend"],
     properties: {
-      newFriend: {
+      friend: {
         type: "string",
         description: "Username of the user you want to invite"
       }

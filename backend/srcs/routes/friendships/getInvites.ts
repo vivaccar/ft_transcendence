@@ -11,14 +11,14 @@ export async function getInvites(app: FastifyInstance) {
 			if (!userObject) {
 				return res.status(404).send({error: 'username not found in database'})
 			}
-			
+
 			const invites = await app.prisma.friendship.findMany({
 				where: {
 					friendBId: userObject.id,
 					status: "pending"
 				},
 				include: {
-					friendA: { select: { username: true }}
+					friendA: { select: { username: true }},
 				}
 			})
 			

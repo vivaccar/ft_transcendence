@@ -33,7 +33,7 @@ const routes: Record<string, () => void | Promise<void>> = {
     buildDashboard();
   }),
   "/ai-game": protectedRoute(() => {
-    buildGamePageManVsManLocal("human");
+    buildGamePageManVsManLocal("ai");
   }),
   "/human-game-local": protectedRoute(() => {
     buildGamePageManVsManLocal("human");

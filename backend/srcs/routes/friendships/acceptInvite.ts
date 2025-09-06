@@ -1,45 +1,52 @@
 import { FastifyInstance } from "fastify"
 import { z } from 'zod'
-//import { inviteFriendSwaggerSchema } from "../../schemaSwagger/inviteFriendSchema"
+import { acceptInviteSwaggerSchema } from "../../schemaSwagger/acceptInviteSchema"
 
 export async function acceptInvite(app: FastifyInstance) {
-	app.patch('/acceptInvite', { preHandler: [app.authenticate]/* , schema: inviteFriendSwaggerSchema  */}, async(req, res) => {
+	app.patch('/acceptInvite', { preHandler: [app.authenticate], schema: acceptInviteSwaggerSchema }, async(req, res) => {
 		const friendSchema = z.object({
-			newFriend: z.string(),
+			friend: z.string(),
 		})
     	try {
 			const body = friendSchema.parse(req.body) // faz o parse do request body, deixando o corpo da requisicao tipado e seguro para ser utilizado
 			
 			const currentUser = req.user
-			const newFriend = await app.prisma.user.findUnique({where: { username: body.newFriend }})
+			const friend = await app.prisma.user.findUnique({where: { username: body.friend }})
 			
-			if (!newFriend) {
+			if (!friend) {
 				 return res.status(404).send({ error: "User not found in database" })
 			}
 			
-			const existingFriendship = await app.prisma.friendship.update({ 
-				where: {
-					OR: [
-						{ friendAId: currentUser.id, friendBId: newFriend.id },
-						{ friendAId: newFriend.id, friendBId: currentUser.id }
-					]
+			const existingFriendship = await app.prisma.friendship.findFirst({ 
+				where: { 
+					friendAId: friend.id,
+					friendBId: currentUser.id
 				}});
 			if (!existingFriendship) {
 				return res.status(409).send({ error: "Friendship not found in database"})
 			}
+			if (existingFriendship.status == "accepted") {
+				return res.status(409).send({ error: "Invite was already accepted"})
+			}
 
 			const friendship = await app.prisma.friendship.update ({
+				where: {
+					id : existingFriendship.id
+				},
 				data: {
-					friendA: {connect: { id: currentUser.id }},
-					friendB: {connect: { id: newFriend.id }},
-					status: "pending"
+					status: "accepted"
+				},
+				include: {
+					friendA: true,
+					friendB: true
 				}
 			})
-			return res.status(201).send({
-				friendA: currentUser.username,
-				friendB: newFriend.username,
-				status: "pending"
-			})
+			return res.status(201).send({ newFriendship: {
+				friendshipId : friendship.id,
+				friendA: friendship.friendA.username,
+				friendB: friendship.friendB.username,
+				status: friendship.status
+			} })
 		} catch(err) {
 			console.error(err)
 			return res.status(400).send({error: err})

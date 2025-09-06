@@ -1,5 +1,6 @@
 import { setupAvatarControls, setupSettingsLogic  } from "../logic/settingsLogic";
-import { renderPage } from "../utils";
+import { renderPage, getCookieValue } from "../utils";
+
 
 export function buildSettingsPage(): void {
 	const container = document.createElement("div");
@@ -26,10 +27,10 @@ export function createSettingsUI(): {
 	oldPasswordInput: HTMLInputElement
   } {
 	const container = document.createElement("div");
-	container.className = "flex flex-col items-center justify-center h-[calc(100vh-64px)] gap-4";
+	container.className = "flex flex-col items-center justify-center  h-[calc(100vh-64px)] gap-4";
   
 	const box = document.createElement("div");
-	box.className = "bg-white text-gray-900 rounded-xl shadow-lg w-full max-w-2xl";
+	box.className = "bg-white text-gray-900 rounded-xl shadow-lg w-full max-w-2xl overflow-y-auto";
 	box.style.background = "#D9D9D9";
   
 	// headerBar e título
@@ -141,7 +142,7 @@ export function createSettingsUI(): {
 	toggleInput2FA.type = "checkbox";
 	toggleInput2FA.className = "sr-only peer";
 
-	const has2FA = sessionStorage.getItem('has2fa') === 'true'
+	const has2FA = getCookieValue('has2fa') === 'true'
 	toggleInput2FA.checked = has2FA;
 
 	const toggleSpan = document.createElement("span");

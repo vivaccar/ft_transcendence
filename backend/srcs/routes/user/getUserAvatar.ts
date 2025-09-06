@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 
 export async function userAvatar(app: FastifyInstance) {
     app.get('/users/:username/avatar',{ preHandler: [app.authenticate] }, async (request, reply) => {
-        const { username } = req.params as { username: string }
+        const { username } = request.params as { username: string }
 
         const user = await app.prisma.user.findUnique({
             where: { username: username },
