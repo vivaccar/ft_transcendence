@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyRequest } from 'fastify';
+import fastify, { FastifyInstance, FastifyRequest } from 'fastify';
 import { WebSocket } from 'ws';
 import { GameSession, Player } from '../../game/engine';
 
@@ -33,9 +33,10 @@ export default async function gameWs(app: FastifyInstance) {
 					console.log("createMatch!", data.payload);
 					const sessionId = generateSessionId();
 					const background = data.payload?.background;
-					const session = new GameSession(sessionId, background);
+					const session = new GameSession(sessionId, background, app.prisma);
 					const playerColor = data.payload?.color || 'white';
-					const player1 = new Player(userId, connection, 'left', playerColor);
+					const playerName = data.payload?.playerName || 'Host'
+					const player1 = new Player(userId, playerName, connection, 'left', playerColor);
 					session.addPlayer(player1);
 
 					sessions.set(sessionId, session);
@@ -51,6 +52,7 @@ export default async function gameWs(app: FastifyInstance) {
 					//DEBUG - NAO APAGAR AINDA
 					console.log("joinMatch!", data.payload);
 					const sessionId = data.payload?.sessionId;
+					const playerName = data.payload?.playerName || "Guest";
 					const playerColor = data.payload?.color || 'white';
 
 					if (!sessionId) {
@@ -61,7 +63,7 @@ export default async function gameWs(app: FastifyInstance) {
 
 					const session = sessions.get(sessionId);
 					if (session && session.players.length === 1) {
-						const player2 = new Player(userId, connection, 'right', playerColor);
+						const player2 = new Player(userId, playerName, connection, 'right', playerColor);
 						session.addPlayer(player2);
 						connectionToSessionMap.set(connection, sessionId);
 						session.start();

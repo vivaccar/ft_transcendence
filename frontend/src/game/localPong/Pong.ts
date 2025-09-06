@@ -4,7 +4,7 @@ import { initializeLocalGame } from './Game';
 import { initializeTournamentMatch } from './Tournament';
 import { API_ROUTES } from '../../config';
 
-async function loadUserProfile() {
+export async function loadUserProfile() {
 
     try {
       const res = await fetch(`${API_ROUTES.me}`, {
@@ -55,10 +55,11 @@ export async function buildHumanGameLocal(gameType: string): Promise<void> {
     player2Title.className = `text-white font-orbitron font-bold text-2xl max-w-full text-center truncate`;
     container.appendChild(player2Title);
 
+    let gameMode = sessionStorage.getItem('selectedGameMode') ?? "default"
     if (gameType === "tournament") {
         initializeTournamentMatch('game-container', 600, 400, gameType);
     } else {
-        initializeLocalGame('game-container', 600, 400, gameType, player1Name, player2Name);
+        initializeLocalGame('game-container', 600, 400, gameType, player1Name, player2Name, gameMode);
     }
 }
 

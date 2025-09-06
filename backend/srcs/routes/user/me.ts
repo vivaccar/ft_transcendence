@@ -29,6 +29,7 @@ export async function me(app: FastifyInstance) {
             id: user.id,
             username: user.username,
             email: user.email,
+            language: user.language,
             avatar: avatarUrl,
             googleUser: googleUser
         })

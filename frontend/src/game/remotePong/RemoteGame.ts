@@ -159,3 +159,4 @@ export function showGameOver(winnerName: string) {
         gameOverScreen.classList.remove('hidden');
     }
 }
+

@@ -4,6 +4,7 @@ export class Ball {
     x: number;
     y: number;
     size: number;
+    speed: number;
     speedX: number;
     speedY: number;
     canvas: HTMLCanvasElement;
@@ -14,8 +15,9 @@ export class Ball {
         this.x = x;
         this.y = y;
         this.size = size;
-        this.speedX = speed;
-        this.speedY = speed;
+        this.speed = speed;
+        this.speedX = -speed;
+        this.speedY = 0;
         this.canvas = canvas;
     }
 
@@ -45,14 +47,17 @@ export class Ball {
         this.x = this.initialX;
         this.y = this.initialY;
         this.speedX *= -1;
-        this.speedY = (Math.random() > 0.5 ? 1 : -1) * Math.abs(this.speedX);
-
+        this.speedY = 0;
+        
+        const originalSpeed = this.speed;
         const originalSpeedX = this.speedX;
         const originalSpeedY = this.speedY;
+        this.speed = originalSpeed;
         this.speedX = 0;
         this.speedY = 0;
         
         setTimeout(() => {
+            this.speed = originalSpeed;
             this.speedX = originalSpeedX;
             this.speedY = originalSpeedY;
         }, 1000);

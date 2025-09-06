@@ -3,6 +3,7 @@ import { connectWebSocket, sendMessage } from "../socketService";
 import { BackgroundCarousel } from "../components/BackgroundCarousel";
 import { ColorSelector } from "../components/ColorSelector";
 import { initGame, startGame, updateGameState, showGameOver, stopGame } from "../game/remotePong/RemoteGame";
+import { loadUserProfile } from "../game/localPong/Pong"
 
 function handleServerMessage(data: any) {
     //DEBUG - NAO EXCLUIR AINDA
@@ -23,6 +24,7 @@ function handleServerMessage(data: any) {
             console.log("🚀 [LÓGICA] Recebido sinal de 'gameStart'.", data);
 
             //ESSE IF PODE SER UM TRY CATCH
+
             if (data.background) {
                 console.log('DEBUG 2: Entrou no "if (data.background)". Tentando atualizar o sessionStorage...');
 
@@ -30,6 +32,8 @@ function handleServerMessage(data: any) {
                 if (settingsStr) {
                     const settings = JSON.parse(settingsStr);
                     settings.background = data.background;
+                    settings.p1_alias = data.p1Name,
+                    settings.p2_alias = data.p2Name,
                     sessionStorage.setItem('gameSettings', JSON.stringify(settings));
                 } else {
                     //DEBUG - NAO EXCLUIR AINDA
@@ -85,10 +89,11 @@ function handleServerMessage(data: any) {
 }
 
 //MUITA COISA AQUI DENTRO PODE SER COMPONENTE - ARRUMAR ISSO DE MANERIA DESCENTE
-function buildHostPage(): void {
+async function buildHostPage(): Promise <void> {
     //DEBUG - NAO EXCLUIR AINDA
     console.log("🛠️ [UI] Construindo a página 'Host Setup'...");
 
+    const loggedUserData = await loadUserProfile();
     let selectedColor: string | null = "white";
     let selectedBackgroundImg = "/images/backgroundGame/back10.jpg";
     const container = document.createElement("div");
@@ -126,8 +131,8 @@ function buildHostPage(): void {
             p2_color: "white",
             background: selectedBackgroundImg,
             //Quando for colocar o nick do usuario, é aqui VISSE VIVACCAR
-            p1_alias: "Host",
-            p2_alias: "Guest"
+            p1_alias: loggedUserData.username ?? 'Host',
+            p2_alias: "Waiting for player 2."
         };
         sessionStorage.setItem('gameSettings', JSON.stringify(gameSettings));
         //DEBUG - NAO EXCLUIR AINDA
@@ -152,7 +157,8 @@ function buildHostPage(): void {
                 type: 'createMatch',
                 payload: { 
                     color: selectedColor ?? 'white', 
-                    background: selectedBackgroundImg 
+                    background: selectedBackgroundImg,
+                    playerName: loggedUserData.username ?? 'Host'
                 }
             });
         }, 500);
@@ -160,10 +166,11 @@ function buildHostPage(): void {
 }
 
 //MUITA COISA AQUI PODE SER COMPONENTE 
-function buildGuestPage(): void {
+async function buildGuestPage(): Promise <void> {
     //DEBUG - NAO EXCLUIR AINDA
     console.log("🛠️ [UI] Construindo a página 'Join Game'...");
 
+    const loggedUserData = await loadUserProfile();
     let selectedColor: string | null = "white";
     let matchId: string = "";
     const container = document.createElement("div");
@@ -223,7 +230,7 @@ function buildGuestPage(): void {
             p2_color: selectedColor ?? "white",
             background: "/images/backgroundGame/back10.jpg", // Background Padrão
             p1_alias: "Host",
-            p2_alias: "Guest"
+            p2_alias: loggedUserData.username ?? "Guest"
         };
         sessionStorage.setItem('gameSettings', JSON.stringify(gameSettings));
         //DEBUG - NAO EXCLUIR AINDA
@@ -239,7 +246,8 @@ function buildGuestPage(): void {
                 type: 'joinMatch',
                 payload: {
                     sessionId: matchId.trim(),
-                    color: selectedColor ?? 'white'
+                    color: selectedColor ?? 'white',
+                    playerName: loggedUserData.username ?? 'Guest'
                 }
             });
         }, 500);
