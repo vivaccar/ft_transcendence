@@ -13,6 +13,6 @@ export default fp(async (fastify) => {
       auth: fastifyOauth2.GOOGLE_CONFIGURATION,
     },
     startRedirectPath: '/auth/google',
-    callbackUri: 'https://localhost/api/auth/google/callback'
+    callbackUri: 'https://localhost:8443/api/auth/google/callback'
   })
 })
