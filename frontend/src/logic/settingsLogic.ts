@@ -4,6 +4,7 @@ import { getToken } from "../auth/authService";
 import { setup2FA } from "../auth/2fa";
 import { setUserInfo } from "../utils";
 import i18next from "i18next";
+import { fetchUserAvatar } from "./friendsLogic";
 
 
 export async function setupSettingsLogic(elements: ReturnType<typeof createSettingsUI>) {
@@ -37,11 +38,14 @@ export async function setupSettingsLogic(elements: ReturnType<typeof createSetti
 
       emailInput.value = data.email || '';
       usernameInput.value = data.username || '';
-      img.src =  data.avatar ? `${data.avatar}?t=${Date.now()}` :  "/images/randomAvatar/0.jpeg";
+      // img.src =  data.avatar ? `${data.avatar}?t=${Date.now()}` :  "/images/randomAvatar/0.jpeg";
       toggleInput2FA.checked = data.has2fa || false;
       oldPasswordInput.value = '';
 
       currentUsername = data.username || ''; 
+
+      img.src = await fetchUserAvatar(currentUsername);
+      console.log(img.src);
     } catch (err) {
       alert('Error loading profile: ' + err);
     }
