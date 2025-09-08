@@ -1,13 +1,15 @@
 import { renderPage } from "../utils";
 import { BackgroundCarousel } from "../components/BackgroundCarousel";
 import { ColorSelector } from "../components/ColorSelector";
+import { GameModeSelector } from "../components/gameModeSelector";
 // import { navigate } from "../router";
 import { buildHumanGameLocal } from "../game/localPong/Pong";
 
 export function buildGamePageManVsManLocal(gameType: string) {
 	let selectedColorP1: string | null = null;
 	let selectedColorP2: string | null = null;
-  		let selectedbackgroundImg = "/images/backgroundGame/back10.jpg";
+  	let selectedbackgroundImg = "/images/backgroundGame/back10.jpg";
+	let selectedGameMode: "default" | "special" = "default";
 
   	const container = document.createElement("div");
   	container.className = "flex flex-col items-center justify-center h-screen overflow-y-auto";
@@ -70,6 +72,11 @@ export function buildGamePageManVsManLocal(gameType: string) {
 	
   	container.appendChild(playersContainer);
 
+    const modeSelector = GameModeSelector((mode) => {
+        selectedGameMode = mode;
+    }, "default");
+    container.appendChild(modeSelector);
+
   	const startBtn = document.createElement("button");
   	startBtn.textContent = "Start";
   	startBtn.className =
@@ -79,6 +86,7 @@ export function buildGamePageManVsManLocal(gameType: string) {
   	sessionStorage.setItem("selectedColorP1", selectedColorP1 ?? "white");
     sessionStorage.setItem("selectedColorP2", selectedColorP2 ?? "white");
     sessionStorage.setItem("selectedBackground", selectedbackgroundImg);
+	sessionStorage.setItem("selectedGameMode", selectedGameMode);
 
     buildHumanGameLocal(`${gameType}`);
 	

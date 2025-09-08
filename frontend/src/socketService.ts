@@ -1,20 +1,20 @@
-// frontend/src/socketService.ts
-
 let socket: WebSocket | null = null;
 let onMessageCallback: ((data: any) => void) | null = null;
 
 export function connectWebSocket(callback: (data: any) => void) {
-    // Evita múltiplas conexões
     if (socket && socket.readyState === WebSocket.OPEN) {
-        console.log('WebSocket já está conectado.');
+        console.log('O WebSocket já está conectado.');
         return;
     }
 
     onMessageCallback = callback;
-    
-    // NOTA: No futuro, aqui irás adicionar o token JWT à URL
-    // ex: `ws://localhost:3002/ws?token=${your_jwt}`
-    socket = new WebSocket('ws://localhost:3002/ws');
+
+    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const host = window.location.host; 
+    const socketURL = `${protocol}://${host}/ws/`;
+
+    console.log(`A tentar conectar ao WebSocket via proxy em: ${socketURL}`);
+    socket = new WebSocket(socketURL);
 
     socket.onopen = () => {
         console.log('WebSocket conectado com sucesso ao servidor.');
