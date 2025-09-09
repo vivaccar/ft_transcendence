@@ -9,6 +9,7 @@ const BALL_SIZE = 10;
 //Pixels per second
 const PADDLE_SPEED = 300;
 const BALL_SPEED = 300;
+const SPEED_INCREASED = 20;
 const WINNING_SCORE = 4;
 
 // Represents a player connected to a session
@@ -46,8 +47,10 @@ export class Ball {
 	size: number = BALL_SIZE;
 	speedX!: number;
 	speedY!: number;
+	speed: number;
 
 	constructor() {
+		this.speed = BALL_SPEED;
 		this.reset();
 	}
 
@@ -58,6 +61,7 @@ export class Ball {
 		const angle = Math.random() * Math.PI / 2 - Math.PI / 4;
 		this.speedX = BALL_SPEED * Math.cos(angle) * (Math.random() > 0.5 ? 1 : -1);
 		this.speedY = BALL_SPEED * Math.sin(angle);
+		this.speed = BALL_SPEED;
 	}
 }
 
@@ -153,7 +157,7 @@ export class GameSession {
 	private checkCollisions() {
 		const p1 = this.players[0];
 		const p2 = this.players[1];
-
+	
 		// colisão com as bordas de cima e baixo
 		if (this.ball.y - this.ball.size < 0 || this.ball.y + this.ball.size > CANVAS_HEIGHT) {
 			this.ball.speedY *= -1;
@@ -170,11 +174,12 @@ export class GameSession {
 			this.ball.x = p1.x + p1.width + this.ball.size;
 			p1.touches++;
 
+			this.ball.speed += SPEED_INCREASED;
 			const hitPos = (this.ball.y - (p1.y + p1.height / 2)) / (p1.height / 2);
 			const angle = hitPos * (Math.PI / 4); // máx 45°
 
-			this.ball.speedX = Math.cos(angle) * BALL_SPEED; // positivo = direita
-			this.ball.speedY = Math.sin(angle) * BALL_SPEED;
+			this.ball.speedX = Math.cos(angle) * this.ball.speed; // positivo = direita
+			this.ball.speedY = Math.sin(angle) * this.ball.speed;
 		}
 
 		// colisão com player2
@@ -187,12 +192,13 @@ export class GameSession {
 		) {
 			this.ball.x = p2.x - this.ball.size;
 			p2.touches++;
-
+			
+			this.ball.speed += SPEED_INCREASED;
 			const hitPos = (this.ball.y - (p2.y + p2.height / 2)) / (p2.height / 2);
 			const angle = hitPos * (Math.PI / 4);
 
-			this.ball.speedX = -Math.cos(angle) * BALL_SPEED; // negativo = esquerda
-			this.ball.speedY = Math.sin(angle) * BALL_SPEED;
+			this.ball.speedX = -Math.cos(angle) * this.ball.speed;// negativo = esquerda
+			this.ball.speedY = Math.sin(angle) * this.ball.speed;
 		}
 
 		// pontos
