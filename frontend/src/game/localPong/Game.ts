@@ -2,6 +2,7 @@ import { Ball } from './Ball';
 import { Paddle } from './Paddle';
 import { createGameUI } from '../../components/localGameUi';
 import { API_ROUTES } from '../../config';
+import { localLeaveDetector } from '../../logic/localLeaveDetector';
 
 // --- TIPOS E ESTADO GLOBAL DO MÓDULO ---
 type GameArea = {
@@ -150,6 +151,7 @@ function setUpAiPowerUp() {
 }
 
 function updateGameArea(currentTime: number) {
+    console.log('💓 Game loop a correr...');
     if (myGameArea.state !== 'playing') 
         return;
     const deltaTime = (currentTime - lastTime) / 1000;
@@ -324,6 +326,7 @@ function checkScore() {
 
 async function endGame(winnerName: string) {
     myGameArea.stop();
+    localLeaveDetector.stop();
 
     // 2. Encontra os elementos HTML que vamos manipular
     //AQUI SAO COMPONENTES E PRECISO REFATORAR PARA FICAREM SEPARADOS NOS COMPONENTES
@@ -387,6 +390,7 @@ function setupRestartButton(): void {
 function restartGame(): void {
     // Type Guard: o código só corre se as configurações tiverem sido guardadas.
     if (lastGameSettings) {
+        localLeaveDetector.stop();
         // A função de inicialização já chama cleanupGame(), por isso não precisamos de o fazer aqui.
         initializeLocalGame(
             lastGameSettings.containerId,
@@ -402,7 +406,7 @@ function restartGame(): void {
     }
 }
 
-function cleanupGame(): void {
+export function cleanupGame(): void {
     console.log("A limpar a instância anterior do jogo...");
     
     // Para o loop de animação, se estiver a correr

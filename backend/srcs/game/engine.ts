@@ -249,12 +249,8 @@ export class GameSession {
 		}
 
 		if (winner) {
-			//ISSO TEM DE SER MUDADO PARA INGLES
-			//console.log(`[GameSession ${this.sessionId}] Fim de jogo! Vencedor: Jogador com ID ${winner.id}`);
-			console.log("Fez o ultimo broadcast");
 			this.broadcastState();
 			await new Promise(resolve => setTimeout(resolve, 100));
-			
 			this.saveGameData();
 			this.stop();
 			this.broadcast({
@@ -266,10 +262,6 @@ export class GameSession {
 		}
 	}
 
-
-	// Envia o estado atual para todos os jogadores na sessão
-	//suspeito que o fato de nao enviar o placar correto seja por que o jogo acaba antes de chegar aqui
-	//reitero, isso é só uma suspeita
 	private broadcastState() {
 		if (this.players.length < 2) 
 			return;
@@ -295,11 +287,9 @@ export class GameSession {
 		this.broadcast(state);
 	}
 
-	// Função utilitária para enviar uma mensagem para ambos os jogadores
 	private broadcast(message: object) {
 		const msgString = JSON.stringify(message);
 		this.players.forEach(player => {
-			// Verificação de segurança para só enviar se a conexão estiver aberta
 			if (player.ws.readyState === WebSocket.OPEN) {
 				player.ws.send(msgString)
 			}
@@ -308,11 +298,10 @@ export class GameSession {
 
 	handlePlayerMove(playerId: string, data: { key: 'w' | 's' | 'ArrowUp' | 'ArrowDown'; keyState: 'keydown' | 'keyup' }) {
 		const player = this.players.find(p => p.id === playerId);
-		if (!player) return;
+		if (!player) 
+			return;
 
-		// Usamos a propriedade renomeada 'keyState'
 		const isKeyDown = data.keyState === 'keydown';
-
 		const playerIndex = this.players.indexOf(player);
 
 		if (playerIndex === 0) {
@@ -335,8 +324,6 @@ export class GameSession {
 		if (!leavingPlayer) return;
 
 		this.stop();
-
-		// Avisa o jogador que ficou que o oponente saiu
 		const remainingPlayer = leavingPlayer.getPlayerOpponent(this.players);
 		if (remainingPlayer) {
 			const message = { type: 'opponentLeft' };
@@ -344,6 +331,5 @@ export class GameSession {
 		}
 
 		this.players = this.players.filter(p => p.id !== playerId);
-		console.log(`[GameSession ${this.sessionId}] Jogador ${playerId} removido. Jogadores restantes: ${this.players.length}`);
 	}
 }
