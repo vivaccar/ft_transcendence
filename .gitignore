@@ -1,9 +1,7 @@
-# Ignora a pasta node_modules
 backend/node_modules/
 frontend/node_modules/
-user-service/node_modules/
-frontend-service/
 
 Subject/
 
 backend/prisma/dev.db
+#.env
