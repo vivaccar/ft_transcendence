@@ -9,7 +9,7 @@ const BALL_SIZE = 10;
 //Pixels per second
 const PADDLE_SPEED = 300;
 const BALL_SPEED = 300;
-const WINNING_SCORE = 10;
+const WINNING_SCORE = 4;
 
 // Represents a player connected to a session
 export class Player {
@@ -198,12 +198,14 @@ export class GameSession {
 		// pontos
 		if (this.ball.x < 0) {
 			p2.score++;
+			console.log(`PONTO PARA P2! Placar: P1 ${p1.score} - P2 ${p2.score}`);
 			this.ball.reset();
 		} else if (this.ball.x > CANVAS_WIDTH) {
 			p1.score++;
+			console.log(`PONTO PARA P1! Placar: P1 ${p1.score} - P2 ${p2.score}`);
 			this.ball.reset();
 		}
-		}
+	}
 		
 	private async saveGameData() {
 		const players = this.players;
@@ -235,7 +237,7 @@ export class GameSession {
 		}
 	}
 
-	private checkWinCondition() {
+	private async checkWinCondition() {
 		const p1 = this.players[0];
 		const p2 = this.players[1];
 		let winner: Player | null = null;
@@ -248,7 +250,11 @@ export class GameSession {
 
 		if (winner) {
 			//ISSO TEM DE SER MUDADO PARA INGLES
-			console.log(`[GameSession ${this.sessionId}] Fim de jogo! Vencedor: Jogador com ID ${winner.id}`);
+			//console.log(`[GameSession ${this.sessionId}] Fim de jogo! Vencedor: Jogador com ID ${winner.id}`);
+			console.log("Fez o ultimo broadcast");
+			this.broadcastState();
+			await new Promise(resolve => setTimeout(resolve, 100));
+			
 			this.saveGameData();
 			this.stop();
 			this.broadcast({
