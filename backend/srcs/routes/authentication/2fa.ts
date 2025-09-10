@@ -14,7 +14,6 @@ export async function setup2fa(app:FastifyInstance) {
     app.post('/2fa/setup', { preHandler: [app.authenticate], schema: setup2faSchema},
     async (request, reply) => {
     const userId = request.user.id;
-    const username = request.user.username
     
     const user = await app.prisma.user.findUnique({ where: {id: userId }})
 
@@ -22,7 +21,7 @@ export async function setup2fa(app:FastifyInstance) {
         return reply.status(400).send({message: "User already has 2fa setup"})
     }
     const secret = speakeasy.generateSecret({
-        name: `Ft_transcendence (${username})`,
+        name: `Ft_transcendence (${user.username})`,
     })
 
     await app.prisma.user.update({
@@ -106,7 +105,6 @@ export async function verify2fa(app:FastifyInstance) {
         const token = app.jwt.sign(
         {
             id: user.id,
-            username: user.username,
             partialToken: false
         },
         { expiresIn: '7d' }

@@ -458,7 +458,7 @@ export function initializeLocalGame(containerId: string, width: number, height: 
     player2 = new Paddle(myGameArea.canvas.width - paddleWidth * 2, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP2') || 'white', player2Name);
     ball = new Ball(myGameArea.canvas.width / 2, myGameArea.canvas.height / 2, ballSize, ballSpeed, myGameArea.canvas);
 
-    if (mode === "ai")
+    if (mode === "ai" && selectedGame === "default")
         setUpAiPowerUp();
 
     window.addEventListener('keydown', handleKeyDown);

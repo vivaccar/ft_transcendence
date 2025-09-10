@@ -55,7 +55,6 @@ export async function googleCallback(app: FastifyInstance) {
         const jwtToken = app.jwt.sign(
           {
             id: user.id,
-            username: user.username,
             partialToken: true,
           },
           { expiresIn: "3m" }
@@ -87,7 +86,6 @@ export async function googleCallback(app: FastifyInstance) {
       const jwtToken = app.jwt.sign(
         {
           id: user.id,
-          username: user.username,
           partialToken: false,
         },
         { expiresIn: "7d" }
