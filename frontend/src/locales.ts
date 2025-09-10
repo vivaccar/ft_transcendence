@@ -166,6 +166,7 @@ export const resources = {
     		touches: "Toques",
     		you: "Você",
     		close: "Fechar",
+			see_profile: "Ver Perfil",
 
 			// Settings Page
 			player_settings: "Configurações do Jogador",
@@ -282,6 +283,7 @@ export const resources = {
     		touches: "Touches",
     		you: "Vous",
     		close: "Fermer",
+			see_profile: "Voir le Profil",
 
 			// Settings Page
 			player_settings: "Paramètres du Joueur",
