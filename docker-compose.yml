@@ -1,6 +1,9 @@
 services:
   backend:
-    build: backend/.
+    build:
+      context: backend/.
+      args:
+        - DATABASE_URL
     container_name: backend
     env_file:
       - .env
@@ -13,6 +16,8 @@ services:
     volumes:
       - ./backend/prisma:/app/prisma
   frontend:
+    depends_on:
+      - backend
     build:
       context: frontend/.
       args:

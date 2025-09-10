@@ -2,14 +2,14 @@ FROM node:20
 
 WORKDIR /app
 
+ARG DATABASE_URL
+
 COPY package*.json ./
 
 COPY . .
 
-RUN npm install
-
-RUN npx prisma generate
+RUN chmod +x entrypoint.sh
 
 EXPOSE 3002
 
-CMD ["npm", "run", "dev"]
+CMD ["./entrypoint.sh"]

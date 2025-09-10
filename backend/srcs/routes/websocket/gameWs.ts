@@ -77,6 +77,10 @@ export default async function gameWs(app: FastifyInstance) {
                     const session = sessions.get(sessionId);
                     if (session && session.players.length === 1) {
                         const player2 = new Player(userId, playerName, connection, 'right', playerColor);
+                        if (session.players[0].name === playerName) {
+                            connection.send(JSON.stringify({ type: 'error', message: 'You Cannot join this match' }));
+                            return;
+                        }
                         session.addPlayer(player2);
                         connectionToSessionMap.set(connection, sessionId);
                         session.start();
