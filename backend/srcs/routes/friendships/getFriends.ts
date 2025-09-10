@@ -36,7 +36,7 @@ export async function getFriends(app: FastifyInstance) {
 				}
 				const status = friendship.status
 				const currentTime = BigInt(Date.now())
-				const isOnline = friend.lastPing + BigInt(10000) > currentTime
+				const isOnline = friend.lastPing + BigInt(20000) > currentTime
 				return {
 					friend: friend.username,
 					status: status,

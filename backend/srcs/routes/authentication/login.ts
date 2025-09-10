@@ -35,11 +35,6 @@ export async function loginRoutes(app: FastifyInstance) {
         return reply.status(401).send({ error: "Invalid credentials" });
       }
 
-      const curTime = BigInt(Date.now());
-      const isOnline = user.lastPing + BigInt(10000) > curTime
-
-      if (isOnline === true)
-          return reply.status(400).send({ message: "You're already logged in somewhere else" });
       if (user.has2fa) {
         const token = app.jwt.sign(
           {
