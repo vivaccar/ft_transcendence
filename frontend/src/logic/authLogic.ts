@@ -3,7 +3,7 @@ import { navigate } from '../router';
 import { login2FA } from '../auth/2fa';
 import { getCookieValue } from '../utils';
 import { API_ROUTES } from '../config';
-
+import i18next from "i18next";
 
 export function setupAuthLogic(): void {
 	const loginForm = document.querySelector<HTMLFormElement>('#loginForm');
@@ -67,14 +67,28 @@ export function setupRegisterLogic(): void {
 	});
   }
 
-export async function isAuthenticated(): Promise<boolean> {
+  export async function isAuthenticated(): Promise<boolean> {
 	try {
 		const res = await fetch(API_ROUTES.me, {
-		method: "GET",
-		credentials: "include"
+			method: "GET",
+			credentials: "include"
 		});
-  
-	return res.ok; 
+
+		if (!res.ok) return false;
+
+		const data = await res.json();
+
+		const userLanguage = data.language?.toLowerCase();
+		const currentLang = i18next.language;
+
+		if (userLanguage && userLanguage !== currentLang) {
+			i18next.changeLanguage(userLanguage, () => {
+				localStorage.setItem("lang", userLanguage);
+			});
+		}
+
+		return true;
+
 	} catch (e) {
 		console.error(e);
 		return false;

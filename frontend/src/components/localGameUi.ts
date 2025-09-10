@@ -1,4 +1,5 @@
 import { navigate } from "../router";
+import i18next from "i18next";
 
 export function createGameUI(): HTMLElement {
     // 1. Criar o elemento raiz
@@ -60,11 +61,11 @@ export function createGameUI(): HTMLElement {
     const restartButton = document.createElement('button');
     restartButton.id = 'restart-button';
     restartButton.className = "bg-[#193D5E] text-white px-4 py-2 rounded-md font-orbitron font-semibold cursor-pointer transition-colors hover:bg-indigo-600";
-    restartButton.textContent = 'Play again';
+    restartButton.textContent = i18next.t("play_again");
 
     // Botão "Página Principal"
     const homeButton = document.createElement('button');
-    homeButton.textContent = 'Games Page';
+    homeButton.textContent = i18next.t("games_page");
     homeButton.className = "bg-[#193D5E] text-white px-4 py-2 rounded-md font-orbitron font-semibold cursor-pointer transition-colors hover:bg-indigo-600";
     homeButton.onclick = () => navigate('./games');
 

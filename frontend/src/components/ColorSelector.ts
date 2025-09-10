@@ -1,3 +1,5 @@
+import i18next from "i18next";
+
 export function ColorSelector(onColorSelect: (color: string) => void): HTMLElement {
 	const colors = ['#A855F7', '#FACC15', '#22C55E', '#60A5FA', '#EC4899'];
 
@@ -5,7 +7,7 @@ export function ColorSelector(onColorSelect: (color: string) => void): HTMLEleme
 	container.className = 'flex flex-col items-center mt-6';
 
 	const label = document.createElement('p');
-	label.textContent = 'Select your color';
+	label.textContent = i18next.t('select_color');
 	label.className = 'text-white font-orbitron font-semibold text-xl mb-4';
 	container.appendChild(label);
 

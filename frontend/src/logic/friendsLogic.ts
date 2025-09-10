@@ -1,6 +1,7 @@
 import { API_ROUTES } from "../config";
 import { navigate } from "../router";
 import type { Invites, Friend } from "../types";
+import i18next from "i18next";
 
 export async function sendFriendInvite(friendName: string) {
 	try {
@@ -15,17 +16,17 @@ export async function sendFriendInvite(friendName: string) {
 
 		if (!response.ok) {
 			const error = await response.json();
-			alert(`❌ Error: ${error.message || "Não foi possível enviar o convite"}`);
+			alert(`❌ ${i18next.t("invite_error")} ${error.error}`);
 			return;
 		}
 
 		const data = await response.json();
-		alert(`✅ Convite enviado para ${friendName}`);
+		alert(`✅ ${i18next.t("invite_success")} ${ friendName }`);
 		console.log("Invite response:", data);
 		navigate('/friends');
 	} catch (err) {
 		console.error("Erro ao enviar convite:", err);
-		alert("⚠️ Erro de rede ao enviar convite");
+		alert(`⚠️ ${i18next.t("network_error")}`);
 	}
 }
 
@@ -39,8 +40,6 @@ export async function fetchFriendInvites(): Promise<Invites[]> {
 		});
 
 		const data = await response.json();
-
-		console.log(data);
 
 		if (!response.ok) {
 			console.error("Erro ao buscar invites:", data.error || data);
@@ -67,7 +66,7 @@ export async function acceptInvite(friend: string) {
 
 		if (!response.ok) {
 			console.error("Erro ao aceitar invite:", data.error || data);
-			alert("❌ Erro ao aceitar convite: " + (data.error || "Unknown error"));
+			alert(`❌ ${i18next.t('accept_error')}` + (data.error || "Unknown error"));
 			return false;
 		}
 
@@ -142,13 +141,13 @@ export async function unfriendUser(friendUsername: string) {
 
         let data;
         if (response.status === 201) {
-            data = await response.text(); // <- resposta é string
-            alert(data); // mostra a mensagem do backend
+            data = await response.text(); 
+            alert(data); 
             return true;
         } else {
-            data = await response.json(); // <- só tenta JSON nos erros
+            data = await response.json();
             console.error("Erro ao desfazer amizade:", data.error || data);
-            alert(data.error || "Failed to remove friend");
+            alert(data.error || `${i18next.t('remove_friend_error')}`);
             return false;
         }
 
