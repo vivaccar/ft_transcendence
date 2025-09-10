@@ -324,7 +324,7 @@ async function createFriendsUI(): Promise<HTMLDivElement> {
 		// Gols
 		const goals = await getUserGoals(friend.friend)
 		const totalGoalsText = document.createElement("p");
-		totalGoalsText.textContent = i18next.t('goals').toUpperCase();
+		totalGoalsText.textContent = i18next.t('points').toUpperCase();
 		totalGoalsText.className = "text-center font-orbitron font-bold mt-4 text-xl";
 		personalNbrBox.appendChild(totalGoalsText);
 
@@ -353,7 +353,7 @@ async function createFriendsUI(): Promise<HTMLDivElement> {
 		goalsProBox.textContent = `${goals.goalsPro}`;
 		goalsProBox.className = "flex justify-center items-center rounded-lg font-orbitron font-bold text-white bg-[#A66DD4]";
 		const goalsProLabel = document.createElement("p");
-		goalsProLabel.textContent = i18next.t("Scored");
+		goalsProLabel.textContent = i18next.t("scored");
 		goalsProLabel.className = "mt-2 font-orbitron font-bold";
 		goalsProColumn.appendChild(goalsProBox);
 		goalsProColumn.appendChild(goalsProLabel);
@@ -366,7 +366,7 @@ async function createFriendsUI(): Promise<HTMLDivElement> {
 		goalsConBox.textContent = `${goals.goalsCon}`;
 		goalsConBox.className = "flex justify-center items-center rounded-lg font-orbitron font-bold text-white bg-[#362A63]";
 		const goalsConLabel = document.createElement("p");
-		goalsConLabel.textContent = i18next.t("Conceded");
+		goalsConLabel.textContent = i18next.t("conceded");
 		goalsConLabel.className = "mt-2 mb-6 font-orbitron font-bold";
 		goalsConColumn.appendChild(goalsConBox);
 		goalsConColumn.appendChild(goalsConLabel);
@@ -375,20 +375,24 @@ async function createFriendsUI(): Promise<HTMLDivElement> {
 		columnsContainerGoals.appendChild(goalsConColumn);
 		personalNbrBox.appendChild(columnsContainerGoals);
 
-	// Last Games Box
-	const lastGamesBox = document.createElement("div");
-	lastGamesBox.className = "bg-[#D9D9D9] text-gray-900 rounded-xl shadow-lg w-full overflow-y-auto flex-1";
+		// Last Games Box
+		const lastGamesBox = document.createElement("div");
+		lastGamesBox.className = "bg-[#D9D9D9] text-gray-900 rounded-xl shadow-lg w-full overflow-y-auto flex-1";
+		lastGamesBox.style.maxHeight = "400px";
 
 		const lgheaderBar = document.createElement("div");
 		lgheaderBar.className = "bg-[#174B7A] px-8 py-3 rounded-t-lg flex justify-center items-center w-full";
 		const lastGametitle = document.createElement("h1");
 		lastGametitle.textContent = i18next.t("last_games");
 		lastGametitle.className = "text-white text-xl font-orbitron font-bold mb-0 text-center";
+		lgheaderBar.style.position = "sticky";
+		lgheaderBar.style.top = "0";
+		lgheaderBar.style.zIndex = "10";
 		lgheaderBar.appendChild(lastGametitle);
 		lastGamesBox.appendChild(lgheaderBar);
 
 		const gamesContainer = document.createElement("div");
-		gamesContainer.className = "flex flex-col gap-4 p-4 items-stretch";
+		gamesContainer.className = "flex flex-col gap-4 p-4 items-stretch overflow-y-auto";
 		// Aqui você pode popular com os últimos jogos do friend, se disponíveis
 		const lastGames = await getMatches(friend.friend)
 
