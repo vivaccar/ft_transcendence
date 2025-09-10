@@ -16,10 +16,12 @@ function generateSessionId(): string {
 // ====================================================================================
 function handlePlayerExit(connection: WebSocket, userId: string) {
     const sessionId = connectionToSessionMap.get(connection);
-    if (!sessionId) return;
+    if (!sessionId) 
+        return;
 
     const session = sessions.get(sessionId);
-    if (!session) return;
+    if (!session) 
+        return;
     
     // Delega a lógica para o método da sessão, que é o lugar certo para isso.
     session.removePlayer(userId);
@@ -97,6 +99,7 @@ export default async function gameWs(app: FastifyInstance) {
 
                 // ADICIONADO: Trata a mensagem de saída explícita do jogador
                 case 'player_left_game': {
+                    console.log("player_left_game");
                     handlePlayerExit(connection, userId);
                     break;
                 }

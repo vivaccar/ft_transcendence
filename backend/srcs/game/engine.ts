@@ -1,5 +1,7 @@
 import { WebSocket } from 'ws';
 import { PrismaClient } from '@prisma/client';
+import { hasOnlyExpressionInitializer } from 'typescript';
+
 
 const CANVAS_WIDTH = 600;
 const CANVAS_HEIGHT = 400;
@@ -10,7 +12,7 @@ const BALL_SIZE = 10;
 const PADDLE_SPEED = 300;
 const BALL_SPEED = 300;
 const SPEED_INCREASED = 20;
-const WINNING_SCORE = 4;
+const WINNING_SCORE = 1;
 
 // Represents a player connected to a session
 export class Player {
@@ -91,7 +93,7 @@ export class GameSession {
 
 	// Inicia o loop do jogo
 	start() {
-		if (this.players.length !== 2) 
+		if (this.players.length !== 2)
 			return;
 
 		const player1 = this.players[0];
@@ -157,7 +159,7 @@ export class GameSession {
 	private checkCollisions() {
 		const p1 = this.players[0];
 		const p2 = this.players[1];
-	
+
 		// colisão com as bordas de cima e baixo
 		if (this.ball.y - this.ball.size < 0 || this.ball.y + this.ball.size > CANVAS_HEIGHT) {
 			this.ball.speedY *= -1;
@@ -192,7 +194,7 @@ export class GameSession {
 		) {
 			this.ball.x = p2.x - this.ball.size;
 			p2.touches++;
-			
+
 			this.ball.speed += SPEED_INCREASED;
 			const hitPos = (this.ball.y - (p2.y + p2.height / 2)) / (p2.height / 2);
 			const angle = hitPos * (Math.PI / 4);
@@ -212,29 +214,29 @@ export class GameSession {
 			this.ball.reset();
 		}
 	}
-		
+
 	private async saveGameData() {
 		const players = this.players;
 
 		try {
 			const match = await this.prisma.match.create({
-			data: {
-				date: new Date(),
-				matchParticipant: {
-				create: players.map(p => {
-					return {
-						user: { connect: { username: p.name } },
-						goals: p.score,
-						touches: p.touches,
-					};
-				}),
+				data: {
+					date: new Date(),
+					matchParticipant: {
+						create: players.map(p => {
+							return {
+								user: { connect: { username: p.name } },
+								goals: p.score,
+								touches: p.touches,
+							};
+						}),
+					},
 				},
-			},
-			include: {
-				matchParticipant: {
-				include: { user: true },
+				include: {
+					matchParticipant: {
+						include: { user: true },
+					},
 				},
-			},
 			});
 
 			console.log(`[GameSession ${this.sessionId}] Partida registrada com sucesso`);
@@ -243,7 +245,7 @@ export class GameSession {
 		}
 	}
 
-	private async checkWinCondition() {
+	private checkWinCondition() {
 		const p1 = this.players[0];
 		const p2 = this.players[1];
 		let winner: Player | null = null;
@@ -256,37 +258,45 @@ export class GameSession {
 
 		if (winner) {
 			this.broadcastState();
-			await new Promise(resolve => setTimeout(resolve, 100));
-			this.saveGameData();
 			this.stop();
-			this.broadcast({
-				type: 'gameOver',
-				payload: {
-					winnerName: winner.name,
-				}
+			setTimeout(() => {
+				console.log("chamou save game data em checkWinCondition");
+				this.broadcast({
+					type: 'gameOver',
+					payload: {
+						winnerName: winner.name,
+					}
+				});
+				this.players.forEach(player => {
+				// O código 1000 significa "Normal Closure", indicando que o propósito da conexão foi cumprido.
+				player.ws.close(1000, 'Game Over');
 			});
+			}, 100);
+			this.saveGameData();
+			
 		}
 	}
 
 	private broadcastState() {
-		if (this.players.length < 2) 
+		if (this.players.length < 2)
 			return;
 
 		const state = {
 			type: 'gameStateUpdate',
 			payload: {
-				ball: { 
-					x: this.ball.x, 
-					y: this.ball.y 
+				ball: {
+					x: this.ball.x,
+					y: this.ball.y
 				},
-				paddles: this.players.map(p => ({ 	id: p.id, 
-													x: p.x, 
-													y: p.y, 
-													color: p.color 
-												})),
-				scores: { 
-					p1: this.players[0].score, 
-					p2: this.players[1].score 
+				paddles: this.players.map(p => ({
+					id: p.id,
+					x: p.x,
+					y: p.y,
+					color: p.color
+				})),
+				scores: {
+					p1: this.players[0].score,
+					p2: this.players[1].score
 				}
 			}
 		};
@@ -304,7 +314,7 @@ export class GameSession {
 
 	handlePlayerMove(playerId: string, data: { key: 'w' | 's' | 'ArrowUp' | 'ArrowDown'; keyState: 'keydown' | 'keyup' }) {
 		const player = this.players.find(p => p.id === playerId);
-		if (!player) 
+		if (!player)
 			return;
 
 		const isKeyDown = data.keyState === 'keydown';

@@ -34,6 +34,6 @@ COPY nginx.conf /etc/nginx/conf.d
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # Expõe HTTP e HTTPS
-EXPOSE 80 443
+EXPOSE  8443
 
 CMD ["nginx", "-g", "daemon off;"]
