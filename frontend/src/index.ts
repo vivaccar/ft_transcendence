@@ -21,7 +21,7 @@ async function startApp(): Promise<void> {
     handleRoute();
   });
 
-  startPing(20);
+  startPing(10);
 }
 
 startApp();

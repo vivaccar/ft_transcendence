@@ -51,6 +51,12 @@ export async function googleCallback(app: FastifyInstance) {
         });
       }
 
+      const curTime = BigInt(Date.now());
+      const isOnline = user.lastPing + BigInt(10000) > curTime
+
+      if (isOnline === true)
+          return reply.redirect("https://localhost:8443/login");
+
       if (user.has2fa) {
         const jwtToken = app.jwt.sign(
           {

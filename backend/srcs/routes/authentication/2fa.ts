@@ -102,6 +102,12 @@ export async function verify2fa(app:FastifyInstance) {
             return reply.status(401).send({message: "Invalid 2FA code"})
         }
 
+        const curTime = BigInt(Date.now());
+        const isOnline = user.lastPing + BigInt(10000) > curTime
+
+        if (isOnline === true)
+            return reply.redirect("https://localhost:8443/login");
+
         const token = app.jwt.sign(
         {
             id: user.id,
