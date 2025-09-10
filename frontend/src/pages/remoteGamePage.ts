@@ -4,6 +4,7 @@ import { BackgroundCarousel } from "../components/BackgroundCarousel";
 import { ColorSelector } from "../components/ColorSelector";
 import { initGame, startGame, updateGameState, showGameOver, stopGame } from "../game/remotePong/RemoteGame";
 import { loadUserProfile } from "../game/localPong/Pong"
+import i18next from "i18next";
 
 // ====================================================================================
 // SOLUÇÃO: Detector de Saída Encapsulado
@@ -77,7 +78,7 @@ function handleServerMessage(data: any) {
             console.log("✅ [LÓGICA] Partida criada com sucesso. Exibindo ID da sessão:", data.sessionId);
             const waitingText = document.getElementById('waiting-text');
             if (waitingText) {
-                waitingText.innerHTML = `Partida criada!<br>Partilhe este ID com o seu amigo:<br><strong class="text-2xl mt-2 block">${data.sessionId}</strong>`;
+                waitingText.innerHTML = i18next.t("match_created", { sessionId: data.sessionId });
             }
             break;
     
@@ -135,7 +136,7 @@ function handleServerMessage(data: any) {
         case 'opponentLeft':
             leaveDetector.stop(); // Desativa a deteção
             stopGame();
-            alert('O seu oponente abandonou a partida. Você venceu!');
+            alert(i18next.t("opponent_left"));
             break;
 
         default:
@@ -155,7 +156,7 @@ async function buildHostPage(): Promise <void> {
     renderPage(container);
 
     const title = document.createElement("h1");
-    title.textContent = "Host Setup";
+    title.textContent = i18next.t("host_setup");
     title.className = "text-white font-orbitron font-bold text-4xl mb-8";
     container.appendChild(title);
     const onSelectBackground = (bg: string) => { selectedBackgroundImg = bg; };
@@ -164,13 +165,13 @@ async function buildHostPage(): Promise <void> {
     const colorWrapper = document.createElement("div");
     colorWrapper.className = "flex flex-col items-center mt-6";
     const colorTitle = document.createElement("h2");
-    colorTitle.textContent = "Your Paddle Color";
+    colorTitle.textContent = i18next.t("paddle_color");
     colorTitle.className = "text-white font-orbitron font-bold mb-2";
     colorWrapper.appendChild(colorTitle);
     colorWrapper.appendChild(ColorSelector(onSelectColor));
     container.appendChild(colorWrapper);
     const startBtn = document.createElement("button");
-    startBtn.textContent = "Criar Partida Online";
+    startBtn.textContent = i18next.t("create_online_game");
     startBtn.className = "mt-6 px-6 py-2 bg-green-600 text-white font-orbitron font-bold rounded hover:bg-green-700 transition";
     container.appendChild(startBtn);
 
@@ -188,7 +189,7 @@ async function buildHostPage(): Promise <void> {
         container.innerHTML = "";
         const waitingMsg = document.createElement("h2");
         waitingMsg.id = 'waiting-text';
-        waitingMsg.textContent = "A conectar e a criar partida...";
+        waitingMsg.textContent = i18next.t("connecting_creating_game");
         waitingMsg.className = "text-white text-center font-orbitron font-bold text-xl animate-pulse";
         container.appendChild(waitingMsg);
 
@@ -217,7 +218,7 @@ async function buildGuestPage(): Promise <void> {
     renderPage(container);
 
     const title = document.createElement("h1");
-    title.textContent = "Join Game";
+    title.textContent = i18next.t("join_game");
     title.className = "text-white font-orbitron font-bold text-4xl mb-8";
     container.appendChild(title);
 
@@ -228,7 +229,7 @@ async function buildGuestPage(): Promise <void> {
     inputWrapper.className = "flex flex-col items-center mb-6";
     box.appendChild(inputWrapper);
     const matchLabel = document.createElement("label");
-    matchLabel.textContent = "Enter Match ID";
+    matchLabel.textContent = i18next.t("enter_match_id");
     matchLabel.className = "text-white font-orbitron font-bold mb-2";
     inputWrapper.appendChild(matchLabel);
     const matchInput = document.createElement("input");
@@ -242,19 +243,19 @@ async function buildGuestPage(): Promise <void> {
     colorWrapper.className = "flex flex-col items-center mt-2";
     box.appendChild(colorWrapper);
     const colorTitle = document.createElement("h2");
-    colorTitle.textContent = "Your Paddle Color";
+    colorTitle.textContent = i18next.t('paddle_color');
     colorTitle.className = "text-white font-orbitron font-bold mb-2";
     colorWrapper.appendChild(colorTitle);
     colorWrapper.appendChild(ColorSelector(onSelectColor));
     const joinBtn = document.createElement("button");
     joinBtn.id = 'join-btn';
-    joinBtn.textContent = "Join Match";
+    joinBtn.textContent = i18next.t("join_match");
     joinBtn.className = "mt-6 px-6 py-2 bg-blue-600 text-white font-orbitron font-bold rounded hover:bg-blue-700 transition";
     box.appendChild(joinBtn);
 
     joinBtn.addEventListener("click", () => {
         if (!matchId.trim()) {
-            alert("Please enter a Match ID.");
+            alert(i18next.t("enter_match_id_alert"));
             return;
         }
         joinBtn.disabled = true;
@@ -287,8 +288,8 @@ function createRemoteGameUI(): HTMLDivElement {
     const container = document.createElement("div");
     container.className = "flex items-center justify-center w-full h-full gap-6";
     const cards = [
-        { title: 'Host', imgSrc: '/images/remoteGame/host.jpeg', action: buildHostPage },
-        { title: 'Guest', imgSrc: '/images/remoteGame/guest.jpeg', action: buildGuestPage },
+        { title: i18next.t("host"), imgSrc: "/images/remoteGame/host.jpeg", action: buildHostPage },
+        { title: i18next.t("guest"), imgSrc: "/images/remoteGame/guest.jpeg", action: buildGuestPage },
     ];
 
     cards.forEach(({ title, imgSrc, action }) => {

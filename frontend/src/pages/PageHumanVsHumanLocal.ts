@@ -2,7 +2,7 @@ import { renderPage } from "../utils";
 import { BackgroundCarousel } from "../components/BackgroundCarousel";
 import { ColorSelector } from "../components/ColorSelector";
 import { GameModeSelector } from "../components/gameModeSelector";
-// import { navigate } from "../router";
+import i18next from "i18next";
 import { buildHumanGameLocal } from "../game/localPong/Pong";
 
 export function buildGamePageManVsManLocal(gameType: string) {
@@ -17,15 +17,15 @@ export function buildGamePageManVsManLocal(gameType: string) {
 
   	const title = document.createElement("h1");
 	if (gameType == 'human') {
-		title.textContent = `Human vs Human`;
+		title.textContent = i18next.t("human_vs_human");
 	} else {
-		title.textContent = `Human vs AI`;
+		title.textContent = i18next.t("human_vs_ai");
 	}
   	title.className = "text-white font-orbitron font-bold text-4xl mb-8";
   	container.appendChild(title);
-	
+
 	const subtitle = document.createElement("h2");
-  	subtitle.textContent = 'Local';
+	subtitle.textContent = i18next.t("local");
   	subtitle.className = "text-white font-orbitron text-4xl mb-8";
   	container.appendChild(subtitle);
 
@@ -78,7 +78,7 @@ export function buildGamePageManVsManLocal(gameType: string) {
     container.appendChild(modeSelector);
 
   	const startBtn = document.createElement("button");
-  	startBtn.textContent = "Start";
+  	startBtn.textContent = i18next.t("start");
   	startBtn.className =
   	  "mt-6 px-6 py-2 bg-green-600 text-white font-bold rounded hover:bg-green-700 transition";
   	startBtn.addEventListener("click", () => {

@@ -1,3 +1,5 @@
+import i18next from "i18next";
+
 type GameMode = "default" | "special";
 
 export function GameModeSelector(
@@ -11,7 +13,7 @@ export function GameModeSelector(
 
   // --- Título ---
   const title = document.createElement("p");
-  title.textContent = "Select Game Mode";
+  title.textContent = i18next.t("select_game_mode");
   title.className = "text-white font-orbitron font-semibold text-xl mb-4";
   container.appendChild(title);
 
@@ -20,11 +22,11 @@ export function GameModeSelector(
   buttonsWrapper.className = "flex gap-4 items-center";
 
   const defaultBtn = document.createElement("button");
-  defaultBtn.textContent = "Default Mode";
+  defaultBtn.textContent = i18next.t("default_mode");
   defaultBtn.className = "px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700";
 
   const specialBtn = document.createElement("button");
-  specialBtn.textContent = "Special Mode";
+  specialBtn.textContent = i18next.t("special_mode");
   specialBtn.className = "px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700";
 
   buttonsWrapper.appendChild(defaultBtn);
@@ -36,7 +38,7 @@ export function GameModeSelector(
   container.appendChild(modeDesc);
 
   specialBtn.addEventListener("mouseenter", () => {
-    modeDesc.textContent = "Power-ups activated";
+    modeDesc.textContent = i18next.t("powerups_activated");
   });
   specialBtn.addEventListener("mouseleave", () => {
     modeDesc.textContent = "";

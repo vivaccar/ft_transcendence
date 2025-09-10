@@ -1,3 +1,5 @@
+import i18next from "i18next";
+
 // /frontend/srcs/components/remoteGameUi.ts (NOVO FICHEIRO)
 
 // Esta função é uma cópia da sua createGameUI, mas adaptada para o jogo remoto.
@@ -45,12 +47,12 @@ export function createRemoteGameUI(): HTMLElement {
     const playAgainButton = document.createElement('button');
     playAgainButton.id = 'play-again-button'; // ID específico para o jogo remoto
     playAgainButton.className = "bg-green-600 text-white px-6 py-3 rounded-md font-orbitron font-semibold cursor-pointer transition-colors hover:bg-green-700";
-    playAgainButton.textContent = 'Jogar Novamente';
+    playAgainButton.textContent = i18next.t("play_again");
 
     // 7. Botão "Página Principal"
     const homeButton = document.createElement('button');
     homeButton.id = 'home-button'; // ID específico
-    homeButton.textContent = 'Voltar ao Menu';
+    homeButton.textContent = i18next.t("back_to_menu");
     homeButton.className = "bg-gray-600 text-white px-6 py-3 rounded-md font-orbitron font-semibold cursor-pointer transition-colors hover:bg-gray-700";
     
     // NOTA: A lógica 'onclick' foi REMOVIDA daqui. Ela será adicionada dinamicamente

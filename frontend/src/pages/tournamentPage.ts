@@ -2,6 +2,7 @@ import { renderPage } from "../utils";
 import { BackgroundCarousel } from "../components/BackgroundCarousel";
 import { ColorSelector } from "../components/ColorSelector";
 import { buildHumanGameLocal } from "../game/localPong/Pong";
+import i18next from "i18next";
 
 // Função auxiliar para criar a UI de configuração para cada jogador
 // Isso evita a repetição de código
@@ -20,7 +21,7 @@ function createPlayerSetupUI(
 
     const nameInput = document.createElement("input");
     nameInput.type = "text";
-    nameInput.placeholder = "Digite seu nome";
+    nameInput.placeholder = i18next.t("enter_your_name");
     nameInput.className = "bg-gray-800 text-white text-center rounded-md p-2 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500";
     nameInput.maxLength = 10;
     nameInput.addEventListener("input", (e) => {
@@ -49,7 +50,7 @@ export function buildTournamentsPage(gameType: string) {
     renderPage(container);
 
     const title = document.createElement("h1");
-    title.textContent = `Tournament Setup`;
+    title.textContent = i18next.t("tournament_setup");
     title.className = "text-white font-orbitron font-bold text-5xl mb-6";
     container.appendChild(title);
     
@@ -93,7 +94,7 @@ export function buildTournamentsPage(gameType: string) {
 
     // --- BOTÃO DE INICIAR TORNEIO ---
     const startBtn = document.createElement("button");
-    startBtn.textContent = "Start Tournament";
+    startBtn.textContent = i18next.t("start_tournament");
     startBtn.className = "mt-10 px-8 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition text-2xl";
     
     startBtn.addEventListener("click", () => {
