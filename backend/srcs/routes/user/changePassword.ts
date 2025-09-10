@@ -6,7 +6,7 @@ export async function updatePassword(app: FastifyInstance) {
     app.patch("/user/password", { preHandler: [app.authenticate], schema: updatePasswordSchema }, async (request, reply) => {
         const { oldPassword, newPassword } = request.body as { oldPassword: string, newPassword: string }
 
-        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
         if (!passwordRegex.test(newPassword)) {
             return reply.status(400).send({ 
                 message: "New password must be at least 8 characters long and contain at least one letter and one number" 

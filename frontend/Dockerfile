@@ -39,6 +39,6 @@ RUN envsubst '$SSL_CERT_PATH $SSL_KEY_PATH' < nginx.conf > /etc/nginx/conf.d/def
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # Expõe HTTP e HTTPS
-EXPOSE 8443
+EXPOSE 8080 8443
 
 CMD ["nginx", "-g", "daemon off;"]
