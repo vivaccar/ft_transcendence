@@ -42,6 +42,7 @@ export const resources = {
     		touches: "Touches",
     		you: "You",
     		close: "Close",
+			see_profile: "See Profile"
 
 		}
 	},
@@ -88,7 +89,7 @@ export const resources = {
     		touches: "Toques",
     		you: "Você",
     		close: "Fechar",
-
+			see_profile: "Ver Perfil"
 		}
 	},
 	fr: {
@@ -134,7 +135,7 @@ export const resources = {
     		touches: "Touches",
     		you: "Vous",
     		close: "Fermer",
-
+			see_profile: "Voir Le Profil"
 		}
 	}
 };
