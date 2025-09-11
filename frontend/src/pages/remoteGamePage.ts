@@ -72,7 +72,7 @@ const leaveDetector = {
 };
 
 function handleServerMessage(data: any) {
-    console.log(`📡 [WS RECEBIDO] Tipo: ${data.type}`, data);
+    //console.log(`📡 [WS RECEBIDO] Tipo: ${data.type}`, data);
     switch (data.type) {
         case 'matchCreated':
             console.log("✅ [LÓGICA] Partida criada com sucesso. Exibindo ID da sessão:", data.sessionId);

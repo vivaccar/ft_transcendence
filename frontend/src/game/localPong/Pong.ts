@@ -3,6 +3,7 @@ import { renderPage } from '../../utils';
 import { initializeLocalGame } from './Game';
 import { initializeTournamentMatch } from './Tournament';
 import { API_ROUTES } from '../../config';
+import { localLeaveDetector } from '../../logic/localLeaveDetector';
 
 export async function loadUserProfile() {
 
@@ -61,5 +62,7 @@ export async function buildHumanGameLocal(gameType: string): Promise<void> {
     } else {
         initializeLocalGame('game-container', 600, 400, gameType, player1Name, player2Name, gameMode);
     }
+
+    localLeaveDetector.start();
 }
 

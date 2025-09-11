@@ -39,14 +39,12 @@ import gameWs from './routes/websocket/gameWs';
 const app = Fastify({ logger: true,  trustProxy: true })
 
 app.register(cors, {
-  origin: ['https://localhost', 'http://localhost:5173'],
+  origin: ['https://localhost:'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
 });
 
-/* app.register(fastifyCookie, {
-  secret: process.env.COOKIE_SECRET!,
-}) */
+
 app.register(swaggerPlugin)
 app.register(dbPlugin);
 app.register(jwtPlugin);
