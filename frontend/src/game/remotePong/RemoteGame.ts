@@ -69,8 +69,6 @@ const handleKeyUp = (e: KeyboardEvent) => {
 };
 
 export function initGame(container: HTMLElement) {
-
-    //ISSO AQUI TEM DE SER UM TRY CATCH
     const settingsStr = sessionStorage.getItem('gameSettings');
 
     if (!settingsStr) {
@@ -87,13 +85,11 @@ export function initGame(container: HTMLElement) {
     container.appendChild(gameUI);
     canvas = gameUI.querySelector('#game-canvas') as HTMLCanvasElement;
 
-    //ISSO TAMBEM TEM DE SER UM TRY CATCH
     if (!canvas || !scoreboard) {
         console.error("Error! initGame - No Canvas or Scoreboard");
         return;
     }
 
-    //ISSO PODE SER UM COMPONENT??? TALVEZ SIM
     const p1AliasSpan = document.createElement('span');
     p1AliasSpan.className = 'text-4xl text-white font-orbitron px-4';
     p1AliasSpan.textContent = settings.p1_alias || 'Player 1';
@@ -135,7 +131,6 @@ export function stopGame() {
 
 export function updateGameState(newState: any) {
     if (!newState || !newState.ball || !newState.paddles || !newState.scores) {
-        //DEBUG - NAO EXCLUIR AINDA
         console.error("Recebido estado de jogo inválido:", newState);
         return;
     }

@@ -1,32 +1,20 @@
-// frontend/src/logic/localLeaveDetector.ts
-
-// A função que o detector precisa de chamar para limpar o jogo.
 import { cleanupGame } from '../game/localPong/Game';
 
-/**
- * Gestor de estado e lógica para a deteção de saída do jogo local.
- * Este objeto é um singleton, o que significa que só existe uma instância dele na aplicação.
- */
 export const localLeaveDetector = {
     observer: null as MutationObserver | null,
     isObserving: false,
 
-    /**
-     * Inicia a observação da página para detetar quando o jogador sai do jogo.
-     */
     start: function() {
         if (this.isObserving) {
-            console.log("DETECTOR: Já se encontra ativo.");
             return;
         }
 
         const gameElement = document.getElementById('game-canvas');
         if (!gameElement) {
-            console.error("DETECTOR: Não foi possível encontrar '#game-canvas'. A deteção de saída não funcionará.");
+            console.error("Error. leaveDetector was not able to find game canvas");
             return;
         }
 
-        // 1. Deteção de fecho de aba ou refresh da página.
         window.addEventListener('beforeunload', this.handleLeave);
 
         // 2. Deteção de navegação interna da SPA, observando quando o canvas é removido do DOM.

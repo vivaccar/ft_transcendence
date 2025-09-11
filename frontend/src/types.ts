@@ -61,3 +61,12 @@ export interface PaddleState {
 	y: number; 
 	color: string; 
 }
+
+//src/game/localPong/Game.ts
+export interface GameSettings {
+  containerId: string;
+  width: number;
+  height: number;
+  mode: string;
+  gameMode: string;
+}

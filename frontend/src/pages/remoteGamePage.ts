@@ -1,81 +1,16 @@
 import { renderPage } from "../utils";
-import { connectWebSocket, sendMessage, disconnectWebSocket } from "../socketService";
+import { connectWebSocket, sendMessage} from "../socketService";
 import { BackgroundCarousel } from "../components/BackgroundCarousel";
 import { ColorSelector } from "../components/ColorSelector";
 import { initGame, startGame, updateGameState, showGameOver, stopGame } from "../game/remotePong/RemoteGame";
 import { loadUserProfile } from "../game/localPong/Pong"
+import { leaveDetector } from "../logic/remoteLeaveDetector";
 import i18next from "i18next";
 
-// ====================================================================================
-// SOLUÇÃO: Detector de Saída Encapsulado
-// Este objeto gere todo o estado e lógica para a deteção de saída.
-// ====================================================================================
-const leaveDetector = {
-    observer: null as MutationObserver | null,
-    hasLeft: false,
-
-    // Método para iniciar a deteção
-    start: function() {
-        this.hasLeft = false;
-
-        // 1. Procurar o elemento do jogo com o ID CORRETO
-        const gameElement = document.getElementById('game-canvas');
-        if (!gameElement) {
-            console.error("DETECTOR: Não foi possível encontrar '#game-canvas'. A deteção de saída por navegação não funcionará.");
-            return;
-        }
-
-        // 2. Deteção de fecho de aba/refresh
-        window.addEventListener('beforeunload', this.handleLeave);
-
-        // 3. Deteção de navegação interna na SPA
-        const appElement = document.querySelector('#app');
-        if (appElement) {
-            this.observer = new MutationObserver((mutationsList) => {
-                for (const mutation of mutationsList) {
-                    if (mutation.removedNodes.length > 0) {
-                        mutation.removedNodes.forEach(node => {
-                            if (node.contains(gameElement)) {
-                                console.log("DETECTOR: O elemento do jogo foi removido do DOM.");
-                                this.handleLeave();
-                            }
-                        });
-                    }
-                }
-            });
-            this.observer.observe(appElement, { childList: true, subtree: true });
-        }
-        console.log("✅ Detector de Saída ATIVADO.");
-    },
-
-    // Ação a ser executada quando a saída é detetada
-    handleLeave: () => {
-        if (leaveDetector.hasLeft) return;
-        leaveDetector.hasLeft = true;
-
-        console.log("👋 Saída detetada. Notificando o servidor...");
-        sendMessage({ type: 'player_left_game' });
-        disconnectWebSocket();
-        leaveDetector.stop(); // Garante que é limpo
-    },
-
-    // Método para parar e limpar todos os listeners
-    stop: function() {
-        window.removeEventListener('beforeunload', this.handleLeave);
-        if (this.observer) {
-            this.observer.disconnect();
-            this.observer = null;
-        }
-        this.hasLeft = true; // Previne chamadas futuras
-        console.log("🛑 Detector de Saída DESATIVADO.");
-    }
-};
 
 function handleServerMessage(data: any) {
-    //console.log(`📡 [WS RECEBIDO] Tipo: ${data.type}`, data);
     switch (data.type) {
         case 'matchCreated':
-            console.log("✅ [LÓGICA] Partida criada com sucesso. Exibindo ID da sessão:", data.sessionId);
             const waitingText = document.getElementById('waiting-text');
             if (waitingText) {
                 waitingText.innerHTML = i18next.t("match_created", { sessionId: data.sessionId });
@@ -83,7 +18,6 @@ function handleServerMessage(data: any) {
             break;
     
         case 'gameStart': {
-            console.log("🚀 [LÓGICA] Recebido sinal de 'gameStart'.", data);
 
             if (data.background) {
                 const settingsStr = sessionStorage.getItem('gameSettings');
@@ -98,16 +32,13 @@ function handleServerMessage(data: any) {
 
             const appContainer = document.querySelector('#app > div');
             if (!appContainer) {
-                console.error("🐛 [ERRO] Container principal da aplicação não encontrado! Não é possível iniciar o jogo.");
                 return;
             }
             appContainer.className = 'w-full h-screen flex justify-center items-center';
             appContainer.innerHTML = '';
-
-            // LÓGICA CORRIGIDA: Jogo inicia sempre, e depois ativamos o detector.
             initGame(appContainer as HTMLElement);
             startGame();
-            leaveDetector.start(); // Ativa a deteção de saída
+            leaveDetector.start();
             break;
         }
 
@@ -116,14 +47,12 @@ function handleServerMessage(data: any) {
             break;
 
         case 'gameOver':
-            console.log(`🏆 [JOGO] Fim de jogo! Vencedor: ${data.payload.winnerName}`);
-            leaveDetector.stop(); // Desativa a deteção
+            leaveDetector.stop();
             showGameOver(data.payload.winnerName);
             break;
 
         case 'error':
-            console.error(`🐛 [ERRO SERVIDOR] Mensagem de erro recebida:`, data.message);
-            leaveDetector.stop(); // Desativa a deteção
+            leaveDetector.stop();
             alert(`Erro do servidor: ${data.message}`);
             stopGame();
             const joinBtn = document.getElementById('join-btn') as HTMLButtonElement | null;
@@ -132,7 +61,6 @@ function handleServerMessage(data: any) {
             }
             break;
 
-        // ADICIONADO: Ouve a mensagem correta (opponentLeft) do servidor
         case 'opponentLeft':
             leaveDetector.stop(); // Desativa a deteção
             stopGame();
@@ -140,12 +68,10 @@ function handleServerMessage(data: any) {
             break;
 
         default:
-            console.warn(`🤔 [WS] Mensagem de tipo desconhecido recebida: ${data.type}`);
+            console.warn(`Error. Not know message received: ${data.type}`);
     }
 }
 
-// O resto do ficheiro (buildHostPage, buildGuestPage, etc.) não precisa de alterações
-// e permanece exatamente como no seu original.
 async function buildHostPage(): Promise <void> {
     const loggedUserData = await loadUserProfile();
     let selectedColor: string | null = "white";

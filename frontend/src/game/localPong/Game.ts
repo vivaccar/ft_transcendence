@@ -3,6 +3,7 @@ import { Paddle } from './Paddle';
 import { createGameUI } from '../../components/localGameUi';
 import { API_ROUTES } from '../../config';
 import { localLeaveDetector } from '../../logic/localLeaveDetector';
+import type { GameSettings } from '../../types';
 import i18next from "i18next";
 
 // --- TIPOS E ESTADO GLOBAL DO MÓDULO ---
@@ -14,14 +15,6 @@ type GameArea = {
     stop: () => void;
     clear: () => void;
 };
-//INTERFACE - PRECISO REFATORAR PARA UM ARQUIVO ESPECIFICO
-interface GameSettings {
-  containerId: string;
-  width: number;
-  height: number;
-  mode: string;
-  gameMode: string;
-}
 
 
 let lastGameSettings: GameSettings | null = null;
@@ -38,8 +31,6 @@ let aiTargetY = 0;
 let winningScore = 3;
 const handleKeyDown = (e: KeyboardEvent) => { keysPressed[e.key.toLowerCase()] = true; };
 const handleKeyUp = (e: KeyboardEvent) => { keysPressed[e.key.toLowerCase()] = false; };
-
-// game settings
 const paddleWidth = 10, paddleHeight = 80, paddleSpeed = 280;
 const ballSpeed = 480, ballSize = 10;
 
@@ -54,7 +45,6 @@ function makeAIDecision() {
     let predictedY = ball.y + ball.speedY * timeToImpact;
     const canvasHeight = myGameArea.canvas!.height;
 
-    // Simula ressaltos.
     while (predictedY < 0 || predictedY > canvasHeight) {
         if (predictedY < 0) {
             predictedY = -predictedY;
@@ -64,7 +54,6 @@ function makeAIDecision() {
         }
     }
 
-    // Margem de erro, pra IA ficar imperfeita.
     const errorMargin = (Math.random() - 0.5) * paddleHeight * 1.3;
     aiTargetY = predictedY + errorMargin;
 }
@@ -87,7 +76,7 @@ function executeAIMove() {
     }
 }
 
-// --- O OBJETO SINGLETON GERENCIADOR ---
+//Game singleton
 const myGameArea: GameArea = {
     canvas: null,
     context: null,
@@ -135,7 +124,7 @@ function showPowerUpMessage(message: string) {
 }
 
 function setUpAiPowerUp() {
-    const number = Math.floor(Math.random() * 3); // Generate number bettwen 0-2 to select random power up;
+    const number = Math.floor(Math.random() * 3);
     if (number == 1) {
         player2.height = paddleHeight + 50;
         showPowerUpMessage(i18next.t("powerup_ai_size"));
@@ -152,7 +141,6 @@ function setUpAiPowerUp() {
 }
 
 function updateGameArea(currentTime: number) {
-    console.log('💓 Game loop a correr...');
     if (myGameArea.state !== 'playing') 
         return;
     const deltaTime = (currentTime - lastTime) / 1000;
@@ -191,7 +179,6 @@ function draw() {
 }
 
 function handleInput(deltaTime: number) {
-
     const effectivePaddle1Speed = player1.speed;
     const effectivePaddle2Speed = player2.speed;
 
@@ -210,7 +197,6 @@ function handleInput(deltaTime: number) {
 }
 
 function checkCollisions() {
-    // colisão com player1
     if (
         ball.speedX < 0 &&
         ball.x - ball.size < player1.x + player1.width &&
@@ -225,12 +211,11 @@ function checkCollisions() {
 
         ball.speed = ballSpeed;
         ball.speed = ball.speed * player1.power;
-        const angle = hitPos * (Math.PI / 4); // máx 45°
-        ball.speedX = Math.cos(angle) * ball.speed; // positive -> right
+        const angle = hitPos * (Math.PI / 4);
+        ball.speedX = Math.cos(angle) * ball.speed;
         ball.speedY = Math.sin(angle) * ball.speed;
     }
 
-    // colisão com player2
     if (
         ball.speedX > 0 &&
         ball.x + ball.size > player2.x &&
@@ -245,8 +230,8 @@ function checkCollisions() {
 
         ball.speed = ballSpeed;
         ball.speed = ball.speed * player2.power;
-        const angle = hitPos * (Math.PI / 4); // max 45°
-        ball.speedX = -Math.cos(angle) * ball.speed; // negative -> left
+        const angle = hitPos * (Math.PI / 4);
+        ball.speedX = -Math.cos(angle) * ball.speed;
         ball.speedY = Math.sin(angle) * ball.speed;
     }
 }
@@ -297,7 +282,6 @@ function checkPlayerPowerUp() {
 function checkScore() {
     let winnerName: string | null = null;
 
-    //AQUI, TEM DE VIR A VARIAVEL COM O NOME DO PLAYER
     if (ball.x - ball.size < 0) {
         player2.score++;
         checkPlayerPowerUp();
@@ -307,7 +291,6 @@ function checkScore() {
         } else {
             ball.reset();
         }
-    //AQUI, TEM DE VIR A VARIAVEL COM O NOME DO PLAYER
     } else if (ball.x + ball.size > myGameArea.canvas!.width) {
         player1.score++;
         checkPlayerPowerUp();
@@ -319,7 +302,6 @@ function checkScore() {
         }
     }
 
-    // Se a variável winnerName tiver um valor, o jogo acaba.
     if (winnerName) {
         endGame(winnerName);
     }
@@ -329,15 +311,11 @@ async function endGame(winnerName: string) {
     myGameArea.stop();
     localLeaveDetector.stop();
 
-    // 2. Encontra os elementos HTML que vamos manipular
-    //AQUI SAO COMPONENTES E PRECISO REFATORAR PARA FICAREM SEPARADOS NOS COMPONENTES
     const gameOverScreen = document.getElementById('game-over-screen');
     const winnerText = document.getElementById('winner-text');
 
     if (gameOverScreen && winnerText) {
         winnerText.textContent = i18next.t("winner_text", { player: winnerName });
-        
-        // Remove a classe "hidden" para mostrar o overlay
         gameOverScreen.classList.remove('hidden');
     }
     
@@ -348,7 +326,7 @@ async function endGame(winnerName: string) {
         "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      date: new Date().toISOString(), // precisa ser ISO 8601
+      date: new Date().toISOString(),
       participants: [
         {
           username: player1.name,
@@ -364,35 +342,36 @@ async function endGame(winnerName: string) {
         }
       ]
     })})
-        console.log("Partida salva com sucesso!");
+        console.log("Match saved.");
     } catch (err) {
-        console.error("Erro ao salvar partida:", err);
+        console.error("Error saving the match.", err);
     }
 }
 
 function updateScoreboard() {
     const p1ScoreElement = document.getElementById('game-player1-score');
     const p2ScoreElement = document.getElementById('game-player2-score');
-    if (p1ScoreElement) p1ScoreElement.textContent = player1.score.toString();
-    if (p2ScoreElement) p2ScoreElement.textContent = player2.score.toString();
+
+    if (p1ScoreElement) 
+        p1ScoreElement.textContent = player1.score.toString();
+    if (p2ScoreElement) 
+        p2ScoreElement.textContent = player2.score.toString();
 }
 
 function setupRestartButton(): void {
     const restartButton = document.getElementById('restart-button') as HTMLButtonElement | null;
 
-    // Type Guard: o código só corre se o botão existir no DOM.
     if (restartButton) {
         restartButton.addEventListener('click', restartGame);
     } else {
-        console.warn('Botão de reiniciar não encontrado. A funcionalidade de reinício não estará disponível.');
+        console.warn('Error! Restart button not found.');
     }
 }
 
 function restartGame(): void {
-    // Type Guard: o código só corre se as configurações tiverem sido guardadas.
     if (lastGameSettings) {
         localLeaveDetector.stop();
-        // A função de inicialização já chama cleanupGame(), por isso não precisamos de o fazer aqui.
+
         initializeLocalGame(
             lastGameSettings.containerId,
             lastGameSettings.width,
@@ -403,20 +382,16 @@ function restartGame(): void {
             lastGameSettings.gameMode
         );
     } else {
-        console.error('Não foi possível reiniciar o jogo: as configurações iniciais não foram encontradas.');
+        console.error('Error. Initial Settings not found.');
     }
 }
 
 export function cleanupGame(): void {
-    console.log("A limpar a instância anterior do jogo...");
-    
-    // Para o loop de animação, se estiver a correr
     if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
         animationFrameId = null;
     }
 
-    // Remove os listeners de eventos da janela para evitar duplicados
     window.removeEventListener('keydown', handleKeyDown);
     window.removeEventListener('keyup', handleKeyUp);
 }
@@ -430,7 +405,6 @@ export function initializeLocalGame(containerId: string, width: number, height: 
     lastGameSettings = { containerId, width, height, mode, gameMode };
 
     if (!container) {
-        console.error(`ERRO: Contentor com id "${containerId}" não encontrado.`);
         return;
     }
     const savedBackground = sessionStorage.getItem('selectedBackground');
@@ -441,7 +415,7 @@ export function initializeLocalGame(containerId: string, width: number, height: 
 
     myGameArea.canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
     if (!myGameArea.canvas) {
-        console.error('ERRO: Não foi possível encontrar o elemento #game-canvas.');
+        console.error('Error. No #game-canvas.');
         return;
     }
 
@@ -455,9 +429,8 @@ export function initializeLocalGame(containerId: string, width: number, height: 
         myGameArea.canvas.style.backgroundSize = 'cover';
         myGameArea.canvas.style.backgroundPosition = 'center';
     } else {
-        myGameArea.canvas.style.backgroundColor = 'black'; // fallback
+        myGameArea.canvas.style.backgroundColor = 'black';
     }
-
 
     player1 = new Paddle(paddleWidth, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP1') || 'white', player1Name);
     player2 = new Paddle(myGameArea.canvas.width - paddleWidth * 2, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP2') || 'white', player2Name);
@@ -469,16 +442,15 @@ export function initializeLocalGame(containerId: string, width: number, height: 
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);  
 
-    //ESSE BOTAO TEM DE DAR A OPÇÃO DE VOLTAR PARA TELAS ESPECIFICATA TAMBEM DE ACORDO COM O DESENHO
     setupRestartButton();
-
     startCountdown(3, () => {
         myGameArea.start(); 
     });
 }
 
 function startCountdown(duration: number, callback: () => void) {
-    if (!myGameArea.canvas) return;
+    if (!myGameArea.canvas) 
+        return;
     const ctx = myGameArea.context!;
     let timeLeft = duration;
 
