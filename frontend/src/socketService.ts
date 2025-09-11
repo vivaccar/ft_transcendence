@@ -48,3 +48,12 @@ export function sendMessage(message: object) {
         console.error('Não é possível enviar mensagem, WebSocket não está conectado.');
     }
 }
+
+// ADIÇÃO NECESSÁRIA
+export function disconnectWebSocket() {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        console.log('A desconectar o WebSocket intencionalmente...');
+        socket.close(1000, "User initiated disconnect");
+        socket = null;
+    }
+}

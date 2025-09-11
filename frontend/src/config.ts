@@ -30,4 +30,6 @@ export const API_ROUTES = {
 	declineInvite: `${BACKEND_URL}/declineInvite`,
 	unfriend: `${BACKEND_URL}/unfriend`,
 	getFriends: (username: string) => `${BACKEND_URL}/users/${username}/getFriends`,
+
+	uploadLang: `${BACKEND_URL}/user/language`,
 };

@@ -1,5 +1,7 @@
 import { WebSocket } from 'ws';
 import { PrismaClient } from '@prisma/client';
+import { hasOnlyExpressionInitializer } from 'typescript';
+
 
 const CANVAS_WIDTH = 600;
 const CANVAS_HEIGHT = 400;
@@ -9,7 +11,8 @@ const BALL_SIZE = 10;
 //Pixels per second
 const PADDLE_SPEED = 300;
 const BALL_SPEED = 300;
-const WINNING_SCORE = 10;
+const SPEED_INCREASED = 20;
+const WINNING_SCORE = 1;
 
 // Represents a player connected to a session
 export class Player {
@@ -46,8 +49,10 @@ export class Ball {
 	size: number = BALL_SIZE;
 	speedX!: number;
 	speedY!: number;
+	speed: number;
 
 	constructor() {
+		this.speed = BALL_SPEED;
 		this.reset();
 	}
 
@@ -58,6 +63,7 @@ export class Ball {
 		const angle = Math.random() * Math.PI / 2 - Math.PI / 4;
 		this.speedX = BALL_SPEED * Math.cos(angle) * (Math.random() > 0.5 ? 1 : -1);
 		this.speedY = BALL_SPEED * Math.sin(angle);
+		this.speed = BALL_SPEED;
 	}
 }
 
@@ -87,7 +93,7 @@ export class GameSession {
 
 	// Inicia o loop do jogo
 	start() {
-		if (this.players.length !== 2) 
+		if (this.players.length !== 2)
 			return;
 
 		const player1 = this.players[0];
@@ -170,11 +176,12 @@ export class GameSession {
 			this.ball.x = p1.x + p1.width + this.ball.size;
 			p1.touches++;
 
+			this.ball.speed += SPEED_INCREASED;
 			const hitPos = (this.ball.y - (p1.y + p1.height / 2)) / (p1.height / 2);
 			const angle = hitPos * (Math.PI / 4); // máx 45°
 
-			this.ball.speedX = Math.cos(angle) * BALL_SPEED; // positivo = direita
-			this.ball.speedY = Math.sin(angle) * BALL_SPEED;
+			this.ball.speedX = Math.cos(angle) * this.ball.speed; // positivo = direita
+			this.ball.speedY = Math.sin(angle) * this.ball.speed;
 		}
 
 		// colisão com player2
@@ -188,45 +195,48 @@ export class GameSession {
 			this.ball.x = p2.x - this.ball.size;
 			p2.touches++;
 
+			this.ball.speed += SPEED_INCREASED;
 			const hitPos = (this.ball.y - (p2.y + p2.height / 2)) / (p2.height / 2);
 			const angle = hitPos * (Math.PI / 4);
 
-			this.ball.speedX = -Math.cos(angle) * BALL_SPEED; // negativo = esquerda
-			this.ball.speedY = Math.sin(angle) * BALL_SPEED;
+			this.ball.speedX = -Math.cos(angle) * this.ball.speed;// negativo = esquerda
+			this.ball.speedY = Math.sin(angle) * this.ball.speed;
 		}
 
 		// pontos
 		if (this.ball.x < 0) {
 			p2.score++;
+			console.log(`PONTO PARA P2! Placar: P1 ${p1.score} - P2 ${p2.score}`);
 			this.ball.reset();
 		} else if (this.ball.x > CANVAS_WIDTH) {
 			p1.score++;
+			console.log(`PONTO PARA P1! Placar: P1 ${p1.score} - P2 ${p2.score}`);
 			this.ball.reset();
 		}
-		}
-		
+	}
+
 	private async saveGameData() {
 		const players = this.players;
 
 		try {
 			const match = await this.prisma.match.create({
-			data: {
-				date: new Date(),
-				matchParticipant: {
-				create: players.map(p => {
-					return {
-						user: { connect: { username: p.name } },
-						goals: p.score,
-						touches: p.touches,
-					};
-				}),
+				data: {
+					date: new Date(),
+					matchParticipant: {
+						create: players.map(p => {
+							return {
+								user: { connect: { username: p.name } },
+								goals: p.score,
+								touches: p.touches,
+							};
+						}),
+					},
 				},
-			},
-			include: {
-				matchParticipant: {
-				include: { user: true },
+				include: {
+					matchParticipant: {
+						include: { user: true },
+					},
 				},
-			},
 			});
 
 			console.log(`[GameSession ${this.sessionId}] Partida registrada com sucesso`);
@@ -247,53 +257,55 @@ export class GameSession {
 		}
 
 		if (winner) {
-			//ISSO TEM DE SER MUDADO PARA INGLES
-			console.log(`[GameSession ${this.sessionId}] Fim de jogo! Vencedor: Jogador com ID ${winner.id}`);
-			this.saveGameData();
+			this.broadcastState();
 			this.stop();
-			this.broadcast({
-				type: 'gameOver',
-				payload: {
-					winnerName: winner.name,
-				}
+			setTimeout(() => {
+				console.log("chamou save game data em checkWinCondition");
+				this.broadcast({
+					type: 'gameOver',
+					payload: {
+						winnerName: winner.name,
+					}
+				});
+				this.players.forEach(player => {
+				// O código 1000 significa "Normal Closure", indicando que o propósito da conexão foi cumprido.
+				player.ws.close(1000, 'Game Over');
 			});
+			}, 100);
+			this.saveGameData();
+			
 		}
 	}
 
-
-	// Envia o estado atual para todos os jogadores na sessão
-	//suspeito que o fato de nao enviar o placar correto seja por que o jogo acaba antes de chegar aqui
-	//reitero, isso é só uma suspeita
 	private broadcastState() {
-		if (this.players.length < 2) 
+		if (this.players.length < 2)
 			return;
 
 		const state = {
 			type: 'gameStateUpdate',
 			payload: {
-				ball: { 
-					x: this.ball.x, 
-					y: this.ball.y 
+				ball: {
+					x: this.ball.x,
+					y: this.ball.y
 				},
-				paddles: this.players.map(p => ({ 	id: p.id, 
-													x: p.x, 
-													y: p.y, 
-													color: p.color 
-												})),
-				scores: { 
-					p1: this.players[0].score, 
-					p2: this.players[1].score 
+				paddles: this.players.map(p => ({
+					id: p.id,
+					x: p.x,
+					y: p.y,
+					color: p.color
+				})),
+				scores: {
+					p1: this.players[0].score,
+					p2: this.players[1].score
 				}
 			}
 		};
 		this.broadcast(state);
 	}
 
-	// Função utilitária para enviar uma mensagem para ambos os jogadores
 	private broadcast(message: object) {
 		const msgString = JSON.stringify(message);
 		this.players.forEach(player => {
-			// Verificação de segurança para só enviar se a conexão estiver aberta
 			if (player.ws.readyState === WebSocket.OPEN) {
 				player.ws.send(msgString)
 			}
@@ -302,11 +314,10 @@ export class GameSession {
 
 	handlePlayerMove(playerId: string, data: { key: 'w' | 's' | 'ArrowUp' | 'ArrowDown'; keyState: 'keydown' | 'keyup' }) {
 		const player = this.players.find(p => p.id === playerId);
-		if (!player) return;
+		if (!player)
+			return;
 
-		// Usamos a propriedade renomeada 'keyState'
 		const isKeyDown = data.keyState === 'keydown';
-
 		const playerIndex = this.players.indexOf(player);
 
 		if (playerIndex === 0) {
@@ -329,8 +340,6 @@ export class GameSession {
 		if (!leavingPlayer) return;
 
 		this.stop();
-
-		// Avisa o jogador que ficou que o oponente saiu
 		const remainingPlayer = leavingPlayer.getPlayerOpponent(this.players);
 		if (remainingPlayer) {
 			const message = { type: 'opponentLeft' };
@@ -338,6 +347,5 @@ export class GameSession {
 		}
 
 		this.players = this.players.filter(p => p.id !== playerId);
-		console.log(`[GameSession ${this.sessionId}] Jogador ${playerId} removido. Jogadores restantes: ${this.players.length}`);
 	}
 }

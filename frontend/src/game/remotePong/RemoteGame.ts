@@ -2,6 +2,7 @@ import { navigate } from "../../router";
 import { sendMessage } from "../../socketService";
 import { createRemoteGameUI } from "../../components/remoteGameUi";
 import type { GameState } from "../../types";
+import i18next from "i18next";
 
 const PADDLE_WIDTH = 10;
 const PADDLE_HEIGHT = 100;
@@ -153,7 +154,7 @@ export function showGameOver(winnerName: string) {
     const homeButton = document.getElementById('home-button') as HTMLButtonElement | null;
 
     if (gameOverScreen && winnerText && playAgainButton && homeButton) {
-        winnerText.textContent = `${winnerName} Venceu!`;
+        winnerText.textContent = i18next.t("winner_text", { player: winnerName });
         playAgainButton.onclick = () => navigate('/human-game-remote');
         homeButton.onclick = () => navigate('/dashboard');
         gameOverScreen.classList.remove('hidden');

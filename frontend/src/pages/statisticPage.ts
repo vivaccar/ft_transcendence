@@ -32,8 +32,9 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 
 	pnheaderBar.appendChild(personalNbrTitle);
 	personalNbrBox.insertBefore(pnheaderBar, personalNbrBox.firstChild);
-
-	const stats = await getUserStats();
+	
+	const username = sessionStorage.getItem('username');
+	const stats = await getUserStats(username);
 	const total = stats.wins + stats.losses;
 	const winPercent = total > 0 ? (stats.wins / total) * 100 : 0;
 	const lossPercent = 100 - winPercent;
@@ -114,7 +115,7 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	personalNbrBox.appendChild(columnsContainer);
 
 	// POINTS 
-	const goals = await getUserGoals();
+	const goals = await getUserGoals(username);
 	const totalGoals = goals.goalsPro + goals.goalsCon;
 	const goalsProPercent = total > 0 ? (goals.goalsPro / totalGoals) * 100 : 0;
 	const goalsConPercent = 100 - goalsProPercent;
@@ -208,7 +209,7 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	const gamesContainer = document.createElement("div");
 	gamesContainer.className = "flex flex-col gap-4 p-4";
 
-	const games: Game[] = await getMatches();
+	const games: Game[] = await getMatches(username);
 
 	function createGameModal(game: typeof games[0]) {
 	    // Modal background

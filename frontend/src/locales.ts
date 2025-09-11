@@ -1,20 +1,20 @@
 export const resources = {
 	en: {
 		translation: {
-			// 🔹 Dashboard
+			// Dashboard
 			human_ai: "Human vs AI",
 			human_local: "Human vs Human\nLocal",
 			human_remote: "Human vs Human\nRemote",
 			tournament: "Tournament",
 
-			// 🔹 Navbar
+			// Navbar
 			games: "Games",
 			friends: "Friends",
 			statistics: "Statistics",
 			settings: "Settings",
 			logout: "Logout",
 
-			// 🔹 Friends Page
+			// Friends Page
 			search_friend: "Search friend...",
 			add_friend: "+ Add Friend",
 			friend_requests: "Friend Requests",
@@ -24,8 +24,14 @@ export const resources = {
 			accept: "Accept",
 			decline: "Decline",
 			enter_friend_name: "Enter the friend's name to send the invite",
+			invite_error: "Error: ",
+      		invite_success: "Invite sent to ",
+      		network_error: "Network error while sending invite",
+			accept_error: "Error accepting invite: ",
+			remove_friend_error: "Failed to remove friend",
 
-			// 🔹 Statistics Page
+
+			// Statistics Page
 			personal_numbers: "Personal Numbers",
 			winning_percentage: "Winning percentage",
 			win: "Win",
@@ -42,25 +48,91 @@ export const resources = {
     		touches: "Touches",
     		you: "You",
     		close: "Close",
+			see_profile: "See Profile",
+
+			// 2FA
+			error_setup: "An error occurred while setting up 2FA.",
+        	error_enable: "Error enabling 2FA: ",
+        	error_disable: "Error disabling 2FA: ",
+        	success_enable: "✅ 2FA enabled successfully!",
+        	success_disable: "✅ 2FA disabled successfully!",
+        	invalid_code: "Invalid code, please try again.",
+        	enter_code: "Enter 2FA Code",
+        	code_placeholder: "6-digit code",
+        	btn_next: "Next",
+        	btn_submit: "Submit",
+        	btn_verify: "Verify",
+        	alert_empty: "Please enter the code",
+
+			//games
+			select_color: "Select your color",
+			select_game_mode: "Select Game Mode",
+			default_mode: "Default Mode",
+			special_mode: "Special Mode",
+			start: "Start",
+			powerups_activated: "Power-ups activated",
+			powerup_ai_size: "AI Paddle Size Up",
+    		powerup_ai_speed: "AI Paddle Speed Up",
+    		powerup_ai_power: "AI Paddle Power Up",
+			powerup_size: "{{player}} Paddle Size Up",
+    		powerup_speed: "{{player}} Paddle Speed Up",
+    		powerup_power: "{{player}} Paddle Power Up",
+			winner_text: "{{player}} won!",
+			play_again: "Play again",
+    		games_page: "Games Page",
+			back_to_menu: "Back to Menu",
+			match_created: "Match created!<br>Share this ID with your friend:<br><strong class=\"text-2xl mt-2 block\">{{sessionId}}</strong>",
+			opponent_left: "Your opponent left the match. You won!",
+			host_setup: "Host Setup",
+    		paddle_color: "Your Paddle Color",
+    		create_online_game: "Create Online Game",
+			connecting_creating_game: "Connecting and creating game...",
+			join_game: "Join Game",
+    		enter_match_id: "Enter Match ID",
+    		join_match: "Join Match",
+    		enter_match_id_alert: "Please enter a Match ID.",
+			tournament_setup: "Tournament Setup",
+    		enter_your_name: "Enter your name",
+    		start_tournament: "Start Tournament",
+			human_vs_human: "Human vs Human",
+			human_vs_ai: "Human vs AI",
+			local: "Local",
+			host: "Host",
+    		guest: "Guest",
+
+			// Settings Page
+			player_settings: "Player Settings",
+			upload_avatar: "Upload a new avatar or choose a random one",
+			upload_photo: "Upload Photo",
+      		random_avatar: "Random Avatar",
+      		email: "Email",
+      		username: "Username",
+      		current_password: "Current Password",
+      		new_password: "New Password",
+      		confirm_password: "Confirm Password",
+      		enable_2fa: "Enable 2FA",
+      		submit: "Submit",
+      		edit: "Edit",
+			password_mismatch: "New passwords do not match!",
 
 		}
 	},
 	pt: {
 		translation: {
-			// 🔹 Dashboard
+			// Dashboard
 			human_ai: "Humano vs IA",
 			human_local: "Humano vs Humano\nLocal",
 			human_remote: "Humano vs Humano\nRemoto",
 			tournament: "Torneio",
 
-			// 🔹 Navbar
+			// Navbar
 			games: "Jogos",
 			friends: "Amigos",
 			statistics: "Estatísticas",
 			settings: "Configurações",
 			logout: "Sair",
 
-			// 🔹 Friends Page
+			// Friends Page
 			search_friend: "Procurar amigo...",
 			add_friend: "+ Adicionar Amigo",
 			friend_requests: "Pedidos de Amizade",
@@ -70,8 +142,14 @@ export const resources = {
 			accept: "Aceitar",
 			decline: "Recusar",
 			enter_friend_name: "Digite o nome do amigo para enviar o convite",
+			invite_error: "Erro: ",
+        	invite_success: "Convite enviado para ",
+        	network_error: "Erro de rede ao enviar convite",
+			accept_error: "Erro ao aceitar convite: ",
+			remove_friend_error: "Falha ao remover amigo",
+
 		
-			// 🔹 Statistics Page
+			// Statistics Page
 			personal_numbers: "Números Pessoais",
 			winning_percentage: "Porcentagem de Vitórias",
 			win: "Vitória",
@@ -88,25 +166,91 @@ export const resources = {
     		touches: "Toques",
     		you: "Você",
     		close: "Fechar",
+			see_profile: "Ver Perfil",
+
+			// Settings Page
+			player_settings: "Configurações do Jogador",
+			upload_avatar: "Envie um novo avatar ou escolha um aleatório",
+			upload_photo: "Carregar Foto",
+      		random_avatar: "Avatar Aleatório",
+      		email: "Email",
+      		username: "Nome de Usuário",
+      		current_password: "Senha Atual",
+      		new_password: "Nova Senha",
+      		confirm_password: "Confirmar Senha",
+      		enable_2fa: "Ativar 2FA",
+      		submit: "Enviar",
+      		edit: "Editar",
+			password_mismatch: "As novas senhas não coincidem!",
+
+			// 2FA
+			error_setup: "Ocorreu um erro ao configurar o 2FA.",
+			error_enable: "Erro ao ativar o 2FA: ",
+			error_disable: "Erro ao desativar o 2FA: ",
+			success_enable: "✅ 2FA ativado com sucesso!",
+			success_disable: "✅ 2FA desativado com sucesso!",
+			invalid_code: "Código inválido, tente novamente.",
+			enter_code: "Digite o código 2FA",
+			code_placeholder: "Código de 6 dígitos",
+			btn_next: "Próximo",
+			btn_submit: "Enviar",
+			btn_verify: "Verificar",
+			alert_empty: "Por favor, insira o código",
+
+			//games
+			select_color: "Selecione sua cor",
+			select_game_mode: "Selecionar modo de jogo",
+			default_mode: "Modo Padrão",
+			special_mode: "Modo Especial",
+			start: "Iniciar",
+			powerups_activated: "Habilidades especiais ativadas",
+			powerup_ai_size: "Aumentou o tamanho da raquete do IA",
+    		powerup_ai_speed: "Aumentou a velocidade da raquete do IA",
+    		powerup_ai_power: "Habilidade especial da raquete do IA ativada",
+			powerup_size: "{{player}} aumentou o tamanho da raquete",
+    		powerup_speed: "{{player}} aumentou a velocidade da raquete",
+    		powerup_power: "{{player}} ativou o poder da raquete",
+			winner_text: "{{player}} venceu!",
+			play_again: "Jogar novamente",
+    		games_page: "Página de Jogos",
+			back_to_menu: "Voltar ao Menu",
+			match_created: "Partida criada!<br>Partilhe este ID com o seu amigo:<br><strong class=\"text-2xl mt-2 block\">{{sessionId}}</strong>",
+			opponent_left: "O seu oponente abandonou a partida. Você venceu!",
+			host_setup: "Configuração do Host",
+    		paddle_color: "A cor da sua raquete",
+    		create_online_game: "Criar Partida Online",
+			connecting_creating_game: "A conectar e a criar partida...",
+			join_game: "Entrar na Partida",
+    		enter_match_id: "Digite o ID da Partida",
+    		join_match: "Entrar na Partida",
+    		enter_match_id_alert: "Por favor, digite o ID da partida.",
+			tournament_setup: "Configuração do Torneio",
+    		enter_your_name: "Digite seu nome",
+    		start_tournament: "Iniciar Torneio",
+			human_vs_human: "Humano vs Humano",
+    		human_vs_ai: "Humano vs IA",
+    		local: "Local",
+			host: "Anfitrião",
+    		guest: "Convidado",
 
 		}
 	},
 	fr: {
 		translation: {
-			// 🔹 Dashboard
+			// Dashboard
 			human_ai: "Humain vs IA",
 			human_local: "Humain vs Humain\nLocal",
 			human_remote: "Humain vs Humain\nÀ distance",
 			tournament: "Tournoi",
 
-			// 🔹 Navbar
+			// Navbar
 			games: "Jeux",
 			friends: "Amis",
 			statistics: "Statistiques",
 			settings: "Paramètres",
 			logout: "Déconnexion",
 
-			// 🔹 Friends Page
+			// Friends Page
 			search_friend: "Rechercher un ami...",
 			add_friend: "+ Ajouter un ami",
 			friend_requests: "Demandes d’amis",
@@ -116,8 +260,13 @@ export const resources = {
 			accept: "Accepter",
 			decline: "Refuser",
 			enter_friend_name: "Entrez le nom de l'ami pour envoyer l'invitation",
+			invite_error: "Erreur: ",
+	        invite_success: "Invitation envoyée à ",
+	        network_error: "Erreur réseau lors de l'envoi de l'invitation",
+			accept_error: "Erreur lors de l'acceptation de l'invitation : ",
+			remove_friend_error: "Échec de la suppression de l'ami",
 
-			// 🔹 Statistics Page
+			// Statistics Page
 			personal_numbers: "Numéros Personnels",
 			winning_percentage: "Pourcentage de Victoires",
 			win: "Victoire",
@@ -134,6 +283,72 @@ export const resources = {
     		touches: "Touches",
     		you: "Vous",
     		close: "Fermer",
+			see_profile: "Voir le Profil",
+
+			// Settings Page
+			player_settings: "Paramètres du Joueur",
+			upload_avatar: "Téléchargez un nouvel avatar ou choisissez-en un au hasard",
+			upload_photo: "Télécharger une photo",
+      		random_avatar: "Avatar aléatoire",
+      		email: "Email",
+      		username: "Nom d’utilisateur",
+      		current_password: "Mot de passe actuel",
+      		new_password: "Nouveau mot de passe",
+      		confirm_password: "Confirmer le mot de passe",
+      		enable_2fa: "Activer la 2FA",
+      		submit: "Soumettre",
+      		edit: "Éditer",
+			password_mismatch: "Les nouveaux mots de passe ne correspondent pas !",
+
+			// 2FA
+			error_setup: "Une erreur est survenue lors de la configuration du 2FA.",
+        	error_enable: "Erreur lors de l’activation du 2FA : ",
+        	error_disable: "Erreur lors de la désactivation du 2FA : ",
+        	success_enable: "✅ 2FA activé avec succès !",
+        	success_disable: "✅ 2FA désactivé avec succès !",
+        	invalid_code: "Code invalide, veuillez réessayer.",
+        	enter_code: "Entrez le code 2FA",
+        	code_placeholder: "Code à 6 chiffres",
+        	btn_next: "Suivant",
+        	btn_submit: "Soumettre",
+        	btn_verify: "Vérifier",
+        	alert_empty: "Veuillez entrer le code",
+
+			//games
+			select_color: "Sélectionnez votre couleur",
+			select_game_mode: "Sélectionner le mode de jeu",
+			default_mode: "Mode par défaut",
+			special_mode: "Mode spécial",
+			start: "Démarrer",
+			powerups_activated: "Bonus activés",
+			powerup_ai_size: "Taille de la raquette IA augmentée",
+    		powerup_ai_speed: "Vitesse de la raquette IA augmentée",
+    		powerup_ai_power: "Bonus de la raquette IA activé",
+			powerup_size: "La raquette de {{player}} a augmenté de taille",
+		    powerup_speed: "La raquette de {{player}} a augmenté en vitesse",
+		    powerup_power: "Le pouvoir de la raquette de {{player}} est activé",
+			winner_text: "{{player}} a gagné !",
+			play_again: "Rejouer",
+    		games_page: "Page des Jeux",
+			back_to_menu: "Retour au Menu",
+			match_created: "Partie créée !<br>Partagez cet ID avec votre ami :<br><strong class=\"text-2xl mt-2 block\">{{sessionId}}</strong>",
+			opponent_left: "Votre adversaire a quitté la partie. Vous avez gagné !",
+			host_setup: "Configuration de l'hôte",
+    		paddle_color: "La couleur de votre raquette",
+    		create_online_game: "Créer une partie en ligne",
+			connecting_creating_game: "Connexion et création de la partie...",
+			join_game: "Rejoindre le match",
+    		enter_match_id: "Entrez l'ID du match",
+    		join_match: "Rejoindre le match",
+    		enter_match_id_alert: "Veuillez entrer un ID de match.",
+			tournament_setup: "Configuration du Tournoi",
+    		enter_your_name: "Entrez votre nom",
+    		start_tournament: "Démarrer le Tournoi",
+			human_vs_human: "Humain vs Humain",
+    		human_vs_ai: "Humain vs IA",
+    		local: "Local",
+			host: "Hôte",
+    		guest: "Invité",
 
 		}
 	}

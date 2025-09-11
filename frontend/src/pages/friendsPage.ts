@@ -1,5 +1,6 @@
 import { renderPage } from "../utils";
 import { fetchFriendInvites, fetchUserAvatar, sendFriendInvite, acceptInvite, declineInvite, fetchFriends, unfriendUser } from "../logic/friendsLogic";
+import { getUserStats, getUserGoals, getMatches } from "../logic/statisticLogic";
 import i18next from "i18next";
 
 export async function buildFriendsPage(): Promise<void> {
@@ -93,22 +94,38 @@ async function createFriendsUI(): Promise<HTMLDivElement> {
 
 		info.appendChild(avatar);
 		info.appendChild(nameStatus);
+		
+		// Botão See Profile
+		const seeProfileBtn = document.createElement("button");
+		seeProfileBtn.textContent = i18next.t("see_profile");
+		seeProfileBtn.className = "bg-[#362A63] text-white px-3 py-1 rounded-md text-sm font-orbitron font-semibold cursor-pointer hover:bg-[#A66DD4] transition-colors";
 
+		seeProfileBtn.addEventListener("click", () => {
+			createFriendModal(friend);
+		});
+
+		
 		// Botão Unfriend
 		const unfriendBtn = document.createElement("button");
 		unfriendBtn.textContent = i18next.t("unfriend");
 		unfriendBtn.className =
-			"bg-[#193D5E] text-white px-3 py-1 rounded-md text-sm font-orbitron font-semibold cursor-pointer hover:bg-red-700 transition-colors";
-
+		"bg-[#193D5E] text-white px-3 py-1 rounded-md text-sm font-orbitron font-semibold cursor-pointer hover:bg-red-700 transition-colors";
+		
 		unfriendBtn.addEventListener("click", async () => {
 			const success = await unfriendUser(friend.friend);
 			if (success) {
 				friendRow.remove();
 			}
 		});
-	
+		
+		const actionsContainer = document.createElement("div");
+		actionsContainer.className = "flex gap-2"; // flex para alinhar lado a lado, gap para espaçamento
+
+		actionsContainer.appendChild(seeProfileBtn);
+		actionsContainer.appendChild(unfriendBtn);
+
 		friendRow.appendChild(info);
-		friendRow.appendChild(unfriendBtn);
+		friendRow.appendChild(actionsContainer);
 
 		friendsList.appendChild(friendRow);
 	};
@@ -200,6 +217,365 @@ async function createFriendsUI(): Promise<HTMLDivElement> {
 
 	container.appendChild(friendsBox);
 	container.appendChild(requestsBox);
+
+
+	// Função para criar o modal do perfil do amigo
+	async function createFriendModal(friend: typeof friends[0]) {
+		// Modal background
+		const modalBg = document.createElement("div");
+		modalBg.className = "fixed inset-0 bg-black/50 flex justify-center items-center z-50";
+
+	// Modal container
+	const modal = document.createElement("div");
+	modal.className = "bg-white rounded-lg p-10 max-w-4xl w-full flex flex-col gap-10 shadow-lg";
+
+		// Avatar e nome (fallback se não existir)
+		let avatarUrl = await fetchUserAvatar(friend.friend);
+		let displayName = friend.friend;
+
+	// Top row: avatar centralizado, nome abaixo centralizado
+	const topRow = document.createElement("div");
+	topRow.className = "flex flex-col items-center justify-center";
+
+	const avatar = document.createElement("img");
+	avatar.src = avatarUrl;
+	avatar.alt = "Avatar";
+	avatar.className = "w-28 h-28 rounded-full border-4 border-[#174B7A] mx-auto mb-1";
+
+	const name = document.createElement("h2");
+	name.textContent = displayName;
+	name.className = "text-4xl font-orbitron font-bold text-center";
+
+	topRow.appendChild(avatar);
+	topRow.appendChild(name);
+
+	// Personal Numbers Box
+	const personalNbrBox = document.createElement("div");
+	personalNbrBox.className = "bg-[#D9D9D9] text-gray-900 rounded-xl shadow-lg w-full overflow-y-auto flex-1";
+
+		const pnheaderBar = document.createElement("div");
+		pnheaderBar.className = "bg-[#174B7A] px-8 py-3 rounded-t-lg flex justify-center items-center w-full";
+		const personalNbrTitle = document.createElement("h1");
+		personalNbrTitle.textContent = i18next.t('personal_numbers');
+		personalNbrTitle.className = "text-white text-xl font-orbitron font-bold mb-0 text-center";
+		pnheaderBar.appendChild(personalNbrTitle);
+		personalNbrBox.appendChild(pnheaderBar);
+
+		// Estatísticas
+		const stats = await getUserStats(friend.friend)
+		const total = stats.wins + stats.losses;
+		const winPercent = total > 0 ? (stats.wins / total) * 100 : 0;
+		const lossPercent = 100 - winPercent;
+
+		const totalText = document.createElement("p");
+		totalText.textContent = i18next.t('games').toUpperCase();
+		totalText.className = "text-center font-orbitron font-bold mt-2 text-xl";
+		personalNbrBox.appendChild(totalText);
+
+		const percentLabel = document.createElement("p");
+		percentLabel.textContent = `${i18next.t('winning_percentage')}: ${winPercent.toFixed(0)}%`;
+		percentLabel.className = "text-center font-orbitron font-bold";
+		personalNbrBox.appendChild(percentLabel);
+
+		const progressBar = document.createElement("div");
+		progressBar.className = "flex h-[25px] rounded-lg overflow-hidden mt-2 mx-4 mb-1";
+		const winBar = document.createElement("div");
+		winBar.style.width = `${winPercent}%`;
+		winBar.className = "flex justify-center items-center text-white bg-[#A66DD4]";
+		const lossBar = document.createElement("div");
+		lossBar.style.width = `${lossPercent}%`;
+		lossBar.className = "flex justify-center items-center text-white bg-[#362A63]";
+		progressBar.appendChild(winBar);
+		progressBar.appendChild(lossBar);
+		personalNbrBox.appendChild(progressBar);
+
+		const columnsContainer = document.createElement("div");
+		columnsContainer.className = "flex justify-center gap-4 mt-4";
+		const winsColumn = document.createElement("div");
+		winsColumn.className = "flex flex-col items-center";
+		const winsBox = document.createElement("div");
+		winsBox.style.width = "50px";
+		winsBox.style.height = "30px";
+		winsBox.textContent = `${stats.wins}`;
+		winsBox.className = "flex justify-center items-center rounded-lg font-orbitron font-bold text-white bg-[#A66DD4]";
+		const winsLabel = document.createElement("p");
+		winsLabel.textContent = i18next.t("wins");
+		winsLabel.className = "mt-1 font-orbitron font-bold";
+		winsColumn.appendChild(winsBox);
+		winsColumn.appendChild(winsLabel);
+
+		const lossesColumn = document.createElement("div");
+		lossesColumn.className = "flex flex-col items-center";
+		const lossesBox = document.createElement("div");
+		lossesBox.style.width = "50px";
+		lossesBox.style.height = "30px";
+		lossesBox.textContent = `${stats.losses}`;
+		lossesBox.className = "flex justify-center items-center rounded-lg font-orbitron font-bold text-white bg-[#362A63]";
+		const lossesLabel = document.createElement("p");
+		lossesLabel.textContent = i18next.t("losses");
+		lossesLabel.className = "mt-1 font-orbitron font-bold";
+		lossesColumn.appendChild(lossesBox);
+		lossesColumn.appendChild(lossesLabel);
+
+		columnsContainer.appendChild(winsColumn);
+		columnsContainer.appendChild(lossesColumn);
+		personalNbrBox.appendChild(columnsContainer);
+
+		// Gols
+		const goals = await getUserGoals(friend.friend)
+		const totalGoalsText = document.createElement("p");
+		totalGoalsText.textContent = i18next.t('points').toUpperCase();
+		totalGoalsText.className = "text-center font-orbitron font-bold mt-4 text-xl";
+		personalNbrBox.appendChild(totalGoalsText);
+
+		const progressGoalsBar = document.createElement("div");
+		progressGoalsBar.className = "flex h-[25px] rounded-lg overflow-hidden mt-2 mx-4 mb-1";
+		const goalsTotal = goals.goalsPro + goals.goalsCon;
+		const goalsProPercent = goalsTotal > 0 ? (goals.goalsPro / goalsTotal) * 100 : 0;
+		const goalsConPercent = 100 - goalsProPercent;
+		const goalsProBar = document.createElement("div");
+		goalsProBar.style.width = `${goalsProPercent}%`;
+		goalsProBar.className = "flex justify-center items-center text-white bg-[#A66DD4]";
+		const goalsConBar = document.createElement("div");
+		goalsConBar.style.width = `${goalsConPercent}%`;
+		goalsConBar.className = "flex justify-center items-center text-white bg-[#362A63]";
+		progressGoalsBar.appendChild(goalsProBar);
+		progressGoalsBar.appendChild(goalsConBar);
+		personalNbrBox.appendChild(progressGoalsBar);
+
+		const columnsContainerGoals = document.createElement("div");
+		columnsContainerGoals.className = "flex justify-center gap-4 mt-4";
+		const goalsProColumn = document.createElement("div");
+		goalsProColumn.className = "flex flex-col items-center";
+		const goalsProBox = document.createElement("div");
+		goalsProBox.style.width = "50px";
+		goalsProBox.style.height = "30px";
+		goalsProBox.textContent = `${goals.goalsPro}`;
+		goalsProBox.className = "flex justify-center items-center rounded-lg font-orbitron font-bold text-white bg-[#A66DD4]";
+		const goalsProLabel = document.createElement("p");
+		goalsProLabel.textContent = i18next.t("scored");
+		goalsProLabel.className = "mt-2 font-orbitron font-bold";
+		goalsProColumn.appendChild(goalsProBox);
+		goalsProColumn.appendChild(goalsProLabel);
+
+		const goalsConColumn = document.createElement("div");
+		goalsConColumn.className = "flex flex-col items-center";
+		const goalsConBox = document.createElement("div");
+		goalsConBox.style.width = "50px";
+		goalsConBox.style.height = "30px";
+		goalsConBox.textContent = `${goals.goalsCon}`;
+		goalsConBox.className = "flex justify-center items-center rounded-lg font-orbitron font-bold text-white bg-[#362A63]";
+		const goalsConLabel = document.createElement("p");
+		goalsConLabel.textContent = i18next.t("conceded");
+		goalsConLabel.className = "mt-2 mb-6 font-orbitron font-bold";
+		goalsConColumn.appendChild(goalsConBox);
+		goalsConColumn.appendChild(goalsConLabel);
+
+		columnsContainerGoals.appendChild(goalsProColumn);
+		columnsContainerGoals.appendChild(goalsConColumn);
+		personalNbrBox.appendChild(columnsContainerGoals);
+
+		// Last Games Box
+		const lastGamesBox = document.createElement("div");
+		lastGamesBox.className = "bg-[#D9D9D9] text-gray-900 rounded-xl shadow-lg w-full overflow-y-auto flex-1";
+		lastGamesBox.style.maxHeight = "400px";
+
+		const lgheaderBar = document.createElement("div");
+		lgheaderBar.className = "bg-[#174B7A] px-8 py-3 rounded-t-lg flex justify-center items-center w-full";
+		const lastGametitle = document.createElement("h1");
+		lastGametitle.textContent = i18next.t("last_games");
+		lastGametitle.className = "text-white text-xl font-orbitron font-bold mb-0 text-center";
+		lgheaderBar.style.position = "sticky";
+		lgheaderBar.style.top = "0";
+		lgheaderBar.style.zIndex = "10";
+		lgheaderBar.appendChild(lastGametitle);
+		lastGamesBox.appendChild(lgheaderBar);
+
+		const gamesContainer = document.createElement("div");
+		gamesContainer.className = "flex flex-col gap-4 p-4 items-stretch overflow-y-auto";
+		// Aqui você pode popular com os últimos jogos do friend, se disponíveis
+		const lastGames = await getMatches(friend.friend)
+
+		function createGameModal(game: typeof lastGames[0]) {
+	    // Modal background
+	    const modalBg = document.createElement("div");
+	    modalBg.className =
+	        "fixed inset-0 bg-black/50 flex justify-center items-center z-50";
+
+	    // Modal container
+	    const modal = document.createElement("div");
+	    modal.className = "bg-white rounded-lg p-6 max-w-md w-full flex flex-col gap-4 shadow-lg";
+
+	    const titleWrapper = document.createElement("div");
+		titleWrapper.className = "flex justify-center items-center gap-4 text-xl font-orbitron font-bold";
+
+		const youBox = document.createElement("div");
+		youBox.textContent = game.youName;
+		youBox.className = "bg-[#A66DD4] text-white px-4 py-2 rounded-lg shadow";
+
+		const vsText = document.createElement("span");
+		vsText.textContent = "vs";
+		vsText.className = "text-black";
+
+		const friendBox = document.createElement("div");
+		friendBox.textContent = game.friendName;
+		friendBox.className = "bg-[#362A63] text-white px-4 py-2 rounded-lg shadow";
+
+		titleWrapper.appendChild(youBox);
+		titleWrapper.appendChild(vsText);
+		titleWrapper.appendChild(friendBox);
+
+		modal.appendChild(titleWrapper);
+		
+	    const score = document.createElement("p");
+	    score.textContent = `${i18next.t('score')}`;
+	    score.className = "flex justify-center font-bold text-gray-600 font-orbitron";
+		
+	    const date = document.createElement("p");
+	    date.textContent = `${game.dateTime.toLocaleString("pt-PT", {
+			day: "2-digit",
+			month: "2-digit",
+			year: "numeric",
+			hour: "2-digit",
+			minute: "2-digit"
+		})}`;
+	    date.className = "flex justify-center font-bold text-gray-600 font-orbitron";
+
+		const goalsWrapper = document.createElement("div");
+		goalsWrapper.className = "w-full flex items-center justify-between gap-2";
+
+		const goalsUserBox = document.createElement("div");
+		goalsUserBox.textContent = game.you.toString();
+		goalsUserBox.className = "bg-[#A66DD4] text-white font-bold rounded-full px-2 py-1 text-sm";
+
+		const goalsBarContainer = document.createElement("div");
+		goalsBarContainer.className = "flex-1 bg-gray-300 rounded h-6 overflow-hidden flex";
+
+		const goalsUserPercent = total > 0 ? (game.you / (game.you + game.friend)) * 100 : 0;
+		const goalsOpponentPercent = 100 - goalsUserPercent;
+
+		const goalsUserBar = document.createElement("div");
+		goalsUserBar.style.width = `${goalsUserPercent}%`;
+		goalsUserBar.className = "bg-[#A66DD4] h-6";
+
+		const goalsOpponentBar = document.createElement("div");
+		goalsOpponentBar.style.width = `${goalsOpponentPercent}%`;
+		goalsOpponentBar.className = "bg-[#362A63] h-6";
+
+		goalsBarContainer.appendChild(goalsUserBar);
+		goalsBarContainer.appendChild(goalsOpponentBar);
+
+		const goalsFriendBox = document.createElement("div");
+		goalsFriendBox.textContent = game.friend.toString();
+		goalsFriendBox.className = "bg-[#362A63] text-white font-bold rounded-full px-2 py-1 text-sm";
+
+		goalsWrapper.appendChild(goalsUserBox);
+		goalsWrapper.appendChild(goalsBarContainer);
+		goalsWrapper.appendChild(goalsFriendBox);
+		
+		const touches = document.createElement("p");
+	    touches.textContent = `${i18next.t('touches')}`;
+	    touches.className = "flex justify-center font-bold text-gray-600 font-orbitron";
+
+		const touchesWrapper = document.createElement("div");
+		touchesWrapper.className = "w-full flex items-center justify-between gap-2";
+
+		const touchesUserBox = document.createElement("div");
+		touchesUserBox.textContent = game.touchesUser.toString();
+		touchesUserBox.className = "bg-[#A66DD4] text-white font-bold rounded-full px-2 py-1 text-sm";
+
+		const touchesBarContainer = document.createElement("div");
+		touchesBarContainer.className = "flex-1 bg-gray-300 rounded h-6 overflow-hidden flex";
+
+		const touchesUserPercent = total > 0 ? (game.touchesUser / (game.touchesUser + game.touchesOpponent)) * 100 : 0;
+		const touchesOpponentPercent = 100 - touchesUserPercent;
+
+		const touchesUserBar = document.createElement("div");
+		touchesUserBar.style.width = `${touchesUserPercent}%`;
+		touchesUserBar.className = "bg-[#A66DD4] h-6";
+
+		const touchesOpponentBar = document.createElement("div");
+		touchesOpponentBar.style.width = `${touchesOpponentPercent}%`;
+		touchesOpponentBar.className = "bg-[#362A63] h-6";
+
+		touchesBarContainer.appendChild(touchesUserBar);
+		touchesBarContainer.appendChild(touchesOpponentBar);
+
+		const touchesFriendBox = document.createElement("div");
+		touchesFriendBox.textContent = game.touchesOpponent.toString();
+		touchesFriendBox.className = "bg-[#362A63] text-white font-bold rounded-full px-2 py-1 text-sm";
+
+		touchesWrapper.appendChild(touchesUserBox);
+		touchesWrapper.appendChild(touchesBarContainer);
+		touchesWrapper.appendChild(touchesFriendBox);
+		
+	    const closeBtn = document.createElement("button");
+	    closeBtn.textContent = i18next.t('close');
+	    closeBtn.className = "mt-4 px-4 py-2 bg-[#174B7A] text-white font-orbitron rounded hover:bg-[#133A58] self-end";
+	    closeBtn.addEventListener("click", () => {
+			modalBg.remove();
+	    });
+		
+	    modal.appendChild(date);
+	    modal.appendChild(score);
+		modal.appendChild(goalsWrapper);
+	    modal.appendChild(touches);
+		modal.appendChild(touchesWrapper);
+	    modal.appendChild(closeBtn);
+	    modalBg.appendChild(modal);
+
+	    document.body.appendChild(modalBg);
+	}
+
+		if (lastGames) {
+			lastGames.forEach(game => {
+				const gameRow = document.createElement("button");
+				gameRow.className = "flex items-center justify-between bg-gray-100 rounded-lg shadow px-4 py-2 w-full text-left hover:bg-gray-200 transition";
+
+				const info = document.createElement("div");
+				info.className = "flex gap-12 justify-between items-center";
+
+				const result = document.createElement("span");
+				result.textContent = i18next.t(game.result?.toLowerCase() || "").toUpperCase();
+				result.className = `font-orbitron font-bold ${game.result === "Win" ? "text-[#2ecc71]" : "text-[#e74c3c]"}`;
+
+				const match = document.createElement("span");
+				match.textContent = `${game.youName} x ${game.friendName}`;
+				match.className = "font-orbitron";
+				
+				gameRow.addEventListener("click", () => createGameModal(game));
+
+				info.appendChild(result);
+				info.appendChild(match);
+				gameRow.appendChild(info);
+				gamesContainer.appendChild(gameRow);
+			});
+		} else {
+			gamesContainer.innerHTML = `<div class='text-center text-gray-500'>${i18next.t("No matches found")}</div>`;
+		}
+		lastGamesBox.appendChild(gamesContainer);
+
+		// Layout lado a lado
+		const boxesRow = document.createElement("div");
+		boxesRow.className = "flex flex-row gap-8 w-full";
+		boxesRow.appendChild(lastGamesBox);
+		boxesRow.appendChild(personalNbrBox);
+
+		// Botão fechar
+		const closeBtn = document.createElement("button");
+		closeBtn.textContent = i18next.t("close") || "Fechar";
+		closeBtn.className = "px-4 py-2 bg-[#174B7A] text-white font-orbitron rounded hover:bg-[#133A58] self-end";
+		closeBtn.addEventListener("click", () => {
+			modalBg.remove();
+		});
+
+		modal.appendChild(topRow);
+		modal.appendChild(boxesRow);
+		modal.appendChild(closeBtn);
+		modalBg.appendChild(modal);
+
+		document.body.appendChild(modalBg);
+	}
 
 	return container;
 }

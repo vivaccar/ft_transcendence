@@ -1,98 +1,152 @@
 import { renderPage } from "../utils";
-import { connectWebSocket, sendMessage } from "../socketService";
+import { connectWebSocket, sendMessage, disconnectWebSocket } from "../socketService";
 import { BackgroundCarousel } from "../components/BackgroundCarousel";
 import { ColorSelector } from "../components/ColorSelector";
 import { initGame, startGame, updateGameState, showGameOver, stopGame } from "../game/remotePong/RemoteGame";
 import { loadUserProfile } from "../game/localPong/Pong"
+import i18next from "i18next";
+
+// ====================================================================================
+// SOLUÇÃO: Detector de Saída Encapsulado
+// Este objeto gere todo o estado e lógica para a deteção de saída.
+// ====================================================================================
+const leaveDetector = {
+    observer: null as MutationObserver | null,
+    hasLeft: false,
+
+    // Método para iniciar a deteção
+    start: function() {
+        this.hasLeft = false;
+
+        // 1. Procurar o elemento do jogo com o ID CORRETO
+        const gameElement = document.getElementById('game-canvas');
+        if (!gameElement) {
+            console.error("DETECTOR: Não foi possível encontrar '#game-canvas'. A deteção de saída por navegação não funcionará.");
+            return;
+        }
+
+        // 2. Deteção de fecho de aba/refresh
+        window.addEventListener('beforeunload', this.handleLeave);
+
+        // 3. Deteção de navegação interna na SPA
+        const appElement = document.querySelector('#app');
+        if (appElement) {
+            this.observer = new MutationObserver((mutationsList) => {
+                for (const mutation of mutationsList) {
+                    if (mutation.removedNodes.length > 0) {
+                        mutation.removedNodes.forEach(node => {
+                            if (node.contains(gameElement)) {
+                                console.log("DETECTOR: O elemento do jogo foi removido do DOM.");
+                                this.handleLeave();
+                            }
+                        });
+                    }
+                }
+            });
+            this.observer.observe(appElement, { childList: true, subtree: true });
+        }
+        console.log("✅ Detector de Saída ATIVADO.");
+    },
+
+    // Ação a ser executada quando a saída é detetada
+    handleLeave: () => {
+        if (leaveDetector.hasLeft) return;
+        leaveDetector.hasLeft = true;
+
+        console.log("👋 Saída detetada. Notificando o servidor...");
+        sendMessage({ type: 'player_left_game' });
+        disconnectWebSocket();
+        leaveDetector.stop(); // Garante que é limpo
+    },
+
+    // Método para parar e limpar todos os listeners
+    stop: function() {
+        window.removeEventListener('beforeunload', this.handleLeave);
+        if (this.observer) {
+            this.observer.disconnect();
+            this.observer = null;
+        }
+        this.hasLeft = true; // Previne chamadas futuras
+        console.log("🛑 Detector de Saída DESATIVADO.");
+    }
+};
 
 function handleServerMessage(data: any) {
-    //DEBUG - NAO EXCLUIR AINDA
-    console.log(`📡 [WS RECEBIDO] Tipo: ${data.type}`, data);
+    //console.log(`📡 [WS RECEBIDO] Tipo: ${data.type}`, data);
     switch (data.type) {
         case 'matchCreated':
-            //DEBUG - NAO EXCLUIR AINDA
             console.log("✅ [LÓGICA] Partida criada com sucesso. Exibindo ID da sessão:", data.sessionId);
             const waitingText = document.getElementById('waiting-text');
             if (waitingText) {
-                //ISSO PRECISA IR PRA INGLES
-                waitingText.innerHTML = `Partida criada!<br>Partilhe este ID com o seu amigo:<br><strong class="text-2xl mt-2 block">${data.sessionId}</strong>`;
+                waitingText.innerHTML = i18next.t("match_created", { sessionId: data.sessionId });
             }
             break;
     
         case 'gameStart': {
-            //DEBUG - NAO EXCLUIR AINDA
             console.log("🚀 [LÓGICA] Recebido sinal de 'gameStart'.", data);
 
-            //ESSE IF PODE SER UM TRY CATCH
-
             if (data.background) {
-                console.log('DEBUG 2: Entrou no "if (data.background)". Tentando atualizar o sessionStorage...');
-
                 const settingsStr = sessionStorage.getItem('gameSettings');
                 if (settingsStr) {
                     const settings = JSON.parse(settingsStr);
                     settings.background = data.background;
-                    settings.p1_alias = data.p1Name,
-                    settings.p2_alias = data.p2Name,
+                    settings.p1_alias = data.p1Name;
+                    settings.p2_alias = data.p2Name;
                     sessionStorage.setItem('gameSettings', JSON.stringify(settings));
-                } else {
-                    //DEBUG - NAO EXCLUIR AINDA
-                    console.error('DEBUG FALHOU: Não encontrou "gameSettings" no sessionStorage no momento de atualizar o background.');
                 }
-            } else {
-                console.warn('DEBUG AVISO: A mensagem "gameStart" foi recebida, mas não continha a propriedade "background".');
             }
 
             const appContainer = document.querySelector('#app > div');
             if (!appContainer) {
-                //DEBUG - NAO EXCLUIR AINDA (PODE SER UM TRY CATCH)
                 console.error("🐛 [ERRO] Container principal da aplicação não encontrado! Não é possível iniciar o jogo.");
                 return;
             }
             appContainer.className = 'w-full h-screen flex justify-center items-center';
             appContainer.innerHTML = '';
+
+            // LÓGICA CORRIGIDA: Jogo inicia sempre, e depois ativamos o detector.
             initGame(appContainer as HTMLElement);
             startGame();
+            leaveDetector.start(); // Ativa a deteção de saída
             break;
         }
 
         case 'gameStateUpdate':
-            //DEBUG - NAO EXCLUIR AINDA
-            console.log("🔄 [JOGO] Atualização de estado recebida.");
             updateGameState(data.payload);
             break;
 
         case 'gameOver':
-            //DEBUG - NAO EXCLUIR AINDA
             console.log(`🏆 [JOGO] Fim de jogo! Vencedor: ${data.payload.winnerName}`);
+            leaveDetector.stop(); // Desativa a deteção
             showGameOver(data.payload.winnerName);
             break;
+
         case 'error':
-            //DEBUG - NAO EXCLUIR AINDA
             console.error(`🐛 [ERRO SERVIDOR] Mensagem de erro recebida:`, data.message);
+            leaveDetector.stop(); // Desativa a deteção
             alert(`Erro do servidor: ${data.message}`);
-            //DEBUG - NAO EXCLUIR AINDA
-            console.log("🛑 [JOGO] Parando o jogo devido a um erro.");
             stopGame();
             const joinBtn = document.getElementById('join-btn') as HTMLButtonElement | null;
             if (joinBtn) {
-                //DEBUG - NAO EXCLUIR AINDA
-                console.log("🔧 [UI] Reativando o botão 'Join' após erro.");
                 joinBtn.disabled = false;
             }
             break;
 
+        // ADICIONADO: Ouve a mensagem correta (opponentLeft) do servidor
+        case 'opponentLeft':
+            leaveDetector.stop(); // Desativa a deteção
+            stopGame();
+            alert(i18next.t("opponent_left"));
+            break;
+
         default:
-            //MUDAR ESSA MENSAGEM LIXO
             console.warn(`🤔 [WS] Mensagem de tipo desconhecido recebida: ${data.type}`);
     }
 }
 
-//MUITA COISA AQUI DENTRO PODE SER COMPONENTE - ARRUMAR ISSO DE MANERIA DESCENTE
+// O resto do ficheiro (buildHostPage, buildGuestPage, etc.) não precisa de alterações
+// e permanece exatamente como no seu original.
 async function buildHostPage(): Promise <void> {
-    //DEBUG - NAO EXCLUIR AINDA
-    console.log("🛠️ [UI] Construindo a página 'Host Setup'...");
-
     const loggedUserData = await loadUserProfile();
     let selectedColor: string | null = "white";
     let selectedBackgroundImg = "/images/backgroundGame/back10.jpg";
@@ -102,7 +156,7 @@ async function buildHostPage(): Promise <void> {
     renderPage(container);
 
     const title = document.createElement("h1");
-    title.textContent = "Host Setup";
+    title.textContent = i18next.t("host_setup");
     title.className = "text-white font-orbitron font-bold text-4xl mb-8";
     container.appendChild(title);
     const onSelectBackground = (bg: string) => { selectedBackgroundImg = bg; };
@@ -111,48 +165,37 @@ async function buildHostPage(): Promise <void> {
     const colorWrapper = document.createElement("div");
     colorWrapper.className = "flex flex-col items-center mt-6";
     const colorTitle = document.createElement("h2");
-    colorTitle.textContent = "Your Paddle Color";
+    colorTitle.textContent = i18next.t("paddle_color");
     colorTitle.className = "text-white font-orbitron font-bold mb-2";
     colorWrapper.appendChild(colorTitle);
     colorWrapper.appendChild(ColorSelector(onSelectColor));
     container.appendChild(colorWrapper);
     const startBtn = document.createElement("button");
-    startBtn.textContent = "Criar Partida Online";
+    startBtn.textContent = i18next.t("create_online_game");
     startBtn.className = "mt-6 px-6 py-2 bg-green-600 text-white font-orbitron font-bold rounded hover:bg-green-700 transition";
     container.appendChild(startBtn);
 
 
     startBtn.addEventListener("click", () => {
-        //DEBUG - NAO EXCLUIR AINDA
-        console.log("➡️ [AÇÃO] Botão 'Criar Partida Online' clicado.");
-
         const gameSettings = {
             p1_color: selectedColor ?? "white",
             p2_color: "white",
             background: selectedBackgroundImg,
-            //Quando for colocar o nick do usuario, é aqui VISSE VIVACCAR
             p1_alias: loggedUserData.username ?? 'Host',
             p2_alias: "Waiting for player 2."
         };
         sessionStorage.setItem('gameSettings', JSON.stringify(gameSettings));
-        //DEBUG - NAO EXCLUIR AINDA
-        console.log("💾 [DADOS] Objeto 'gameSettings' salvo na sessionStorage.", gameSettings);
         
         container.innerHTML = "";
         const waitingMsg = document.createElement("h2");
         waitingMsg.id = 'waiting-text';
-        //ISSO TEM DE SER INGLES
-        waitingMsg.textContent = "A conectar e a criar partida...";
+        waitingMsg.textContent = i18next.t("connecting_creating_game");
         waitingMsg.className = "text-white text-center font-orbitron font-bold text-xl animate-pulse";
         container.appendChild(waitingMsg);
 
-        //DEBUG - NAO EXCLUIR AINDA
-        console.log("🔌 [WS] Tentando conectar ao WebSocket...");
         connectWebSocket(handleServerMessage);
 
         setTimeout(() => {
-            //DEBUG - NAO EXCLUIR AINDA
-            console.log("📤 [WS ENVIADO] Enviando mensagem 'createMatch'...");
             sendMessage({
                 type: 'createMatch',
                 payload: { 
@@ -165,11 +208,7 @@ async function buildHostPage(): Promise <void> {
     });
 }
 
-//MUITA COISA AQUI PODE SER COMPONENTE 
 async function buildGuestPage(): Promise <void> {
-    //DEBUG - NAO EXCLUIR AINDA
-    console.log("🛠️ [UI] Construindo a página 'Join Game'...");
-
     const loggedUserData = await loadUserProfile();
     let selectedColor: string | null = "white";
     let matchId: string = "";
@@ -179,7 +218,7 @@ async function buildGuestPage(): Promise <void> {
     renderPage(container);
 
     const title = document.createElement("h1");
-    title.textContent = "Join Game";
+    title.textContent = i18next.t("join_game");
     title.className = "text-white font-orbitron font-bold text-4xl mb-8";
     container.appendChild(title);
 
@@ -190,7 +229,7 @@ async function buildGuestPage(): Promise <void> {
     inputWrapper.className = "flex flex-col items-center mb-6";
     box.appendChild(inputWrapper);
     const matchLabel = document.createElement("label");
-    matchLabel.textContent = "Enter Match ID";
+    matchLabel.textContent = i18next.t("enter_match_id");
     matchLabel.className = "text-white font-orbitron font-bold mb-2";
     inputWrapper.appendChild(matchLabel);
     const matchInput = document.createElement("input");
@@ -204,23 +243,19 @@ async function buildGuestPage(): Promise <void> {
     colorWrapper.className = "flex flex-col items-center mt-2";
     box.appendChild(colorWrapper);
     const colorTitle = document.createElement("h2");
-    colorTitle.textContent = "Your Paddle Color";
+    colorTitle.textContent = i18next.t('paddle_color');
     colorTitle.className = "text-white font-orbitron font-bold mb-2";
     colorWrapper.appendChild(colorTitle);
     colorWrapper.appendChild(ColorSelector(onSelectColor));
     const joinBtn = document.createElement("button");
     joinBtn.id = 'join-btn';
-    joinBtn.textContent = "Join Match";
+    joinBtn.textContent = i18next.t("join_match");
     joinBtn.className = "mt-6 px-6 py-2 bg-blue-600 text-white font-orbitron font-bold rounded hover:bg-blue-700 transition";
     box.appendChild(joinBtn);
 
     joinBtn.addEventListener("click", () => {
-        //DEBUG - NAO EXCLUIR AINDA
-        console.log("➡️ [AÇÃO] Botão 'Join Match' clicado.");
         if (!matchId.trim()) {
-            //DEBUG - NAO EXCLUIR AINDA
-            console.warn("⚠️ [VALIDAÇÃO] Tentativa de join sem Match ID.");
-            alert("Please enter a Match ID.");
+            alert(i18next.t("enter_match_id_alert"));
             return;
         }
         joinBtn.disabled = true;
@@ -228,20 +263,15 @@ async function buildGuestPage(): Promise <void> {
         const gameSettings = {
             p1_color: "white",
             p2_color: selectedColor ?? "white",
-            background: "/images/backgroundGame/back10.jpg", // Background Padrão
+            background: "/images/backgroundGame/back10.jpg",
             p1_alias: "Host",
             p2_alias: loggedUserData.username ?? "Guest"
         };
         sessionStorage.setItem('gameSettings', JSON.stringify(gameSettings));
-        //DEBUG - NAO EXCLUIR AINDA
-        console.log("💾 [DADOS] Objeto 'gameSettings' salvo na sessionStorage.", gameSettings);
-        console.log("🔌 [WS] Tentando conectar ao WebSocket...");
-
+        
         connectWebSocket(handleServerMessage);
 
         setTimeout(() => {
-            //DEBUG - NAO EXCLUIR AINDA
-            console.log(`📤 [WS ENVIADO] Enviando mensagem 'joinMatch' com ID: ${matchId.trim()}`);
             sendMessage({
                 type: 'joinMatch',
                 payload: {
@@ -254,15 +284,12 @@ async function buildGuestPage(): Promise <void> {
     });
 }
 
-
 function createRemoteGameUI(): HTMLDivElement {
-    //DEBUG - NAO EXCLUIR AINDA
-    console.log("🎨 [UI] Criando a UI de seleção (Host/Guest)...");
     const container = document.createElement("div");
     container.className = "flex items-center justify-center w-full h-full gap-6";
     const cards = [
-        { title: 'Host', imgSrc: '/images/remoteGame/host.jpeg', action: buildHostPage },
-        { title: 'Guest', imgSrc: '/images/remoteGame/guest.jpeg', action: buildGuestPage },
+        { title: i18next.t("host"), imgSrc: "/images/remoteGame/host.jpeg", action: buildHostPage },
+        { title: i18next.t("guest"), imgSrc: "/images/remoteGame/guest.jpeg", action: buildGuestPage },
     ];
 
     cards.forEach(({ title, imgSrc, action }) => {
@@ -274,7 +301,6 @@ function createRemoteGameUI(): HTMLDivElement {
         card.href = "#";
         card.addEventListener("click", (e) => {
             e.preventDefault();
-            console.log(`➡️ [AÇÃO] Cartão '${title}' clicado.`);
             action();
         });
         const titleDiv = document.createElement('div');
@@ -286,8 +312,6 @@ function createRemoteGameUI(): HTMLDivElement {
     return container;
 }
 export function buildRemoteGamePage(): void {
-    //DEBUG - NAO EXCLUIR AINDA
-    console.log("🚀 [ROTA] Iniciando a construção da 'remoteGamePage'.");
     const container = document.createElement("div");
     container.className = "flex flex-col items-center justify-center h-screen";
     renderPage(container);

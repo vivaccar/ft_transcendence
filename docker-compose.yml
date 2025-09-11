@@ -1,7 +1,12 @@
 services:
   backend:
-    build: backend/.
+    build:
+      context: backend/.
+      args:
+        - DATABASE_URL
     container_name: backend
+    env_file:
+      - .env
     expose:
       - "3002"
 #    ports:
@@ -11,9 +16,16 @@ services:
     volumes:
       - ./backend/prisma:/app/prisma
   frontend:
+    depends_on:
+      - backend
     build:
       context: frontend/.
-      dockerfile: Dockerfile
+      args:
+        - CERT_PATH
+        - SSL_CERT_PATH
+        - SSL_KEY_PATH
+    env_file:
+      - .env
     container_name: frontend
     ports:
       - "8443:8443"

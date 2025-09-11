@@ -10,7 +10,7 @@ export async function unfriend(app: FastifyInstance) {
     	try {
 			const body = friendSchema.parse(req.body) // faz o parse do request body, deixando o corpo da requisicao tipado e seguro para ser utilizado
 			
-			const currentUser = req.user
+			const currentUser = await app.prisma.user.findUnique({where: { id: req.user.id }})
 			const friend = await app.prisma.user.findUnique({where: { username: body.friend }})
 			
 			if (!friend) {

@@ -2,6 +2,8 @@ import { Ball } from './Ball';
 import { Paddle } from './Paddle';
 import { createGameUI } from '../../components/localGameUi';
 import { API_ROUTES } from '../../config';
+import { localLeaveDetector } from '../../logic/localLeaveDetector';
+import i18next from "i18next";
 
 // --- TIPOS E ESTADO GLOBAL DO MÓDULO ---
 type GameArea = {
@@ -136,20 +138,21 @@ function setUpAiPowerUp() {
     const number = Math.floor(Math.random() * 3); // Generate number bettwen 0-2 to select random power up;
     if (number == 1) {
         player2.height = paddleHeight + 50;
-        showPowerUpMessage("AI PADDLE SIZE UP");
+        showPowerUpMessage(i18next.t("powerup_ai_size"));
     }
     else if (number == 2){
         player2.height = paddleHeight;
         player2.speed = paddleSpeed * 1.5;
-        showPowerUpMessage("AI PADDLE SPEED UP");
+        showPowerUpMessage(i18next.t("powerup_ai_speed"));
     }
     else {
         player2.power = 1.5;
-        showPowerUpMessage("AI PADDLE POWER UP");
+        showPowerUpMessage(i18next.t("powerup_ai_power"));
     }
 }
 
 function updateGameArea(currentTime: number) {
+    console.log('💓 Game loop a correr...');
     if (myGameArea.state !== 'playing') 
         return;
     const deltaTime = (currentTime - lastTime) / 1000;
@@ -255,19 +258,19 @@ function setUpPlayerPowerUp(player: Paddle) {
         player.height = paddleHeight + 50;
         player.speed = paddleSpeed;
         player.power = 1;
-        showPowerUpMessage(`${player.name} PADDLE SIZE UP`); 
+        showPowerUpMessage(i18next.t("powerup_size", { player: player.name }));
     }
     else if (number === 2){
         player.speed = paddleSpeed * 2;
         player.height = paddleHeight;
         player.power = 1;
-        showPowerUpMessage(`${player.name} PADDLE SPEED UP`);
+        showPowerUpMessage(i18next.t("powerup_speed", { player: player.name }));
     }
     else {
         player.power = 1.5;
         player.speed = paddleSpeed;
         player.height = paddleHeight;
-        showPowerUpMessage(`${player.name} PADDLE POWER UP`);
+        showPowerUpMessage(i18next.t("powerup_power", { player: player.name }));
     }
 }
 
@@ -324,6 +327,7 @@ function checkScore() {
 
 async function endGame(winnerName: string) {
     myGameArea.stop();
+    localLeaveDetector.stop();
 
     // 2. Encontra os elementos HTML que vamos manipular
     //AQUI SAO COMPONENTES E PRECISO REFATORAR PARA FICAREM SEPARADOS NOS COMPONENTES
@@ -331,7 +335,7 @@ async function endGame(winnerName: string) {
     const winnerText = document.getElementById('winner-text');
 
     if (gameOverScreen && winnerText) {
-        winnerText.textContent = `${winnerName} won!`;
+        winnerText.textContent = i18next.t("winner_text", { player: winnerName });
         
         // Remove a classe "hidden" para mostrar o overlay
         gameOverScreen.classList.remove('hidden');
@@ -387,6 +391,7 @@ function setupRestartButton(): void {
 function restartGame(): void {
     // Type Guard: o código só corre se as configurações tiverem sido guardadas.
     if (lastGameSettings) {
+        localLeaveDetector.stop();
         // A função de inicialização já chama cleanupGame(), por isso não precisamos de o fazer aqui.
         initializeLocalGame(
             lastGameSettings.containerId,
@@ -402,7 +407,7 @@ function restartGame(): void {
     }
 }
 
-function cleanupGame(): void {
+export function cleanupGame(): void {
     console.log("A limpar a instância anterior do jogo...");
     
     // Para o loop de animação, se estiver a correr
@@ -458,7 +463,7 @@ export function initializeLocalGame(containerId: string, width: number, height: 
     player2 = new Paddle(myGameArea.canvas.width - paddleWidth * 2, myGameArea.canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, paddleSpeed, sessionStorage.getItem('selectedColorP2') || 'white', player2Name);
     ball = new Ball(myGameArea.canvas.width / 2, myGameArea.canvas.height / 2, ballSize, ballSpeed, myGameArea.canvas);
 
-    if (mode === "ai")
+    if (mode === "ai" && selectedGame === "default")
         setUpAiPowerUp();
 
     window.addEventListener('keydown', handleKeyDown);

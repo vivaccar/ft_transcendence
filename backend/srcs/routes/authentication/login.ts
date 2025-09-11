@@ -1,7 +1,9 @@
 import { FastifyInstance } from "fastify";
 import { compare } from "bcryptjs";
-import { z } from "zod";
+import { boolean, z } from "zod";
 import { loginSwaggerSchema } from "../../schemaSwagger/loginSchema";
+
+
 
 export async function loginRoutes(app: FastifyInstance) {
   app.post(
@@ -37,7 +39,6 @@ export async function loginRoutes(app: FastifyInstance) {
         const token = app.jwt.sign(
           {
             id: user.id,
-            username: user.username,
             partialToken: true,
           },
           { expiresIn: "3m" }
@@ -63,7 +64,6 @@ export async function loginRoutes(app: FastifyInstance) {
       const token = app.jwt.sign(
         {
           id: user.id,
-          username: user.username,
           partialToken: false,
         },
         { expiresIn: "7d" }

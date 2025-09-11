@@ -2,18 +2,18 @@ import { FastifyInstance } from "fastify"
 
 export async function ping(app: FastifyInstance) {
   app.post("/ping", async (request, reply) => {
-    let user: { username: string } | null = null;
+    let user: { id: number } | null = null;
 
     try {
       const payload = await request.jwtVerify({ onlyCookie: true });
-      user = payload as { username: string };
+      user = payload as { id: number };
     } catch {
       return reply.status(200).send({ message: "Ping ignored: user not logged in" });
     }
 
     try {
       const updatedUser = await app.prisma.user.update({
-        where: { username: user.username },
+        where: { id: user.id },
         data: { lastPing: BigInt(Date.now()) },
       });
       console.log("\n\n PING REGISTRADO: ", updatedUser.lastPing.toString())

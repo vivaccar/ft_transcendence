@@ -1,7 +1,8 @@
 import { API_ROUTES } from "../config";
-import { getToken/* , saveToken  */} from "./authService";
+import { getToken } from "./authService";
 import { navigate } from "../router";
 import { getCookieValue } from "../utils";
+import i18next from "i18next";
 
 export function setup2FA(toggleInput2FA: HTMLInputElement) {
 	toggleInput2FA.addEventListener("change", async () => {
@@ -66,7 +67,6 @@ export function setup2FA(toggleInput2FA: HTMLInputElement) {
 				  }
 				});
 
-				// sessionStorage.setItem('has2fa', 'false');
 				toggleInput2FA.checked = false;
 				navigate('/settings');
 				if (!disableRes.ok){
@@ -96,11 +96,10 @@ export async function login2FA(){
 	  });
 	
 	  if (res.ok) {
-		// const data = await res.json();
-		// saveToken(data.token);
 
 		navigate("/dashboard");
-	  } else {
+	  
+	} else {
 		alert("Invalid code, please try again.");
 	  }
 	}
@@ -138,7 +137,7 @@ export function showQRCodeModal(qrCodeSrc: string): Promise<string | null> {
   });
 
   const nextBtn = document.createElement("button");
-  nextBtn.textContent = "Next";
+  nextBtn.textContent = i18next.t("btn_next");
   nextBtn.className = `
 	mt-4 px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700 transition
   `;
@@ -149,12 +148,12 @@ export function showQRCodeModal(qrCodeSrc: string): Promise<string | null> {
 
 	const input = document.createElement("input");
 	input.type = "text";
-	input.placeholder = "Type code";
+	input.placeholder = i18next.t("code_placeholder");
 	input.className = "border p-2 rounded w-full";
 	modal.appendChild(input);
 
 	const submitBtn = document.createElement("button");
-	submitBtn.textContent = "Submit";
+	submitBtn.textContent = i18next.t("btn_submit");
 	submitBtn.className = `
 	  mt-4 px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700 transition
 	`;
@@ -163,7 +162,7 @@ export function showQRCodeModal(qrCodeSrc: string): Promise<string | null> {
 	submitBtn.addEventListener("click", () => {
 	  const code = input.value.trim();
 		if (code === "") {
-		  alert("Please enter the code");
+			alert(i18next.t("alert_empty"));
 		  return;
 		}
 		document.body.removeChild(overlay);
