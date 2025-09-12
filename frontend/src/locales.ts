@@ -99,6 +99,15 @@ export const resources = {
 			local: "Local",
 			host: "Host",
     		guest: "Guest",
+			end_tournament_title: "End of tournament!",
+      		end_tournament_message: "The winner is {{winnerName}}!",
+      		end_tournament_button: "Back to main menu",
+			tournament_winner_title: "Winner: {{winnerName}}",
+			tournament_next_message: "Next: {{p3}} vs {{p4}}",
+			tournament_next_button: "Next Match",
+			tournament_final_title: "Winner: {{winnerName}}",
+			tournament_final_message: "Final: {{f1}} vs {{f2}}",
+			tournament_final_button: "Playing the final",
 
 			// Settings Page
 			player_settings: "Player Settings",
@@ -232,7 +241,15 @@ export const resources = {
     		local: "Local",
 			host: "Anfitrião",
     		guest: "Convidado",
-
+			end_tournament_title: "Fim do torneio!",
+      		end_tournament_message: "O vencedor é {{winnerName}}!",
+      		end_tournament_button: "Voltar ao menu principal",
+			tournament_winner_title: "Vencedor: {{winnerName}}",
+			tournament_next_message: "Próximo: {{p3}} vs {{p4}}",
+			tournament_next_button: "Próxima Partida",
+			tournament_final_title: "Vencedor: {{winnerName}}",
+    		tournament_final_message: "Final: {{f1}} vs {{f2}}",
+    		tournament_final_button: "Jogando a final",
 		}
 	},
 	fr: {
@@ -349,7 +366,15 @@ export const resources = {
     		local: "Local",
 			host: "Hôte",
     		guest: "Invité",
-
+			end_tournament_title: "Fin du tournoi !",
+      		end_tournament_message: "Le gagnant est {{winnerName}} !",
+      		end_tournament_button: "Retour au menu principal",
+			tournament_winner_title: "Vainqueur : {{winnerName}}",
+			tournament_next_message: "Suivant : {{p3}} contre {{p4}}",
+			tournament_next_button: "Match suivant",
+			tournament_final_title: "Vainqueur : {{winnerName}}",
+      		tournament_final_message: "Finale : {{f1}} contre {{f2}}",
+      		tournament_final_button: "Jouer la finale",
 		}
 	}
 };

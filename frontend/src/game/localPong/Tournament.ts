@@ -3,7 +3,7 @@ import { Paddle } from './Paddle';
 import { createGameUI } from '../../components/localGameUi';
 import { buildHumanGameLocal } from './Pong';
 import { navigate } from '../../router';
-
+import i18next from "i18next";
 
 type GameArea = { 
     canvas: HTMLCanvasElement | null; 
@@ -88,9 +88,12 @@ function handleTournamentMatchEnd(winnerName: string) {
             const winnerKey1 = winnerName === p1Name ? 'p1' : 'p2';
             sessionStorage.setItem('tournament_finalist1_name', sessionStorage.getItem(`tournament_${winnerKey1}_name`)!);
             sessionStorage.setItem('tournament_finalist1_color', sessionStorage.getItem(`tournament_${winnerKey1}_color`)!);
-            title = `Winner: ${winnerName}`;
-            message = `Next: ${sessionStorage.getItem('tournament_p3_name')} vs ${sessionStorage.getItem('tournament_p4_name')}`;
-            buttonText = 'Next Match';
+            title = i18next.t("tournament_winner_title", { winnerName });
+            message = i18next.t("tournament_next_message", { 
+              p3: sessionStorage.getItem("tournament_p3_name"),
+              p4: sessionStorage.getItem("tournament_p4_name")
+            });
+            buttonText = i18next.t("tournament_next_button");
             nextAction = () => {
                 sessionStorage.setItem('playerName1', sessionStorage.getItem('tournament_p3_name')!);
                 sessionStorage.setItem('selectedColorP1', sessionStorage.getItem('tournament_p3_color')!);
@@ -105,9 +108,12 @@ function handleTournamentMatchEnd(winnerName: string) {
             const winnerKey2 = winnerName === p3Name ? 'p3' : 'p4';
             sessionStorage.setItem('tournament_finalist2_name', sessionStorage.getItem(`tournament_${winnerKey2}_name`)!);
             sessionStorage.setItem('tournament_finalist2_color', sessionStorage.getItem(`tournament_${winnerKey2}_color`)!);
-            title = `Winner: ${winnerName}`;
-            message = `Final: ${sessionStorage.getItem('tournament_finalist1_name')} vs ${sessionStorage.getItem('tournament_finalist2_name')}`;
-            buttonText = 'Playing the final';
+            title = i18next.t("tournament_final_title", { winnerName });
+            message = i18next.t("tournament_final_message", {
+                f1: sessionStorage.getItem("tournament_finalist1_name"),
+                f2: sessionStorage.getItem("tournament_finalist2_name")
+            });
+            buttonText = i18next.t("tournament_final_button");
             nextAction = () => {
                 sessionStorage.setItem('playerName1', sessionStorage.getItem('tournament_finalist1_name')!);
                 sessionStorage.setItem('selectedColorP1', sessionStorage.getItem('tournament_finalist1_color')!);
@@ -118,9 +124,9 @@ function handleTournamentMatchEnd(winnerName: string) {
             };
             break;
         case 'tournament_final':
-            title = 'End of tournament!';
-            message = `The winner is ${winnerName}!`;
-            buttonText = 'Back to main menu';
+            title = i18next.t("end_tournament_title");
+            message = i18next.t("end_tournament_message", { winnerName });
+            buttonText = i18next.t("end_tournament_button");
             nextAction = () => {
                 Object.keys(sessionStorage).forEach(key => { if (key.startsWith('tournament_') || key.startsWith('player') || key.startsWith('selected')) sessionStorage.removeItem(key); });
                 navigate('/');
