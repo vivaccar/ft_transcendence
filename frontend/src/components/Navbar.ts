@@ -7,7 +7,6 @@ export function Navbar(): HTMLElement {
 	nav.className =
 		'bg-[#174B7A] text-white font-orbitron font-semibold px-8 py-4 flex justify-between items-center';
 
-	// 🔹 Links principais
 	const ul = document.createElement('ul');
 	ul.className = 'flex gap-6';
 
@@ -29,7 +28,6 @@ export function Navbar(): HTMLElement {
 		ul.appendChild(li);
 	});
 
-	// 🔹 Logout
 	const logout = document.createElement('a');
 	logout.textContent = i18next.t("logout"); 
 	logout.href = "#";
@@ -39,7 +37,6 @@ export function Navbar(): HTMLElement {
 		navigate('./logout');
 	});
 
-	// 🔹 Seletor de idiomas
 	const langSelect = document.createElement("select");
 	langSelect.className =
 		'ml-4 bg-[#0F3558] text-white px-2 py-1 rounded cursor-pointer';
@@ -90,7 +87,6 @@ export function Navbar(): HTMLElement {
 		}
 	});
 
-	// 🔹 Agrupar Logout + Seletor
 	const rightContainer = document.createElement('div');
 	rightContainer.className = "flex items-center gap-4";
 	rightContainer.appendChild(langSelect);

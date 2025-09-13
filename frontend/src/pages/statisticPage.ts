@@ -39,29 +39,24 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	const winPercent = total > 0 ? (stats.wins / total) * 100 : 0;
 	const lossPercent = 100 - winPercent;
 
-	// Texto mostrando total de partidas
 	const totalText = document.createElement("p");
 	totalText.textContent = i18next.t('games').toUpperCase();
 	totalText.className = "text-center font-orbitron font-bold mt-2 text-2xl";
 
 	personalNbrBox.appendChild(totalText);
 	
-	// Percent label
 	const percentLabel = document.createElement("p");
 	percentLabel.textContent = `${i18next.t('winning_percentage')}: ${winPercent.toFixed(0)}%`;
 	percentLabel.className = "text-center font-orbitron font-bold";
 	personalNbrBox.appendChild(percentLabel);
 
-	// Barra de vitória/derrota
 	const progressBar = document.createElement("div");
 	progressBar.className = "flex h-[30px] rounded-lg overflow-hidden mt-2 mx-4 mb-1";
 
-	// Win bar
 	const winBar = document.createElement("div");
 	winBar.style.width = `${winPercent}%`;
 	winBar.className = "flex justify-center items-center text-white bg-[#A66DD4]";
 
-	// Loss bar
 	const lossBar = document.createElement("div");
 	lossBar.style.width = `${lossPercent}%`;
 	lossBar.className = "flex justify-center items-center text-white bg-[#362A63]";
@@ -71,11 +66,9 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	personalNbrBox.appendChild(progressBar);
 
 
-	// Columns container
 	const columnsContainer = document.createElement("div");
 	columnsContainer.className = "flex justify-center gap-4 mt-4";
 
-	// Coluna de vitórias
 	const winsColumn = document.createElement("div");
 	winsColumn.className = "flex flex-col items-center";
 
@@ -92,7 +85,6 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	winsColumn.appendChild(winsBox);
 	winsColumn.appendChild(winsLabel);
 
-	// Coluna de derrotas
 	const lossesColumn = document.createElement("div");
 	lossesColumn.className = "flex flex-col items-center";
 
@@ -114,7 +106,6 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 
 	personalNbrBox.appendChild(columnsContainer);
 
-	// POINTS 
 	const goals = await getUserGoals(username);
 	const totalGoals = goals.goalsPro + goals.goalsCon;
 	const goalsProPercent = total > 0 ? (goals.goalsPro / totalGoals) * 100 : 0;
@@ -126,16 +117,13 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 
 	personalNbrBox.appendChild(totalGoalsText);
 
-	// Barra de pontos feitos/concedidos
 	const progressGoalsBar = document.createElement("div");
 	progressGoalsBar.className = "flex h-[30px] rounded-lg overflow-hidden mt-2 mx-4 mb-1";
 
-	// goals pro bar
 	const goalsProBar = document.createElement("div");
 	goalsProBar.style.width = `${goalsProPercent}%`;
 	goalsProBar.className = "flex justify-center items-center text-white bg-[#A66DD4]";
 
-	// goals con bar
 	const goalsConBar = document.createElement("div");
 	goalsConBar.style.width = `${goalsConPercent}%`;
 	goalsConBar.className = "flex justify-center items-center text-white bg-[#362A63]";
@@ -145,11 +133,9 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	personalNbrBox.appendChild(progressGoalsBar);
  
 	
-	// Columns container
 	const columnsContainerGoals = document.createElement("div");
 	columnsContainerGoals.className = "flex justify-center gap-4 mt-4";
 
-	// Coluna de goals pro
 	const goalsProColumn = document.createElement("div");
 	goalsProColumn.className = "flex flex-col items-center";
 
@@ -166,7 +152,6 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	goalsProColumn.appendChild(goalsProBox);
 	goalsProColumn.appendChild(goalsProLabel);
 
-	// Coluna de goals con
 	const goalsConColumn = document.createElement("div");
 	goalsConColumn.className = "flex flex-col items-center";
 
@@ -193,11 +178,9 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	lastGamesBox.className = "bg-white text-gray-900 rounded-xl shadow-lg w-full h-2/3 max-w-2xl overflow-y-auto"; 
 	lastGamesBox.style.background = "#D9D9D9";
 
-	// Header 
 	const lgheaderBar = document.createElement("div");
 	lgheaderBar.className = "bg-[#174B7A] px-8 py-6 rounded-t-lg flex justify-center items-center sticky top-0 z-10 w-full";
 
-	// Título Last Games
 	const lastGametitle = document.createElement("h1");
 	lastGametitle.textContent = i18next.t("last_games");
 	lastGametitle.className = "text-white text-xl font-orbitron font-bold mb-0 text-center";
@@ -205,19 +188,16 @@ async function createStatisticsUI(): Promise<{ container: HTMLDivElement }> {
 	lgheaderBar.appendChild(lastGametitle);
 	lastGamesBox.appendChild(lgheaderBar);
 
-	// Container para os games
 	const gamesContainer = document.createElement("div");
 	gamesContainer.className = "flex flex-col gap-4 p-4";
 
 	const games: Game[] = await getMatches(username);
 
 	function createGameModal(game: typeof games[0]) {
-	    // Modal background
 	    const modalBg = document.createElement("div");
 	    modalBg.className =
 	        "fixed inset-0 bg-black/50 flex justify-center items-center z-50";
 
-	    // Modal container
 	    const modal = document.createElement("div");
 	    modal.className = "bg-white rounded-lg p-6 max-w-md w-full flex flex-col gap-4 shadow-lg";
 

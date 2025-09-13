@@ -52,7 +52,6 @@ async function createFriendsUI(): Promise<HTMLDivElement> {
 	pnheaderBar.appendChild(searchInput);
 	pnheaderBar.appendChild(addButton);
 
-	// Lista de amigos (scrollável)
 	const friendsList = document.createElement("div");
 	friendsList.className =
 		"flex-1 overflow-y-auto p-4 flex flex-col gap-4";
@@ -64,7 +63,6 @@ async function createFriendsUI(): Promise<HTMLDivElement> {
 		friendRow.className =
 			"flex items-center justify-between bg-gray-100 rounded-lg shadow px-4 py-2";
 
-		// Foto + Nome + Status
 		const info = document.createElement("div");
 		info.className = "flex items-center gap-3";
 
@@ -95,7 +93,6 @@ async function createFriendsUI(): Promise<HTMLDivElement> {
 		info.appendChild(avatar);
 		info.appendChild(nameStatus);
 		
-		// Botão See Profile
 		const seeProfileBtn = document.createElement("button");
 		seeProfileBtn.textContent = i18next.t("see_profile");
 		seeProfileBtn.className = "bg-[#362A63] text-white px-3 py-1 rounded-md text-sm font-orbitron font-semibold cursor-pointer hover:bg-[#A66DD4] transition-colors";
@@ -105,7 +102,6 @@ async function createFriendsUI(): Promise<HTMLDivElement> {
 		});
 
 		
-		// Botão Unfriend
 		const unfriendBtn = document.createElement("button");
 		unfriendBtn.textContent = i18next.t("unfriend");
 		unfriendBtn.className =
@@ -119,8 +115,7 @@ async function createFriendsUI(): Promise<HTMLDivElement> {
 		});
 		
 		const actionsContainer = document.createElement("div");
-		actionsContainer.className = "flex gap-2"; // flex para alinhar lado a lado, gap para espaçamento
-
+		actionsContainer.className = "flex gap-2"; 
 		actionsContainer.appendChild(seeProfileBtn);
 		actionsContainer.appendChild(unfriendBtn);
 
@@ -174,7 +169,6 @@ async function createFriendsUI(): Promise<HTMLDivElement> {
 		info.appendChild(avatar);
 		info.appendChild(name);
 
-		// Botões
 		const btnGroup = document.createElement("div");
 		btnGroup.className = "flex gap-2";
 
@@ -219,21 +213,16 @@ async function createFriendsUI(): Promise<HTMLDivElement> {
 	container.appendChild(requestsBox);
 
 
-	// Função para criar o modal do perfil do amigo
 	async function createFriendModal(friend: typeof friends[0]) {
-		// Modal background
 		const modalBg = document.createElement("div");
 		modalBg.className = "fixed inset-0 bg-black/50 flex justify-center items-center z-50";
 
-	// Modal container
 	const modal = document.createElement("div");
 	modal.className = "bg-white rounded-lg p-10 max-w-4xl w-full flex flex-col gap-10 shadow-lg";
 
-		// Avatar e nome (fallback se não existir)
 		let avatarUrl = await fetchUserAvatar(friend.friend);
 		let displayName = friend.friend;
 
-	// Top row: avatar centralizado, nome abaixo centralizado
 	const topRow = document.createElement("div");
 	topRow.className = "flex flex-col items-center justify-center";
 
@@ -261,7 +250,6 @@ async function createFriendsUI(): Promise<HTMLDivElement> {
 		pnheaderBar.appendChild(personalNbrTitle);
 		personalNbrBox.appendChild(pnheaderBar);
 
-		// Estatísticas
 		const stats = await getUserStats(friend.friend)
 		const total = stats.wins + stats.losses;
 		const winPercent = total > 0 ? (stats.wins / total) * 100 : 0;
@@ -393,7 +381,6 @@ async function createFriendsUI(): Promise<HTMLDivElement> {
 
 		const gamesContainer = document.createElement("div");
 		gamesContainer.className = "flex flex-col gap-4 p-4 items-stretch overflow-y-auto";
-		// Aqui você pode popular com os últimos jogos do friend, se disponíveis
 		const lastGames = await getMatches(friend.friend)
 
 		function createGameModal(game: typeof lastGames[0]) {
@@ -555,13 +542,11 @@ async function createFriendsUI(): Promise<HTMLDivElement> {
 		}
 		lastGamesBox.appendChild(gamesContainer);
 
-		// Layout lado a lado
 		const boxesRow = document.createElement("div");
 		boxesRow.className = "flex flex-row gap-8 w-full";
 		boxesRow.appendChild(lastGamesBox);
 		boxesRow.appendChild(personalNbrBox);
 
-		// Botão fechar
 		const closeBtn = document.createElement("button");
 		closeBtn.textContent = i18next.t("close") || "Fechar";
 		closeBtn.className = "px-4 py-2 bg-[#174B7A] text-white font-orbitron rounded hover:bg-[#133A58] self-end";
