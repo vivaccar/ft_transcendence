@@ -123,22 +123,26 @@ export async function setupSettingsLogic(elements: ReturnType<typeof createSetti
   await loadUserProfile();
 }
 
-export function setupAvatarControls(
+export async function setupAvatarControls(
   img: HTMLImageElement,
   btnUpload: HTMLButtonElement,
   btnRandom: HTMLButtonElement
-): void {
+): Promise<void> {
   // Upload
   btnUpload.addEventListener("click", () => {
     const input: HTMLInputElement = document.createElement("input");
     input.type = "file";
     input.accept = "image/*";
 
-    input.onchange = () => {
+    input.onchange = async () => {
       if (input.files && input.files[0]) {
-        const file: File = input.files[0];
-        img.src = URL.createObjectURL(file);
-        uploadAvatar(file);
+        try {
+          const file: File = input.files[0];
+          await uploadAvatar(file);
+          img.src = URL.createObjectURL(file);
+        } catch (error) {
+          alert(`${error}`);
+        }
       }
     };
 
@@ -180,33 +184,30 @@ export function setupAvatarControls(
       }
 
     } catch (error) {
-      console.error(error);
-      alert("Error updating avatar");
+		alert("Error updating avatar");
     }
-  });
+});
 }
 
 async function uploadAvatar(file: File): Promise<void> {
-  const formData: FormData = new FormData();
-  formData.append("avatar", file);
-  const token = getToken();
-
-  try {
-    const res: Response = await fetch(`${API_ROUTES.uploadAvatar}`, {
-      method: "POST",
-      body: formData,
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    if (!res.ok) {
-      alert("Error uploading avatar");
-      return;
+	const formData: FormData = new FormData();
+	formData.append("avatar", file);
+	const token = getToken();
+	
+	try {
+		const res: Response = await fetch(`${API_ROUTES.uploadAvatar}`, {
+			method: "POST",
+			body: formData,
+			headers: {
+				'Authorization': `Bearer ${token}`
+			}
+		});
+		
+		if (!res.ok) {
+        throw new Error("Error uploading avatar");
     }
 
   } catch (error) {
-    console.error(error);
-    alert("An error occurred while trying to upload the avatar.");
+    throw new Error("An error occurred while trying to upload the avatar.");
   }
 }
