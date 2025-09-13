@@ -20,7 +20,7 @@ export async function sendFriendInvite(friendName: string) {
 			return;
 		}
 
-		const data = await response.json();
+		await response.json();
 		alert(`✅ ${i18next.t("invite_success")} ${ friendName }`);
 		navigate('/friends');
 	} catch (err) {

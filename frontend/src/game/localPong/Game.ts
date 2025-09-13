@@ -53,7 +53,7 @@ function makeAIDecision() {
         }
     }
 
-    const errorMargin = (Math.random() - 0.5) * paddleHeight * 1.3;
+    const errorMargin = (Math.random() - 0.5) * paddleHeight * 1.7;
     aiTargetY = predictedY + errorMargin;
 }
 
