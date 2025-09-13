@@ -17,7 +17,7 @@ export const localLeaveDetector = {
 
         window.addEventListener('beforeunload', this.handleLeave);
 
-        // 2. Deteção de navegação interna da SPA, observando quando o canvas é removido do DOM.
+     
         const appElement = document.querySelector('#app');
         if (appElement) {
             this.observer = new MutationObserver((mutationsList) => {
@@ -35,25 +35,15 @@ export const localLeaveDetector = {
         }
         
         this.isObserving = true;
-        console.log("✅ Detector de Saída Local ATIVADO.");
     },
 
-    /**
-     * Ação a ser executada quando a saída é detetada.
-     * Invoca a função de limpeza do jogo para parar tudo de forma segura.
-     */
     handleLeave: () => {
         if (!localLeaveDetector.isObserving) return;
         
-        console.log("👋 Saída do jogo local detetada. A limpar recursos...");
         cleanupGame();
-        localLeaveDetector.stop(); // Para o próprio detector para evitar chamadas múltiplas.
+        localLeaveDetector.stop(); 
     },
 
-    /**
-     * Para e limpa todos os listeners e observadores.
-     * É crucial chamar isto quando o jogo termina normalmente.
-     */
     stop: function() {
         window.removeEventListener('beforeunload', this.handleLeave);
         if (this.observer) {
@@ -62,7 +52,6 @@ export const localLeaveDetector = {
         }
         if (this.isObserving) {
             this.isObserving = false;
-            console.log("🛑 Detector de Saída Local DESATIVADO.");
         }
     }
 };

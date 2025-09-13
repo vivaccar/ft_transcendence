@@ -85,12 +85,11 @@ export function Navbar(): HTMLElement {
 			});
 
 		} catch (error) {
-			console.error("Erro ao atualizar idioma:", error);
-			alert("Erro ao atualizar idioma");
+			console.error("Error while updating language:", error);
+			alert("Error while updating language");
 		}
 	});
 
-	// 🔹 Agrupar Logout + Seletor
 	const rightContainer = document.createElement('div');
 	rightContainer.className = "flex items-center gap-4";
 	rightContainer.appendChild(langSelect);

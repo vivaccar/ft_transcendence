@@ -22,10 +22,9 @@ export async function sendFriendInvite(friendName: string) {
 
 		const data = await response.json();
 		alert(`✅ ${i18next.t("invite_success")} ${ friendName }`);
-		console.log("Invite response:", data);
 		navigate('/friends');
 	} catch (err) {
-		console.error("Erro ao enviar convite:", err);
+		console.error("Error while sending invite:", err);
 		alert(`⚠️ ${i18next.t("network_error")}`);
 	}
 }
@@ -42,13 +41,13 @@ export async function fetchFriendInvites(): Promise<Invites[]> {
 		const data = await response.json();
 
 		if (!response.ok) {
-			console.error("Erro ao buscar invites:", data.error || data);
+			console.error("Error while searching invites:", data.error || data);
 			return [];
 		}
 
 		return data.invites || [];
 	} catch (err) {
-		console.error("Erro de rede:", err);
+		console.error("Network error:", err);
 		return [];
 	}
 }
@@ -65,17 +64,16 @@ export async function acceptInvite(friend: string) {
 		const data = await response.json();
 
 		if (!response.ok) {
-			console.error("Erro ao aceitar invite:", data.error || data);
+			console.error("Error while accepting invite:", data.error || data);
 			alert(`❌ ${i18next.t('accept_error')}` + (data.error || "Unknown error"));
 			return false;
 		}
 
-		console.log("✅ Invite aceito:", data);
 		navigate('/friends');
 
 		return true;
 	} catch (err) {
-		console.error("Erro de rede ao aceitar invite:", err);
+		console.error("Network error while accepting invite:", err);
 		return false;
 	}
 }
@@ -92,15 +90,14 @@ export async function declineInvite(friend: string) {
 		const data = await response.json().catch(() => null);
 
 		if (!response.ok) {
-			console.error("Erro ao recusar invite:", data?.error || data);
-			alert("❌ Erro ao recusar convite: " + (data?.error || "Unknown error"));
+			console.error("Error while declining invite:", data?.error || data);
+			alert("❌ Error while declining invite: " + (data?.error || "Unknown error"));
 			return false;
 		}
 
-		console.log("🚫 Invite recusado:", data);
 		return true;
 	} catch (err) {
-		console.error("Erro de rede ao recusar invite:", err);
+		console.error("Network error while declining invite:", err);
 		return false;
 	}
 }
@@ -117,13 +114,13 @@ export async function fetchFriends(): Promise<Friend[]> {
 		const data = await response.json();
 
 		if (!response.ok) {
-			console.error("Erro ao buscar amigos:", data.error || data);
+			console.error("Error while searching for friends:", data.error || data);
 			return [];
 		}
 
 		return data.friendships || [];
 	} catch (err) {
-		console.error("Erro de rede ao buscar amigos:", err);
+		console.error("Network error while searching for friends:", err);
 		return [];
 	}
 }
@@ -146,13 +143,13 @@ export async function unfriendUser(friendUsername: string) {
             return true;
         } else {
             data = await response.json();
-            console.error("Erro ao desfazer amizade:", data.error || data);
+            console.error("Error while removing friend:", data.error || data);
             alert(data.error || `${i18next.t('remove_friend_error')}`);
             return false;
         }
 
     } catch (err) {
-        console.error("Erro de rede:", err);
+        console.error("Network error:", err);
         alert("Network error while removing friend");
         return false;
     }
@@ -166,14 +163,14 @@ export async function fetchUserAvatar(username: string): Promise<string> {
 		});
 
 		if (!response.ok) {
-			console.error(`Erro ao buscar avatar de ${username}:`, response.status);
+			console.error(`Error while searching for ${username} avatar:`, response.status);
 			return "/images/randomAvatar/0.jpeg";
 		}
 
 		const blob = await response.blob();
 		return URL.createObjectURL(blob);
 	} catch (err) {
-		console.error("Erro de rede ao buscar avatar:", err);
+		console.error("Network error while searching for avatar:", err);
 		return "/images/randomAvatar/0.jpeg";
 	}
 }

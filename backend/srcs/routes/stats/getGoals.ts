@@ -16,7 +16,7 @@ export async function getGoals(app: FastifyInstance) {
 			const matches = await app.prisma.match.findMany({
 				  where: {
 					matchParticipant: {
-						some: { userId: userObject.id }  // usa userId dentro de matchParticipant
+						some: { userId: userObject.id }  
 						}
 					},
 					include: {
@@ -28,19 +28,14 @@ export async function getGoals(app: FastifyInstance) {
 			for (const match of matches) {
 				for (const participant of match.matchParticipant) {
 					if (participant.userId === userObject.id) {
-						// Goals marcados pelo usuário (goals pro)
 						goalsPro += participant.goals;
-						console.log(`User scored ${participant.goals} goals in match ${match.id}. Total goalsPro: ${goalsPro}`)
 					} else {
-						// Goals marcados pelo oponente (goals contra)
 						goalsCon += participant.goals;
-						console.log(`Opponent scored ${participant.goals} goals in match ${match.id}. Total goalsCon: ${goalsCon}`)
 					}
 				}
 			}
 			return res.status(200).send({ goalsPro: goalsPro, goalsCon: goalsCon })
 		} catch(error) {
-			console.log('error getGoals:', error)
 			return res.status(400).send({ message: 'Bad request', error: error })
 		}
 	})

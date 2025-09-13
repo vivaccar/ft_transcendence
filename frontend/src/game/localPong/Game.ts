@@ -6,7 +6,6 @@ import { localLeaveDetector } from '../../logic/localLeaveDetector';
 import type { GameSettings } from '../../types';
 import i18next from "i18next";
 
-// --- TIPOS E ESTADO GLOBAL DO MÓDULO ---
 type GameArea = {
     canvas: HTMLCanvasElement | null;
     context: CanvasRenderingContext2D | null;
@@ -84,7 +83,6 @@ const myGameArea: GameArea = {
 
     start() {
         if (!this.canvas || !this.context) {
-            console.log("Error! No Canvas or No Context.");
             return;
         }
         this.state = 'playing';
@@ -342,7 +340,6 @@ async function endGame(winnerName: string) {
         }
       ]
     })})
-        console.log("Match saved.");
     } catch (err) {
         console.error("Error saving the match.", err);
     }
@@ -425,7 +422,6 @@ export function initializeLocalGame(containerId: string, width: number, height: 
 
     if (savedBackground) {
         myGameArea.canvas.style.backgroundImage = `url(${savedBackground})`;
-        console.log(myGameArea.canvas.style.backgroundImage);
         myGameArea.canvas.style.backgroundSize = 'cover';
         myGameArea.canvas.style.backgroundPosition = 'center';
     } else {

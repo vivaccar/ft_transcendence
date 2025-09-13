@@ -13,18 +13,16 @@ export async function getWinsAndLosses(app: FastifyInstance) {
 			if (!userObject) {
 				return res.status(404).send({error: 'username not found in database'})
 			}
-			console.log('userObject:', userObject)
 			const matches = await app.prisma.match.findMany({
 				  where: {
 					matchParticipant: {
-						some: { userId: userObject.id }  // usa userId dentro de matchParticipant
+						some: { userId: userObject.id } 
 						}
 					},
 					include: {
-						matchParticipant: true  // ou include user também, se precisar do username
+						matchParticipant: true 
 					}
 			})
-			console.log('matches:', matches)
 			let wins = 0;
 			let losses = 0;
 			for (const match of matches) {
@@ -38,7 +36,6 @@ export async function getWinsAndLosses(app: FastifyInstance) {
 			}
 			return res.status(200).send({ wins: wins, losses: losses })
 		} catch(error) {
-			console.log('error getWins:', error)
 			return res.status(400).send({ message: 'Bad request', error: error })
 		}
 	})

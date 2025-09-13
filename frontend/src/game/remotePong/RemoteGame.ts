@@ -72,7 +72,6 @@ export function initGame(container: HTMLElement) {
     const settingsStr = sessionStorage.getItem('gameSettings');
 
     if (!settingsStr) {
-        console.error("DEU ERRO InitGame SettingStr");
         navigate('./games');
         return;
     }
@@ -126,12 +125,11 @@ export function stopGame() {
     }
     window.removeEventListener('keydown', handleKeyDown);
     window.removeEventListener('keyup', handleKeyUp);
-    console.log('Loop de renderização e listeners parados.');
 }
 
 export function updateGameState(newState: any) {
     if (!newState || !newState.ball || !newState.paddles || !newState.scores) {
-        console.error("Recebido estado de jogo inválido:", newState);
+        console.error("Invalid game state:", newState);
         return;
     }
     gameState.ball = newState.ball;

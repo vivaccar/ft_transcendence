@@ -38,14 +38,12 @@ export async function setupSettingsLogic(elements: ReturnType<typeof createSetti
 
       emailInput.value = data.email || '';
       usernameInput.value = data.username || '';
-      // img.src =  data.avatar ? `${data.avatar}?t=${Date.now()}` :  "/images/randomAvatar/0.jpeg";
       toggleInput2FA.checked = data.has2fa || false;
       oldPasswordInput.value = '';
 
       currentUsername = data.username || ''; 
 
       img.src = await fetchUserAvatar(currentUsername);
-      console.log(img.src);
     } catch (err) {
       alert('Error loading profile: ' + err);
     }
@@ -56,7 +54,6 @@ export async function setupSettingsLogic(elements: ReturnType<typeof createSetti
     e.preventDefault();
   
     try {
-      // 1. Atualizar username (se mudou)
       if (usernameInput.value && usernameInput.value !== currentUsername) {
         const resUsername = await fetch(API_ROUTES.username, {
           method: 'PATCH',
@@ -72,10 +69,8 @@ export async function setupSettingsLogic(elements: ReturnType<typeof createSetti
           alert("Error updating username: " + data.message);
           return;
         }
-        console.log(data.message);
       }
   
-      // 2. Atualizar senha (se usuário preencheu os campos)
       if (oldPasswordInput.value && passwordInput.value && confirmPasswordInput.value) {
         if (passwordInput.value !== confirmPasswordInput.value) {
           alert(i18next.t("password_mismatch"));
@@ -99,10 +94,8 @@ export async function setupSettingsLogic(elements: ReturnType<typeof createSetti
           alert("Error updating password: " + data.message);
           return;
         }
-        console.log(data.message);
       }
   
-      // alert("Profile updated successfully!");
       currentUsername = usernameInput.value;
 
       usernameInput.className = 'inputBlocked';
@@ -152,7 +145,7 @@ export function setupAvatarControls(
       const avatarPath = `/images/randomAvatar/${randomIndex}.jpeg`;
 
       const res = await fetch(avatarPath);
-      if (!res.ok) throw new Error("Falha ao carregar avatar local");
+      if (!res.ok) throw new Error("Error while updating local avatar");
 
       const blob = await res.blob();
 
@@ -180,7 +173,6 @@ export function setupAvatarControls(
       }
 
     } catch (error) {
-      console.error(error);
       alert("Error updating avatar");
     }
   });
@@ -206,7 +198,6 @@ async function uploadAvatar(file: File): Promise<void> {
     }
 
   } catch (error) {
-    console.error(error);
     alert("An error occurred while trying to upload the avatar.");
   }
 }

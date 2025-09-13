@@ -13,10 +13,6 @@ export function connectWebSocket(callback: (data: any) => void) {
     const socketURL = `${protocol}://${host}/ws/`;
     socket = new WebSocket(socketURL);
 
-    /* socket.onopen = () => {
-        console.log('WebSocket conectado com sucesso ao servidor.');
-    }; */
-
     socket.onmessage = (event) => {
         try {
             const data = JSON.parse(event.data);

@@ -58,7 +58,6 @@ export function setup2FA(toggleInput2FA: HTMLInputElement) {
 			toggleInput2FA.checked = false;
 		  }
 		} else {
-			console.log('tentando desabilitar');
 			try {
 				const disableRes = await fetch(`${API_ROUTES.disable2FA}`, {
 				  method: "POST",

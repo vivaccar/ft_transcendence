@@ -30,7 +30,6 @@ export async function uploadAvatar(app: FastifyInstance) {
 				where: {id: userId},
 				data: { avatar: buffer }
 			})
-			console.log("A IMAGEM FOI ADICIONADA COM SUCESSO\n")
 			return res.status(200).send({message: "New avatar uploaded"})
 		} catch(err) {
 			console.error(err)

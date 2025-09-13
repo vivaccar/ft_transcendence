@@ -34,7 +34,7 @@ export async function getMatches(username: string | null): Promise<Game[]> {
 	  });
 	  
 	  if (!response.ok) {
-		throw new Error(`Erro ao buscar partidas: ${response.status}`);
+		throw new Error(`Error while searching for matches: ${response.status}`);
 	  }
   
 	  const data = await response.json();
@@ -49,10 +49,9 @@ export async function getMatches(username: string | null): Promise<Game[]> {
 		touchesUser: match.touchesUser,
 		dateTime: new Date(match.dateTime),
 	  })).sort((a: { dateTime: Date }, b: { dateTime: Date }) => b.dateTime.getTime() - a.dateTime.getTime());
-	  console.log(data);
 	  return games;
 	} catch (error) {
-	  console.error("Erro em getMatches:", error);
+	  console.error("Error in getMatches:", error);
 	  return [];
 	}
 }

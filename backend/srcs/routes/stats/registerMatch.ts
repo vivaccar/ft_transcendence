@@ -18,7 +18,7 @@ export async function registerMatch(app: FastifyInstance) {
 			})
 		})
     	try {
-			const body = matchSchema.parse(req.body) // faz o parse do request body, deixando o corpo da requisicao tipado e seguro para ser utilizado
+			const body = matchSchema.parse(req.body)
 			
 			const match = await app.prisma.match.create ({
 				data: {

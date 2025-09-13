@@ -46,8 +46,6 @@ export async function registerRoutes(app: FastifyInstance) {
         },
       })
 
-      console.log
-
       return reply.status(201).send({ id: user.id, email: user.email })
 
     } catch (err) {
