@@ -90,10 +90,6 @@ async function buildHostPage(): Promise <void> {
     const onSelectColor = (color: string) => { selectedColor = color; };
     const colorWrapper = document.createElement("div");
     colorWrapper.className = "flex flex-col items-center mt-6";
-    const colorTitle = document.createElement("h2");
-    colorTitle.textContent = i18next.t("paddle_color");
-    colorTitle.className = "text-white font-orbitron font-bold mb-2";
-    colorWrapper.appendChild(colorTitle);
     colorWrapper.appendChild(ColorSelector(onSelectColor));
     container.appendChild(colorWrapper);
     const startBtn = document.createElement("button");
@@ -168,10 +164,6 @@ async function buildGuestPage(): Promise <void> {
     const colorWrapper = document.createElement("div");
     colorWrapper.className = "flex flex-col items-center mt-2";
     box.appendChild(colorWrapper);
-    const colorTitle = document.createElement("h2");
-    colorTitle.textContent = i18next.t('paddle_color');
-    colorTitle.className = "text-white font-orbitron font-bold mb-2";
-    colorWrapper.appendChild(colorTitle);
     colorWrapper.appendChild(ColorSelector(onSelectColor));
     const joinBtn = document.createElement("button");
     joinBtn.id = 'join-btn';
