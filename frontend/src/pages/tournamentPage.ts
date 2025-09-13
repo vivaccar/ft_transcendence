@@ -4,8 +4,6 @@ import { ColorSelector } from "../components/ColorSelector";
 import { buildHumanGameLocal } from "../game/localPong/Pong";
 import i18next from "i18next";
 
-// Função auxiliar para criar a UI de configuração para cada jogador
-// Isso evita a repetição de código
 function createPlayerSetupUI(
     playerNumber: number,
     onNameChange: (name: string) => void,
@@ -36,7 +34,6 @@ function createPlayerSetupUI(
 
 
 export function buildTournamentsPage(gameType: string) {
-    // Estado para armazenar as escolhas dos 4 jogadores
     let selectedbackgroundImg = "/images/backgroundGame/back10.jpg";
     const playersData = {
         p1: { name: "", color: "white" },
@@ -54,18 +51,14 @@ export function buildTournamentsPage(gameType: string) {
     title.className = "text-white font-orbitron font-bold text-5xl mb-6";
     container.appendChild(title);
     
-    // --- SELEÇÃO DE BACKGROUND ---
     const onSelectBackground = (background: string) => {
         selectedbackgroundImg = background;
     };
     const carousel = BackgroundCarousel(onSelectBackground);
     container.appendChild(carousel);
-
-    // --- CONTAINER PARA OS 4 JOGADORES ---
     const playersContainer = document.createElement("div");
     playersContainer.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-8";
-    
-    // --- CONFIGURAÇÃO DE CADA JOGADOR ---
+
     const player1Setup = createPlayerSetupUI(1, 
         (name) => { playersData.p1.name = name; },
         (color) => { playersData.p1.color = color; }
@@ -92,33 +85,25 @@ export function buildTournamentsPage(gameType: string) {
     playersContainer.appendChild(player4Setup);
     container.appendChild(playersContainer);
 
-    // --- BOTÃO DE INICIAR TORNEIO ---
     const startBtn = document.createElement("button");
     startBtn.textContent = i18next.t("start_tournament");
     startBtn.className = "mt-10 px-8 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition text-2xl";
     
     startBtn.addEventListener("click", () => {
-        // Guarda os dados de TODOS os jogadores para usar depois
         for (let i = 1; i <= 4; i++) {
             const pKey = `p${i}` as keyof typeof playersData;
-            // Usa "Player X" se o nome estiver vazio
             const playerName = playersData[pKey].name.trim() === '' ? `Player ${i}` : playersData[pKey].name;
-            
             sessionStorage.setItem(`tournament_p${i}_name`, playerName);
             sessionStorage.setItem(`tournament_p${i}_color`, playersData[pKey].color);
         }
 
-        // Configura a SESSÃO para o PRIMEIRO JOGO (Player 1 vs Player 2)
         sessionStorage.setItem("playerName1", sessionStorage.getItem('tournament_p1_name')!);
         sessionStorage.setItem("selectedColorP1", sessionStorage.getItem('tournament_p1_color')!);
         sessionStorage.setItem("playerName2", sessionStorage.getItem('tournament_p2_name')!);
         sessionStorage.setItem("selectedColorP2", sessionStorage.getItem('tournament_p2_color')!);
         
         sessionStorage.setItem("selectedBackground", selectedbackgroundImg);
-        // Indica que estamos em modo torneio para a lógica futura
         sessionStorage.setItem("gameMode", "tournament_semi_1");
-
-        // Inicia o primeiro jogo do torneio
         buildHumanGameLocal(`${gameType}`);
     });
     container.appendChild(startBtn);

@@ -1,73 +1,22 @@
 import { WebSocket } from 'ws';
 import { PrismaClient } from '@prisma/client';
+import { Ball } from './entities/Ball';
+import { Player } from './entities/Player';
 import { hasOnlyExpressionInitializer } from 'typescript';
 
 
-const CANVAS_WIDTH = 600;
-const CANVAS_HEIGHT = 400;
-const PADDLE_WIDTH = 10;
-const PADDLE_HEIGHT = 100;
-const BALL_SIZE = 10;
-//Pixels per second
+export const CANVAS_WIDTH = 600;
+export const CANVAS_HEIGHT = 400;
+export const BALL_SPEED = 300;
+export const BALL_SIZE = 10;
+export const PADDLE_WIDTH = 10;
+export const PADDLE_HEIGHT = 100;
+
 const PADDLE_SPEED = 300;
-const BALL_SPEED = 300;
 const SPEED_INCREASED = 20;
-const WINNING_SCORE = 1;
+const WINNING_SCORE = 4;
 
-// Represents a player connected to a session
-export class Player {
-	id: string;
-	name: string;
-	ws: WebSocket;
-	color: string;
-	x: number;
-	y: number;
-	width: number = PADDLE_WIDTH;
-	height: number = PADDLE_HEIGHT;
-	score: number = 0;
-	touches: number = 0;
-	moveUp: boolean = false;
-	moveDown: boolean = false;
-
-	constructor(id: string, name: string, ws: WebSocket, side: 'left' | 'right', color: string) {
-		this.id = id;
-		this.name = name;
-		this.ws = ws;
-		this.color = color;
-		this.x = (side === 'left') ? PADDLE_WIDTH : CANVAS_WIDTH - (PADDLE_WIDTH * 2);
-		this.y = CANVAS_HEIGHT / 2 - PADDLE_HEIGHT / 2;
-	}
-
-	getPlayerOpponent(players: Player[]): Player | undefined {
-		return players.find((p) => p.id !== this.id);
-	}
-}
-
-export class Ball {
-	x!: number;
-	y!: number;
-	size: number = BALL_SIZE;
-	speedX!: number;
-	speedY!: number;
-	speed: number;
-
-	constructor() {
-		this.speed = BALL_SPEED;
-		this.reset();
-	}
-
-	// Put BALL in the center with random direction
-	reset() {
-		this.x = CANVAS_WIDTH / 2;
-		this.y = CANVAS_HEIGHT / 2;
-		const angle = Math.random() * Math.PI / 2 - Math.PI / 4;
-		this.speedX = BALL_SPEED * Math.cos(angle) * (Math.random() > 0.5 ? 1 : -1);
-		this.speedY = BALL_SPEED * Math.sin(angle);
-		this.speed = BALL_SPEED;
-	}
-}
-
-// REMOTE GAME ENGINE
+//This class represents the remote game ression
 export class GameSession {
 	sessionId: string;
 	players: Player[] = [];
@@ -91,7 +40,6 @@ export class GameSession {
 		}
 	}
 
-	// Inicia o loop do jogo
 	start() {
 		if (this.players.length !== 2)
 			return;
@@ -99,11 +47,6 @@ export class GameSession {
 		const player1 = this.players[0];
 		const player2 = this.players[1];
 
-		//DEBUG - NAO EXCLUIR AINDA
-		console.log(`[GameSession ${this.sessionId}] Iniciando jogo. Notificando ambos os jogadores.`);
-		console.log(`---> PREPARANDO PARA ENVIAR 'gameStart' PARA O GUEST (${player2.id}) COM BACKGROUND: ${this.background}`);
-
-		//ISSO PODE SER REFATORADO PARA UM PAYLOAD. MAS VAI TER DE MUDAR MUITA COISA QUE CHATO PORRA
 		player1.ws.send(JSON.stringify({
 			type: 'gameStart',
 			opponentId: player2.id,
@@ -111,7 +54,7 @@ export class GameSession {
 			p2Name: player2.name,
 			background: this.background
 		}));
-		//ISSO PODE SER REFATORADO PARA UM PAYLOAD. MAS VAI TER DE MUDAR MUITA COISA QUE CHATO PORRA
+
 		player2.ws.send(JSON.stringify({
 			type: 'gameStart',
 			opponentId: player1.id,
@@ -121,9 +64,7 @@ export class GameSession {
 		}));
 
 		this.lastTime = Date.now();
-		//SUSPEITO QUE O TRAVAMENTO POSSA ESTAR RELACIONADO A ISSO AQUI
-		//MAS O ROBO NAO ME AJUDA A RESOLVER ESSA PORRA
-		this.gameInterval = setInterval(() => this.update(), 1000 / 60); //AQUI MUDA A QUANTIDADE DE FRAMES POR SEGUNDO
+		this.gameInterval = setInterval(() => this.update(), 1000 / 60);
 	}
 
 	stop() {
@@ -160,12 +101,10 @@ export class GameSession {
 		const p1 = this.players[0];
 		const p2 = this.players[1];
 
-		// colisão com as bordas de cima e baixo
 		if (this.ball.y - this.ball.size < 0 || this.ball.y + this.ball.size > CANVAS_HEIGHT) {
 			this.ball.speedY *= -1;
 		}
 
-		// colisão com player1
 		if (
 			this.ball.speedX < 0 &&
 			this.ball.x - this.ball.size < p1.x + p1.width &&
@@ -178,13 +117,12 @@ export class GameSession {
 
 			this.ball.speed += SPEED_INCREASED;
 			const hitPos = (this.ball.y - (p1.y + p1.height / 2)) / (p1.height / 2);
-			const angle = hitPos * (Math.PI / 4); // máx 45°
+			const angle = hitPos * (Math.PI / 4);
 
-			this.ball.speedX = Math.cos(angle) * this.ball.speed; // positivo = direita
+			this.ball.speedX = Math.cos(angle) * this.ball.speed;
 			this.ball.speedY = Math.sin(angle) * this.ball.speed;
 		}
 
-		// colisão com player2
 		if (
 			this.ball.speedX > 0 &&
 			this.ball.x + this.ball.size > p2.x &&
@@ -199,18 +137,15 @@ export class GameSession {
 			const hitPos = (this.ball.y - (p2.y + p2.height / 2)) / (p2.height / 2);
 			const angle = hitPos * (Math.PI / 4);
 
-			this.ball.speedX = -Math.cos(angle) * this.ball.speed;// negativo = esquerda
+			this.ball.speedX = -Math.cos(angle) * this.ball.speed;
 			this.ball.speedY = Math.sin(angle) * this.ball.speed;
 		}
 
-		// pontos
 		if (this.ball.x < 0) {
 			p2.score++;
-			console.log(`PONTO PARA P2! Placar: P1 ${p1.score} - P2 ${p2.score}`);
 			this.ball.reset();
 		} else if (this.ball.x > CANVAS_WIDTH) {
 			p1.score++;
-			console.log(`PONTO PARA P1! Placar: P1 ${p1.score} - P2 ${p2.score}`);
 			this.ball.reset();
 		}
 	}

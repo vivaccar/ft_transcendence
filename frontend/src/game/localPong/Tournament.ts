@@ -77,7 +77,6 @@ function showTournamentTransitionScreen(title: string, message: string, buttonTe
     container.appendChild(nextButton);
 }
 
-
 function handleTournamentMatchEnd(winnerName: string) {
     const gameMode = sessionStorage.getItem('gameMode');
     let title: string, message: string, buttonText: string, nextAction: () => void;

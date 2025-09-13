@@ -1,6 +1,7 @@
 import fastify, { FastifyInstance, FastifyRequest } from 'fastify';
 import { WebSocket } from 'ws';
-import { GameSession, Player } from '../../game/engine';
+import { GameSession } from '../../game/engine';
+import { Player } from '../../game/entities/Player';
 
 const sessions = new Map<string, GameSession>();
 const connectionToSessionMap = new Map<WebSocket, string>();
@@ -9,11 +10,6 @@ function generateSessionId(): string {
     return Math.random().toString(36).substring(2, 9);
 }
 
-// ====================================================================================
-// SOLUÇÃO: Lógica de Saída Centralizada e Simplificada
-// Esta função encontra a sessão do jogador e chama o método `removePlayer` da sessão,
-// que já contém a lógica correta para parar o jogo e notificar o oponente.
-// ====================================================================================
 function handlePlayerExit(connection: WebSocket, userId: string) {
     const sessionId = connectionToSessionMap.get(connection);
     if (!sessionId) 
@@ -22,14 +18,11 @@ function handlePlayerExit(connection: WebSocket, userId: string) {
     const session = sessions.get(sessionId);
     if (!session) 
         return;
-    
-    // Delega a lógica para o método da sessão, que é o lugar certo para isso.
+
     session.removePlayer(userId);
 
-    // Se a sessão ficar vazia após a remoção, nós a limpamos do mapa.
     if (session.players.length === 0) {
         sessions.delete(sessionId);
-        console.log(`Sessão ${sessionId} vazia e removida.`);
     }
     
     connectionToSessionMap.delete(connection);
@@ -38,7 +31,6 @@ function handlePlayerExit(connection: WebSocket, userId: string) {
 export default async function gameWs(app: FastifyInstance) {
     app.get('/ws', { websocket: true }, (connection: WebSocket, req: FastifyRequest) => {
 
-        console.log("Conectado!");
         const userId = req.headers['sec-websocket-key'] as string;
         if (!userId) {
             connection.close(1011, 'Missing connection key');
@@ -101,7 +93,6 @@ export default async function gameWs(app: FastifyInstance) {
                     break;
                 }
 
-                // ADICIONADO: Trata a mensagem de saída explícita do jogador
                 case 'player_left_game': {
                     console.log("player_left_game");
                     handlePlayerExit(connection, userId);
@@ -111,7 +102,6 @@ export default async function gameWs(app: FastifyInstance) {
         });
 
         connection.on('close', () => {
-            // ALTERADO: A desconexão agora também usa a lógica centralizada
             handlePlayerExit(connection, userId);
         });
     });
