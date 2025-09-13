@@ -12,4 +12,6 @@ RUN chmod +x entrypoint.sh
 
 EXPOSE 3002
 
+RUN npm i
+
 CMD ["./entrypoint.sh"]
