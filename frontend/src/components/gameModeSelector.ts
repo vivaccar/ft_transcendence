@@ -34,7 +34,7 @@ export function GameModeSelector(
   container.appendChild(buttonsWrapper);
 
   const modeDesc = document.createElement("p");
-  modeDesc.className = "text-gray-300 text-sm mt-2 h-5"; // altura fixa para evitar pular layout
+  modeDesc.className = "text-gray-300 text-sm mt-2 h-5";
   container.appendChild(modeDesc);
 
   specialBtn.addEventListener("mouseenter", () => {
