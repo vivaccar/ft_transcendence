@@ -56,7 +56,6 @@ export async function setupSettingsLogic(elements: ReturnType<typeof createSetti
     e.preventDefault();
   
     try {
-      // 1. Atualizar username (se mudou)
       if (usernameInput.value && usernameInput.value !== currentUsername) {
         const resUsername = await fetch(API_ROUTES.username, {
           method: 'PATCH',
@@ -75,7 +74,6 @@ export async function setupSettingsLogic(elements: ReturnType<typeof createSetti
         console.log(data.message);
       }
   
-      // 2. Atualizar senha (se usuário preencheu os campos)
       if (oldPasswordInput.value && passwordInput.value && confirmPasswordInput.value) {
         if (passwordInput.value !== confirmPasswordInput.value) {
           alert(i18next.t("password_mismatch"));
@@ -102,7 +100,6 @@ export async function setupSettingsLogic(elements: ReturnType<typeof createSetti
         console.log(data.message);
       }
   
-      // alert("Profile updated successfully!");
       currentUsername = usernameInput.value;
 
       usernameInput.className = 'inputBlocked';
@@ -174,7 +171,6 @@ export async function setupAvatarControls(
         headers: {
           "Authorization": `Bearer ${token}`
         },
-        // credentials: "include",
         body: formData
       });
 
