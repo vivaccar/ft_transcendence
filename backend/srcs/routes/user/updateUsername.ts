@@ -5,8 +5,8 @@ export async function updateUsername(app: FastifyInstance) {
     app.patch("/user/username", { preHandler: [app.authenticate] , schema: updateUsernameSchema}, async (request, reply) => {
         const { newUsername } = request.body as { newUsername: string }
 
-        if (!newUsername || newUsername.trim().length < 3) {
-            return reply.status(400).send({ message: "Username must have at least 3 characters" })
+        if (!newUsername || newUsername.trim().length < 3 || newUsername.trim().length > 15) {
+            return reply.status(400).send({ message: "Username must have at least 3 and maximum 15 characters" })
         }
 
         const usernameRegex = /^[a-zA-Z0-9_]+$/;
