@@ -101,9 +101,15 @@ export class GameSession {
 		const p1 = this.players[0];
 		const p2 = this.players[1];
 
-		if (this.ball.y - this.ball.size < 0 || this.ball.y + this.ball.size > CANVAS_HEIGHT) {
+		if (this.ball.y - this.ball.size < 0) {
 			this.ball.speedY *= -1;
+			this.ball.y = this.ball.size;
 		}
+		else if (this.ball.y + this.ball.size > CANVAS_HEIGHT) {
+			this.ball.speedY *= -1;
+			this.ball.y = CANVAS_HEIGHT - this.ball.size;
+		}
+
 
 		if (
 			this.ball.speedX < 0 &&
@@ -173,10 +179,8 @@ export class GameSession {
 					},
 				},
 			});
-
-			console.log(`[GameSession ${this.sessionId}] Partida registrada com sucesso`);
 		} catch (error) {
-			console.error(`Erro ao registrar a partida:`, error);
+			console.error(`Error registering match:`, error);
 		}
 	}
 
@@ -195,7 +199,6 @@ export class GameSession {
 			this.broadcastState();
 			this.stop();
 			setTimeout(() => {
-				console.log("chamou save game data em checkWinCondition");
 				this.broadcast({
 					type: 'gameOver',
 					payload: {
@@ -203,12 +206,11 @@ export class GameSession {
 					}
 				});
 				this.players.forEach(player => {
-				// O código 1000 significa "Normal Closure", indicando que o propósito da conexão foi cumprido.
-				player.ws.close(1000, 'Game Over');
-			});
+					player.ws.close(1000, 'Game Over');
+				});
 			}, 100);
 			this.saveGameData();
-			
+
 		}
 	}
 

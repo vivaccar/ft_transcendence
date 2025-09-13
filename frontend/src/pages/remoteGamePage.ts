@@ -62,7 +62,7 @@ function handleServerMessage(data: any) {
             break;
 
         case 'opponentLeft':
-            leaveDetector.stop(); // Desativa a deteção
+            leaveDetector.stop();
             stopGame();
             alert(i18next.t("opponent_left"));
             break;
