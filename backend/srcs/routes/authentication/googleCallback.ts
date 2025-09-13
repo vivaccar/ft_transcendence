@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { googleCallbackSwaggerSchema } from "../../schemaSwagger/googleCallbackSchema";
 
-// ESTA FUNCAO É REDIRECIONADA APÓS O USUARIO SE AUTENTICAR PELA API DO GOOGLE!
+// Google redirect
 export async function googleCallback(app: FastifyInstance) {
   app.get(
     "/auth/google/callback",
@@ -68,13 +68,13 @@ export async function googleCallback(app: FastifyInstance) {
             path: "/",
           })
           .setCookie("has2fa", "true", {
-            httpOnly: false, // front pode ler esta flag
+            httpOnly: false, // front can read
             secure: true,
             sameSite: "lax",
             path: "/",
           })          
           .setCookie("google", "true", {
-            httpOnly: false, // front pode ler esta flag
+            httpOnly: false, // front can read
             secure: true,
             sameSite: "lax",
             path: "/",
