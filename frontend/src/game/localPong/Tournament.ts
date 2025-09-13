@@ -28,7 +28,7 @@ let ball: Ball;
 let keysPressed: { [key: string]: boolean } = {};
 let animationFrameId: number | null = null;
 let lastTime = 0;
-let winningScore = 6;
+let winningScore = 5;
 
 const handleKeyDown = (e: KeyboardEvent) => { keysPressed[e.key.toLowerCase()] = true; };
 const handleKeyUp = (e: KeyboardEvent) => { keysPressed[e.key.toLowerCase()] = false; };
