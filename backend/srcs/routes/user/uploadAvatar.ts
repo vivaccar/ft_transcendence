@@ -1,6 +1,5 @@
 import { FastifyInstance } from "fastify"
 import { fileTypeFromBuffer } from 'file-type'
-//import { uploadAvatarSwaggerSchema } from "../../schemaSwagger/uploadAvatarSchema"
 
 export async function uploadAvatar(app: FastifyInstance) {
 	app.post('/uploadAvatar', { preHandler: [app.authenticate] }, async(req, res) => {
@@ -19,7 +18,7 @@ export async function uploadAvatar(app: FastifyInstance) {
 			const buffer = await file.toBuffer()
 			const fileType = await fileTypeFromBuffer(buffer)
 
-			const allowedExtensions = ['jpg', 'jpeg', 'png']
+			const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif']
 
 			if (!fileType || !allowedExtensions.includes(fileType.ext)) {
 				return res.status(415).send({ error: "Unsupported File Type"})
