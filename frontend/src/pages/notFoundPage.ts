@@ -1,5 +1,3 @@
-// import { navigate } from "../router";
-
 export function buildNotFoundPage() {
 	const root = document.getElementById("app");
 	if (root) {

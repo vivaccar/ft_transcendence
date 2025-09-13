@@ -14,7 +14,7 @@ export const PADDLE_HEIGHT = 100;
 
 const PADDLE_SPEED = 300;
 const SPEED_INCREASED = 20;
-const WINNING_SCORE = 4;
+const WINNING_SCORE = 5;
 
 //This class represents the remote game ression
 export class GameSession {

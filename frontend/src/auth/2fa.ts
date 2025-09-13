@@ -189,13 +189,11 @@ export function showTwoFactorModal(): Promise<string | null> {
 		relative bg-white p-6 rounded-lg max-w-xs w-full text-center
 	  `;
   
-	  // título
 	  const title = document.createElement("h2");
 	  title.textContent = "Enter 2FA Code";
 	  title.className = "text-xl font-bold mb-4 text-gray-800";
 	  modal.appendChild(title);
   
-	  // botão de fechar
 	  const closeBtn = document.createElement("button");
 	  closeBtn.textContent = "×";
 	  closeBtn.className = `
@@ -208,7 +206,6 @@ export function showTwoFactorModal(): Promise<string | null> {
 	  });
 	  modal.appendChild(closeBtn);
   
-	  // input
 	  const input = document.createElement("input");
 	  input.type = "text";
 	  input.maxLength = 6;
@@ -220,7 +217,6 @@ export function showTwoFactorModal(): Promise<string | null> {
 	  `;
 	  modal.appendChild(input);
   
-	  // botão submit
 	  const submitBtn = document.createElement("button");
 	  submitBtn.textContent = "Verify";
 	  submitBtn.className = `

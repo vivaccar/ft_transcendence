@@ -27,7 +27,7 @@ let selectedGame: string | null = null;
 let lastTime = 0;
 let aiDecisionTimer = 1;
 let aiTargetY = 0;
-let winningScore = 3;
+let winningScore = 5;
 const handleKeyDown = (e: KeyboardEvent) => { keysPressed[e.key.toLowerCase()] = true; };
 const handleKeyUp = (e: KeyboardEvent) => { keysPressed[e.key.toLowerCase()] = false; };
 const paddleWidth = 10, paddleHeight = 80, paddleSpeed = 280;
